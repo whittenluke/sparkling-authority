@@ -13,107 +13,132 @@
 - [ ] **Authentication:** Supabase Auth (Email, Google, Social OAuth)
 - [ ] **Social & SEO Tools:** Next.js optimizations, auto-posting to social media
 
-## Features
+## Site Structure
 
-### 1. User-Generated Reviews & Ratings
+### 1. Explore Section
 
-- [ ] Users can submit reviews with:
-  - [ ] **Overall rating** (stars)
-  - [ ] **Taste, Carbonation, Aftertaste ratings** (separate structured scores)
-  - [ ] **Text review**
-- [x] **No image uploads** at launch _(requirement confirmed)_
-- [ ] **Moderation:** Reviews require **manual approval** initially
-- [ ] **Future AI moderation** (spam/inappropriate filtering) may be considered
+- [ ] **All Brands:** Comprehensive brand directory
+- [ ] **New Releases:** Latest product launches
+- [ ] **By Flavor:** Categorized flavor profiles
+- [ ] **By Carbonation Level:** Carbonation intensity categories
+- [ ] **Regional Favorites:** Geographic-based recommendations
+- [ ] **Product Directory:** Complete database of products
 
-### 2. Commenting & Engagement
+### 2. Rankings Section
 
-- [ ] Users can **comment and like** articles and reviews
-- [x] No forum planned at launch _(requirement confirmed)_
-- [ ] Reputation system & voting on reviews TBD
+- [ ] **Best Overall:** Top-rated across all categories
+- [ ] **Best Flavor:** Taste-focused rankings
+- [ ] **Strongest Carbonation:** Carbonation-level rankings
+- [ ] **Best Value:** Price-performance analysis
+- [ ] **Healthiest Options:** Health-focused selections
+- [ ] **Editor's Picks:** Expert recommendations
+- [ ] **User Favorites:** Community-voted rankings
 
-### 3. Expert Articles & Guides
+### 3. Resources Section
 
-- [ ] Authored by site owner and contributors
-- [ ] Managed via **Notion API CMS**
-- [ ] Includes industry news, buying guides, health benefits, etc.
-- [ ] **Auto-posting to social media** upon publishing
+- [ ] **Health Guide:** Health benefits and considerations
+- [ ] **Carbonation Explained:** Technical deep-dive
+- [ ] **Making Your Own:** DIY guides and equipment reviews
+- [ ] **Nutrition Facts:** Detailed nutritional information
+- [ ] **Buying Guide:** Purchase recommendations
+- [ ] **Terminology:** Sparkling water glossary
+- [ ] **FAQ:** Common questions answered
 
-### 4. Sparkling Water Database
+### 4. Community Section
 
-- [ ] A curated database of brands, flavors, and product details
-- [ ] Includes brand comparisons, flavor profiles, and ratings
-- [ ] **Updating Mechanism:**
-  - [ ] Users' ratings contribute to database updates
-  - [ ] Brands can submit missing products via email
-  - [ ] Discontinued products remain for historical reference
+- [ ] **Discussion Forum:** User conversations
+- [ ] **Submit a Review:** User review system
+- [ ] **User Rankings:** Community-driven ratings
+- [ ] **Events & Meetups:** Community gatherings
+- [ ] **Submit a Product:** Product submission system
+- [ ] **Sparkling Water News:** Industry updates
 
-### 5. Monetization Strategy (Future)
+## Features & Implementation
 
-- [ ] **Affiliate Marketing** (Amazon, sparkling water brands)
-- [ ] **Sponsored Content** (Paid placements, advertorials)
-- [ ] **Community Donations** (Patreon, one-time donations)
-- [ ] **Merchandise** (Potential long-term idea)
+### 1. User-Generated Content
 
-### 6. SEO & Content Strategy
+- [ ] **Review System:**
+  - [ ] Overall rating (stars)
+  - [ ] Taste, Carbonation, Value ratings
+  - [ ] Detailed text reviews
+  - [ ] Photo uploads (future feature)
+- [ ] **Moderation:**
+  - [ ] Manual approval initially
+  - [ ] Future AI moderation implementation
 
-- [ ] High-ranking **organic keywords** targeting _(meta tags implemented)_
-- [ ] Structured data for search engines _(basic implementation)_
-- [ ] Content optimized for sharing & social engagement
+### 2. Expert Content
 
-### 7. Social Media Integration
+- [ ] **Article Types:**
+  - [ ] Product reviews and comparisons
+  - [ ] Health and nutrition guides
+  - [ ] Industry news and trends
+  - [ ] Educational content
+- [ ] **Content Management:**
+  - [ ] Notion API integration
+  - [ ] SEO optimization
+  - [ ] Rich media support
 
-- [ ] Auto-posting new content to **Instagram, X, TikTok**
-- [ ] Social sharing for articles (reviews TBD)
-- [ ] Content scheduling possible in the future
+### 3. Product Database
 
-### 8. User Authentication & Accounts
+- [ ] **Data Structure:**
+  - [ ] Brand information
+  - [ ] Product details
+  - [ ] Nutritional information
+  - [ ] Price tracking
+  - [ ] Availability data
+- [ ] **Update Mechanism:**
+  - [ ] Admin updates
+  - [ ] User submissions
+  - [ ] Brand submissions
+  - [ ] Automated price tracking
 
-- [ ] Email + OAuth (Google, Social logins)
-- [ ] Required for posting reviews and comments
+### 4. Community Features
 
-### 9. Moderation & Maintenance
+- [ ] **Forum System:**
+  - [ ] Topic categories
+  - [ ] User profiles
+  - [ ] Moderation tools
+- [ ] **Events:**
+  - [ ] Event creation and management
+  - [ ] RSVP system
+  - [ ] Location-based filtering
 
-- [ ] **Manual review approval** at launch
-- [ ] **Reporting system** for spam/inappropriate content
-- [ ] **Alerts for moderation needs**
-- [ ] Minimal manual maintenance preferred
+## Monetization Strategy
 
-### 10. Analytics & Performance
-
-- [x] User engagement tracking (popular content, traffic, etc.) _(Next.js Analytics ready)_
-- [x] Site speed and performance optimizations _(Next.js defaults implemented)_
+- [ ] **Affiliate Marketing:**
+  - [ ] Product links
+  - [ ] Equipment recommendations
+- [ ] **Sponsored Content:**
+  - [ ] Brand partnerships
+  - [ ] Featured products
+- [ ] **Premium Features:**
+  - [ ] Advanced comparison tools
+  - [ ] Price tracking alerts
+  - [ ] Expert consultations
 
 ## Current Progress
 
 ✅ **Completed:**
 
 - Basic Next.js setup with TypeScript
-- Initial responsive layout and navigation
-- Homepage with hero section and featured content
-- Placeholder pages for main sections
-- Database schema design and implementation
+- Initial responsive layout
+- Authentication system
+- Database schema design
 
 🔄 **In Progress:**
 
-- Setting up GitHub repository
-- Setting up Netlify hosting
-- Setting up Supabase Auth
+- User profile system
+- Review submission system
+- Product database implementation
 
-⏳ **Next Steps:**
+## Future Considerations
 
-- Authentication flow
-- Review system implementation
-
-## Future Roadmap Considerations
-
-- [ ] AI moderation for reviews/comments
-- [ ] Expanding to sparkling water subscription boxes, taste tests, or community voting
-- [ ] International content & translations (long-term vision)
-
-## Summary
-
-SparklingAuthority.com will be the definitive online resource for sparkling water lovers, providing expert content, structured product comparisons, and user-driven reviews. The platform is designed for **scalability, ease of maintenance, and SEO-driven growth**, with a clear long-term roadmap for monetization and community engagement.
+- [ ] Mobile app development
+- [ ] International expansion
+- [ ] AI-powered recommendations
+- [ ] Price comparison tools
+- [ ] Subscription box service
 
 ---
 
-This document will serve as the foundation for developing the website. Let me know if you'd like to refine anything!
+This document will serve as the foundation for developing SparklingAuthority.com. Updates will be made as requirements evolve.
