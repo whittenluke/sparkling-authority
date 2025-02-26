@@ -34,7 +34,7 @@ export function Header() {
           
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             <Link
-              href="/login"
+              href="/auth/login"
               className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500"
             >
               Sign in

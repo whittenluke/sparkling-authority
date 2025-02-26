@@ -7,7 +7,7 @@ import { supabase } from './client'
 type AuthContextType = {
   user: User | null
   loading: boolean
-  signIn: (provider: 'google' | 'github') => Promise<void>
+  signIn: (provider: 'google' | 'facebook') => Promise<void>
   signInWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null, user: User | null }>
   signOut: () => Promise<void>
@@ -34,11 +34,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signIn = async (provider: 'google' | 'github') => {
+  const signIn = async (provider: 'google' | 'facebook') => {
     await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`
+        redirectTo: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/callback`
       }
     })
   }
@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/callback`
       }
     })
     return { user, error }

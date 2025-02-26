@@ -7,7 +7,7 @@
 ## Tech Stack
 
 - [ ] **Hosting:** Netlify _(not configured yet)_
-- [ ] **Database & Backend:** Supabase (PostgreSQL-based) _(not initialized yet)_
+- [x] **Database & Backend:** Supabase (PostgreSQL-based) _(schema implemented)_
 - [x] **Frontend Framework:** Next.js (for performance & SEO) _(implemented)_
 - [ ] **CMS:** Notion API (for expert articles & content management)
 - [ ] **Authentication:** Supabase Auth (Email, Google, Social OAuth)
@@ -56,8 +56,8 @@
 
 ### 6. SEO & Content Strategy
 
-- [x] High-ranking **organic keywords** targeting _(meta tags implemented)_
-- [x] Structured data for search engines _(basic implementation)_
+- [ ] High-ranking **organic keywords** targeting _(meta tags implemented)_
+- [ ] Structured data for search engines _(basic implementation)_
 - [ ] Content optimized for sharing & social engagement
 
 ### 7. Social Media Integration
@@ -91,16 +91,16 @@
 - Initial responsive layout and navigation
 - Homepage with hero section and featured content
 - Placeholder pages for main sections
+- Database schema design and implementation
 
 🔄 **In Progress:**
 
 - Setting up GitHub repository
-- Setting up Supabase project
 - Setting up Netlify hosting
+- Setting up Supabase Auth
 
 ⏳ **Next Steps:**
 
-- Database schema design
 - Authentication flow
 - Review system implementation
 
