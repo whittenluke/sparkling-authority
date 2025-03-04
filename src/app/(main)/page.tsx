@@ -7,7 +7,7 @@ export default function HomePage() {
   return (
     <div className="space-y-16">
       {/* Hero Section */}
-      <section className="relative -mx-4 -mt-8 sm:-mx-6 lg:-mx-8">
+      <section className="relative w-screen left-[50%] right-[50%] mx-[-50vw]">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white" />
         <div className="relative px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
