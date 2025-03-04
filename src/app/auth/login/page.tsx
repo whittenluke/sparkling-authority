@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Facebook } from 'lucide-react'
+import { Facebook, Twitter } from 'lucide-react'
 import { useAuth } from '@/lib/supabase/auth-context'
 
 export default function LoginPage() {
@@ -32,7 +32,7 @@ export default function LoginPage() {
     }
   }
 
-  const handleOAuthLogin = async (provider: 'google' | 'facebook') => {
+  const handleOAuthLogin = async (provider: 'google' | 'facebook' | 'twitter') => {
     setIsLoading(true)
     setError(null)
 
@@ -122,7 +122,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="mt-6 grid grid-cols-3 gap-3">
             <button
               onClick={() => handleOAuthLogin('google')}
               disabled={isLoading}
@@ -144,6 +144,15 @@ export default function LoginPage() {
             >
               <span className="sr-only">Sign in with Facebook</span>
               <Facebook className="w-5 h-5 text-[#1877F2]" />
+            </button>
+
+            <button
+              onClick={() => handleOAuthLogin('twitter')}
+              disabled={isLoading}
+              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="sr-only">Sign in with Twitter</span>
+              <Twitter className="w-5 h-5 text-[#1DA1F2]" />
             </button>
           </div>
         </div>
