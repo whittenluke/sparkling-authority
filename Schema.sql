@@ -55,8 +55,8 @@ create table public.products (
     brand_id uuid references public.brands(id) on delete cascade,
     name text not null,
     description text,
-    flavor text,
-    carbonation_level text check (carbonation_level in ('light', 'medium', 'strong')),
+    flavor text[],
+    carbonation_level smallint check (carbonation_level between 1 and 10),
     container_type text check (container_type in ('can', 'bottle', 'other')),
     container_size text,
     is_discontinued boolean default false,
@@ -142,6 +142,19 @@ create index idx_comments_review_id on public.comments(review_id);
 create index idx_likes_user_id on public.likes(user_id);
 create index idx_articles_author_id on public.articles(author_id);
 create index idx_articles_slug on public.articles(slug);
+
+-- Add carbonation level migration for existing tables
+ALTER TABLE public.products 
+DROP CONSTRAINT IF EXISTS products_carbonation_level_check,
+ALTER COLUMN carbonation_level TYPE smallint USING 
+  CASE 
+    WHEN carbonation_level = 'light' THEN 3
+    WHEN carbonation_level = 'medium' THEN 6
+    WHEN carbonation_level = 'strong' THEN 9
+    ELSE NULL 
+  END,
+ADD CONSTRAINT products_carbonation_level_check 
+  CHECK (carbonation_level BETWEEN 1 AND 10);
 
 -- Add updated_at triggers
 create or replace function public.handle_updated_at()
