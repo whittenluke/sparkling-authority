@@ -255,4 +255,12 @@ create policy "Public likes are viewable by everyone"
 
 create policy "Users can manage their own likes"
     on likes for all
-    using ( auth.uid() = user_id ); 
+    using ( auth.uid() = user_id );
+
+-- Add flavor array migration
+ALTER TABLE public.products 
+DROP COLUMN IF EXISTS flavor,
+ADD COLUMN flavors text[] DEFAULT '{}';
+
+-- Add index for flavor search
+CREATE INDEX idx_products_flavors ON public.products USING GIN (flavors); 
