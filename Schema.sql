@@ -61,9 +61,26 @@ create table public.products (
     container_size text,
     is_discontinued boolean default false,
     nutrition_info jsonb,
+    product_line_id uuid references public.product_lines(id) on delete cascade,
     created_at timestamptz default now(),
     updated_at timestamptz default now(),
     unique(brand_id, name)
+);
+
+-- Product Lines table
+create table public.product_lines (
+    id uuid default uuid_generate_v4() primary key,
+    brand_id uuid references public.brands(id) on delete cascade,
+    name text not null,
+    description text,
+    is_default boolean default false,
+    target_demographic text,
+    launch_date date,
+    created_at timestamptz default now(),
+    updated_at timestamptz default now(),
+    unique(brand_id, name),
+    CONSTRAINT unique_default_per_brand EXCLUDE (brand_id WITH =) 
+        WHERE (is_default = true)
 );
 
 -- Reviews table
@@ -134,6 +151,8 @@ create table public.likes (
 
 -- Create indexes for better query performance
 create index idx_products_brand_id on public.products(brand_id);
+create index idx_products_product_line_id on public.products(product_line_id);
+create index idx_product_lines_brand_id on public.product_lines(brand_id);
 create index idx_reviews_product_id on public.reviews(product_id);
 create index idx_reviews_user_id on public.reviews(user_id);
 create index idx_comments_user_id on public.comments(user_id);
@@ -181,6 +200,11 @@ create trigger handle_updated_at
     execute function public.handle_updated_at();
 
 create trigger handle_updated_at
+    before update on public.product_lines
+    for each row
+    execute function public.handle_updated_at();
+
+create trigger handle_updated_at
     before update on public.reviews
     for each row
     execute function public.handle_updated_at();
@@ -199,6 +223,7 @@ create trigger handle_updated_at
 alter table public.profiles enable row level security;
 alter table public.brands enable row level security;
 alter table public.products enable row level security;
+alter table public.product_lines enable row level security;
 alter table public.reviews enable row level security;
 alter table public.articles enable row level security;
 alter table public.comments enable row level security;
@@ -215,6 +240,10 @@ create policy "Public brands are viewable by everyone"
 
 create policy "Public products are viewable by everyone"
     on products for select
+    using ( true );
+
+create policy "Public product lines are viewable by everyone"
+    on product_lines for select
     using ( true );
 
 create policy "Public reviews are viewable by everyone"

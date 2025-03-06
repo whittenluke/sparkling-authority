@@ -39,3 +39,25 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Database and sensitive files
+/supabase/seed/
+/supabase/seeds/
+*.seed.sql
+*_seed.sql
+*_products.sql
+*_data.sql
+
+# Design and planning documents
+DesignDoc.md
+SchemaRoadmap.md
+**/design/
+**/docs/private/
+**/planning/
+
+# Supabase
+.supabase/
+supabase/.temp/
+DesignSystem.md
+DesignDoc.md
+DesignDoc.md
