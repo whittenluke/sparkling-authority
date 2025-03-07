@@ -10,13 +10,48 @@ export const dynamic = 'force-dynamic'
 export default async function BrandsPage() {
   const supabase = createServerComponentClient({ cookies })
   
+  // Get brands with their product lines
   const { data: brands } = await supabase
     .from('brands')
     .select(`
-      *,
-      products:products(count)
+      id,
+      name,
+      description,
+      product_lines (
+        id,
+        name,
+        description,
+        is_default,
+        products:products(count)
+      )
     `)
     .order('name')
+
+  // Transform data to show both regular brands and product lines as separate entries
+  const brandEntries = (brands || []).flatMap(brand => {
+    const productLines = brand.product_lines || []
+    
+    // If brand has no product lines, show it as a regular brand
+    if (productLines.length === 0) {
+      return [{
+        id: brand.id,
+        name: brand.name,
+        description: brand.description,
+        productCount: 0,
+        isProductLine: false
+      }]
+    }
+    
+    // If brand has product lines, show each as a separate entry
+    return productLines.map(line => ({
+      id: brand.id,
+      name: line.is_default ? brand.name : `${brand.name} ${line.name}`,
+      description: line.description || brand.description,
+      productCount: line.products.count,
+      isProductLine: true,
+      productLineId: line.id
+    }))
+  })
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -25,7 +60,7 @@ export default async function BrandsPage() {
         <main className="flex-grow py-8">
           <div className="space-y-8">
             <BrandsHeader />
-            <BrandsGrid brands={brands || []} />
+            <BrandsGrid brands={brandEntries} />
           </div>
         </main>
       </div>

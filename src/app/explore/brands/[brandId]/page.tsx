@@ -3,12 +3,20 @@ import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import Link from 'next/link'
+import { ProductsSection } from './components/ProductsSection'
 
 type Product = {
   id: string
   name: string
   flavor: string[]
+  product_line_id: string
+}
+
+type ProductLine = {
+  id: string
+  name: string
+  description: string | null
+  is_default: boolean
 }
 
 export default async function BrandPage({ params }: { params: { brandId: string } }) {
@@ -18,10 +26,17 @@ export default async function BrandPage({ params }: { params: { brandId: string 
     .from('brands')
     .select(`
       *,
+      product_lines (
+        id,
+        name,
+        description,
+        is_default
+      ),
       products (
         id,
         name,
-        flavor
+        flavor,
+        product_line_id
       )
     `)
     .eq('id', params.brandId)
@@ -30,6 +45,13 @@ export default async function BrandPage({ params }: { params: { brandId: string 
   if (!brand) {
     notFound()
   }
+
+  // Sort product lines to ensure default line comes first
+  const productLines = (brand.product_lines || []).sort((a, b) => {
+    if (a.is_default) return -1
+    if (b.is_default) return 1
+    return a.name.localeCompare(b.name)
+  })
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -76,46 +98,11 @@ export default async function BrandPage({ params }: { params: { brandId: string 
               </dl>
             </div>
 
-            {/* Products Section */}
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Products</h2>
-              <div className="mt-6 space-y-4">
-                {brand.products?.map((product: Product) => (
-                  <Link
-                    key={product.id}
-                    href={`/explore/products/${product.id}`}
-                    className="group block rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md hover:ring-blue-200"
-                  >
-                    <div className="flex items-start gap-5">
-                      {/* Product Image Placeholder */}
-                      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-50 group-hover:bg-gray-100">
-                        <div className="flex h-full w-full items-center justify-center text-xl text-gray-400">
-                          {product.name.charAt(0)}
-                        </div>
-                      </div>
-                      
-                      <div className="flex-1 space-y-1">
-                        <h3 className="font-medium text-gray-900 group-hover:text-blue-600">
-                          {product.name}
-                        </h3>
-                        {product.flavor && product.flavor.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {product.flavor.map(flavor => (
-                              <span 
-                                key={flavor} 
-                                className="inline-block rounded-full bg-gray-50 px-2.5 py-0.5 text-xs text-gray-600"
-                              >
-                                {flavor}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
+            {/* Products Section with Line Filter */}
+            <ProductsSection 
+              products={brand.products || []} 
+              productLines={productLines} 
+            />
           </div>
         </div>
       </main>

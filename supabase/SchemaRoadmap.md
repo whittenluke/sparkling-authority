@@ -6,7 +6,9 @@
 
   - [x] Created separate product_containers table
   - [x] Migrated existing container data
-  - [x] Flexible container_type and container_size fields
+  - [x] Added unique constraint for product/type/size combination
+  - [x] Added proper indexes for container queries
+  - [x] Updated seed files to use new container structure
 
 - Product Lines
   - [x] Added product_line column to products table
@@ -14,6 +16,14 @@
   - [x] Null = default product line
 
 ## Critical Requirements
+
+- Container Data Standards
+
+  - [ ] Define standard container types (can, bottle, glass, etc.)
+  - [ ] Standardize size formats (fl oz, ml, L)
+  - [ ] Add container material types (aluminum, glass, plastic)
+  - [ ] Add container validation triggers
+  - [ ] Consider container-specific attributes (recyclable, BPA-free)
 
 - World-Class Search Implementation
 
@@ -26,14 +36,15 @@
     - [ ] Flavors
     - [ ] Brands
     - [ ] Product lines
+    - [ ] Container types and sizes
   - [ ] Proper indexes for fast queries
   - [ ] Relevance scoring
 
 - Data Validation & Constraints
   - [ ] Standardize flavor names
-  - [ ] Container type validation
-  - [ ] Container size format standards
   - [ ] Product line naming conventions
+  - [ ] Add data validation triggers
+  - [ ] Implement audit logging
 
 ## Nice-to-Have Improvements
 

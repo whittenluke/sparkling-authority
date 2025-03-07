@@ -57,14 +57,23 @@ create table public.products (
     description text,
     flavor text[],
     carbonation_level smallint check (carbonation_level between 1 and 10),
-    container_type text check (container_type in ('can', 'bottle', 'other')),
-    container_size text,
     is_discontinued boolean default false,
     nutrition_info jsonb,
     product_line_id uuid references public.product_lines(id) on delete cascade,
     created_at timestamptz default now(),
     updated_at timestamptz default now(),
     unique(brand_id, name)
+);
+
+-- Product Containers table
+create table public.product_containers (
+    id uuid default uuid_generate_v4() primary key,
+    product_id uuid references public.products(id) on delete cascade,
+    container_type text not null,
+    container_size text not null,
+    created_at timestamptz default now(),
+    updated_at timestamptz default now(),
+    unique(product_id, container_type, container_size)
 );
 
 -- Product Lines table
@@ -152,6 +161,7 @@ create table public.likes (
 -- Create indexes for better query performance
 create index idx_products_brand_id on public.products(brand_id);
 create index idx_products_product_line_id on public.products(product_line_id);
+create index idx_product_containers_product_id on public.product_containers(product_id);
 create index idx_product_lines_brand_id on public.product_lines(brand_id);
 create index idx_reviews_product_id on public.reviews(product_id);
 create index idx_reviews_user_id on public.reviews(user_id);
