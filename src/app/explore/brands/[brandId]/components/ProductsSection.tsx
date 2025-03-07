@@ -48,7 +48,7 @@ export function ProductsSection({
               <div className="relative">
                 <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white py-2.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-600 sm:text-sm">
                   <span className="block truncate">
-                    {selectedLine ? (selectedLine.is_default ? 'Default Line' : selectedLine.name) : 'All Products'}
+                    {selectedLine ? (selectedLine.is_default ? 'Original' : selectedLine.name) : 'All Products'}
                   </span>
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                     <ChevronDown className="h-4 w-4 text-gray-400" aria-hidden="true" />
@@ -84,7 +84,7 @@ export function ProductsSection({
                         {({ selected, active }) => (
                           <>
                             <span className={`block truncate ${selected ? 'font-semibold' : 'font-normal'}`}>
-                              {line.is_default ? 'Default Line' : line.name}
+                              {line.is_default ? 'Original' : line.name}
                             </span>
                             {line.description && (
                               <span className={`block truncate text-sm ${
