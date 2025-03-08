@@ -11,11 +11,15 @@ type Product = {
   flavor: string[]
 }
 
-export default async function ProductLinePage({ 
-  params 
-}: { 
-  params: { brandId: string, lineId: string }
-}) {
+type PageProps = {
+  params: {
+    brandId: string
+    lineId: string
+  }
+  searchParams?: { [key: string]: string | string[] | undefined }
+}
+
+export default async function ProductLinePage({ params }: PageProps) {
   const supabase = createServerComponentClient({ cookies })
   
   // Get brand and product line info

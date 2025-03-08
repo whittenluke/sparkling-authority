@@ -21,7 +21,14 @@ type ProductContainer = {
   container_size: string
 }
 
-export default async function ProductPage({ params }: { params: { productId: string } }) {
+type PageProps = {
+  params: {
+    productId: string
+  }
+  searchParams?: { [key: string]: string | string[] | undefined }
+}
+
+export default async function ProductPage({ params }: PageProps) {
   const supabase = createServerComponentClient({ cookies })
   
   const { data: product } = await supabase

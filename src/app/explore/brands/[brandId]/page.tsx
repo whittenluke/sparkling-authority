@@ -5,7 +5,14 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { ProductsSection } from './components/ProductsSection'
 
-export default async function BrandPage({ params }: { params: { brandId: string } }) {
+type PageProps = {
+  params: {
+    brandId: string
+  }
+  searchParams?: { [key: string]: string | string[] | undefined }
+}
+
+export default async function BrandPage({ params }: PageProps) {
   const supabase = createServerComponentClient({ cookies })
   
   const { data: brand } = await supabase
