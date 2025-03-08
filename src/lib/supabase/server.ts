@@ -2,6 +2,17 @@ import { createServerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { Database } from './database.types'
 
+type CookieOptions = {
+  name: string
+  value: string
+  maxAge?: number
+  httpOnly?: boolean
+  secure?: boolean
+  path?: string
+  domain?: string
+  sameSite?: 'strict' | 'lax' | 'none'
+}
+
 export function createClient() {
   const cookieStore = cookies()
 
@@ -13,18 +24,18 @@ export function createClient() {
         get(name: string) {
           return cookieStore.get(name)?.value
         },
-        set(name: string, value: string, options: any) {
+        set(name: string, value: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value, ...options })
           } catch (error) {
-            // Handle cookie errors
+            console.error('Error setting cookie:', error)
           }
         },
-        remove(name: string, options: any) {
+        remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: '', ...options })
           } catch (error) {
-            // Handle cookie errors
+            console.error('Error removing cookie:', error)
           }
         },
       },

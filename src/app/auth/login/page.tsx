@@ -26,6 +26,7 @@ export default function LoginPage() {
       router.push('/')
       router.refresh()
     } catch (err) {
+      console.error('Email login error:', err)
       setError('Invalid email or password')
     } finally {
       setIsLoading(false)
@@ -39,6 +40,7 @@ export default function LoginPage() {
     try {
       await signIn(provider)
     } catch (err) {
+      console.error('OAuth login error:', err)
       setError('Failed to sign in with ' + provider)
       setIsLoading(false)
     }

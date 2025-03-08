@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ChevronDown, LogOut, User } from 'lucide-react'
+import { LogOut, User } from 'lucide-react'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { useState } from 'react'
 

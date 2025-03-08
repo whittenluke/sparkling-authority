@@ -5,20 +5,6 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { ProductsSection } from './components/ProductsSection'
 
-type Product = {
-  id: string
-  name: string
-  flavor: string[]
-  product_line_id: string
-}
-
-type ProductLine = {
-  id: string
-  name: string
-  description: string | null
-  is_default: boolean
-}
-
 export default async function BrandPage({ params }: { params: { brandId: string } }) {
   const supabase = createServerComponentClient({ cookies })
   
