@@ -66,7 +66,7 @@ export default async function ProductPage({ params }: PageProps) {
     }
     acc[container.container_type].push(container.container_size);
     return acc;
-  }, {});
+  }, {} as { [key: string]: string[] });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -147,7 +147,7 @@ export default async function ProductPage({ params }: PageProps) {
                 <div className="col-span-2 rounded-lg bg-white px-4 py-3 shadow-sm ring-1 ring-gray-200">
                   <dt className="text-sm font-medium text-gray-500">Available Containers</dt>
                   <dd className="mt-1 space-y-1">
-                    {Object.entries(containersByType).map(([type, sizes]) => (
+                    {(Object.entries(containersByType) as [string, string[]][]).map(([type, sizes]) => (
                       <div key={type} className="flex items-center gap-1.5">
                         <span className="text-sm font-medium text-gray-900 capitalize">
                           {type}:

@@ -40,7 +40,7 @@ export default async function BrandPage({ params }: PageProps) {
   }
 
   // Sort product lines to ensure default line comes first
-  const productLines = (brand.product_lines || []).sort((a, b) => {
+  const productLines = (brand.product_lines || []).sort((a: { is_default: boolean, name: string }, b: { is_default: boolean, name: string }) => {
     if (a.is_default) return -1
     if (b.is_default) return 1
     return a.name.localeCompare(b.name)
