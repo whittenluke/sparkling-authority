@@ -12,7 +12,7 @@ export function BrandsHeader() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">Brands</h1>
         <p className="mt-2 text-lg text-gray-600">
-          Discover and explore the world's finest sparkling water brands.
+          Discover and explore the world&apos;s finest sparkling water brands.
         </p>
       </div>
 
