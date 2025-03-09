@@ -13,11 +13,12 @@ type Product = {
   flavor: string[]
 }
 
-export default async function ProductLinePage({
-  params,
-}: {
-  params: { brandId: string; lineId: string }
-}) {
+type Props = {
+  params: Promise<{ brandId: string; lineId: string }>
+}
+
+export default async function ProductLinePage({ params }: Props) {
+  const { brandId, lineId } = await params
   const supabase = createServerComponentClient({ cookies })
   
   // Get brand and product line info
@@ -31,8 +32,8 @@ export default async function ProductLinePage({
         description
       )
     `)
-    .eq('id', params.brandId)
-    .eq('product_lines.id', params.lineId)
+    .eq('id', brandId)
+    .eq('product_lines.id', lineId)
     .single()
 
   if (!brand) {
@@ -45,8 +46,8 @@ export default async function ProductLinePage({
   const { data: products } = await supabase
     .from('products')
     .select('id, name, flavor')
-    .eq('brand_id', params.brandId)
-    .eq('product_line_id', params.lineId)
+    .eq('brand_id', brandId)
+    .eq('product_line_id', lineId)
     .order('name')
 
   return (

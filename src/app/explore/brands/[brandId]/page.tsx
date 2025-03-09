@@ -7,11 +7,12 @@ import { ProductsSection } from './components/ProductsSection'
 
 export const dynamic = 'force-dynamic'
 
-export default async function BrandPage({
-  params,
-}: {
-  params: { brandId: string }
-}) {
+type Props = {
+  params: Promise<{ brandId: string }>
+}
+
+export default async function BrandPage({ params }: Props) {
+  const { brandId } = await params
   const supabase = createServerComponentClient({ cookies })
   
   const { data: brand } = await supabase
@@ -31,7 +32,7 @@ export default async function BrandPage({
         product_line_id
       )
     `)
-    .eq('id', params.brandId)
+    .eq('id', brandId)
     .single()
 
   if (!brand) {

@@ -23,11 +23,12 @@ type ProductContainer = {
   container_size: string
 }
 
-export default async function ProductPage({
-  params,
-}: {
-  params: { productId: string }
-}) {
+type Props = {
+  params: Promise<{ productId: string }>
+}
+
+export default async function ProductPage({ params }: Props) {
+  const { productId } = await params
   const supabase = createServerComponentClient({ cookies })
   
   const { data: product } = await supabase
@@ -49,7 +50,7 @@ export default async function ProductPage({
         container_size
       )
     `)
-    .eq('id', params.productId)
+    .eq('id', productId)
     .single()
 
   if (!product) {
