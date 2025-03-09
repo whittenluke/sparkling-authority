@@ -6,11 +6,11 @@
 
 ## Tech Stack
 
-- [ ] **Hosting:** Netlify _(not configured yet)_
+- [x] **Hosting:** Netlify _(configured and deployed)_
 - [x] **Database & Backend:** Supabase (PostgreSQL-based) _(schema implemented)_
 - [x] **Frontend Framework:** Next.js (for performance & SEO) _(implemented)_
 - [ ] **CMS:** Notion API (for expert articles & content management)
-- [ ] **Authentication:** Supabase Auth (Email, Google, Social OAuth)
+- [x] **Authentication:** Supabase Auth (Email) _(basic implementation complete)_
 - [ ] **Social & SEO Tools:** Next.js optimizations, auto-posting to social media
 
 ## Site Structure
@@ -143,14 +143,13 @@
 - Brand detail pages with product listings
 - Product card design with flavor tags
 - Complete product database for all initial brands
-- Structured product data including:
-  - Flavors and descriptions
-  - Nutrition facts
-  - Container information
-  - Carbonation levels
+- Mobile-responsive navigation
+- Deployment configuration
+- Basic user authentication flow
 
 🔄 **In Progress:**
 
+- Dark mode implementation
 - User profile system
 - Review submission system
 - Individual product pages

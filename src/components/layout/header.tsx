@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { LogOut, Menu, User, X } from 'lucide-react'
+import { LogOut, Menu, Moon, Sun, User, X } from 'lucide-react'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { useState } from 'react'
+import { useTheme } from '@/components/theme-provider'
 
 const navigation = {
   explore: {
@@ -54,26 +55,43 @@ const navigation = {
   },
 }
 
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme()
+
+  return (
+    <button
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      className="relative h-10 w-10 rounded-md text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+    >
+      <div className="relative h-full w-full">
+        <Sun className="absolute inset-0 h-full w-full rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 p-2" />
+        <Moon className="absolute inset-0 h-full w-full rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 p-2" />
+      </div>
+      <span className="sr-only">Toggle theme</span>
+    </button>
+  )
+}
+
 function NavDropdown({ section, items }: { section: string; items: { name: string; href: string }[] }) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="relative h-full flex items-center" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
       <button
-        className="inline-flex items-center text-sm font-medium text-gray-900 hover:text-blue-600"
+        className="inline-flex items-center text-sm font-medium text-gray-900 hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
         onClick={() => setIsOpen(!isOpen)}
       >
         {section}
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+        <div className="absolute left-0 top-full mt-1 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
           <div className="py-1">
             {items.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 {item.name}
               </Link>
@@ -95,7 +113,7 @@ function MobileNavSection({ section, items, onItemClick }: {
   return (
     <div>
       <button
-        className="flex w-full items-center justify-between py-2 text-base font-medium text-gray-900"
+        className="flex w-full items-center justify-between py-2 text-base font-medium text-gray-900 dark:text-gray-100"
         onClick={() => setIsOpen(!isOpen)}
       >
         {section}
@@ -109,7 +127,7 @@ function MobileNavSection({ section, items, onItemClick }: {
             <Link
               key={item.name}
               href={item.href}
-              className="block py-2 text-sm text-gray-600 hover:text-blue-600"
+              className="block py-2 text-sm text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
               onClick={onItemClick}
             >
               {item.name}
@@ -131,21 +149,21 @@ function UserMenu() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 text-gray-700 hover:text-blue-600"
+        className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
       >
         <User className="h-6 w-6" />
         <span className="text-sm">{user.email?.split('@')[0]}</span>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
           <div className="py-1">
             <button
               onClick={() => {
                 signOut()
                 setIsOpen(false)
               }}
-              className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
             >
               <LogOut className="mr-2 h-4 w-4" />
               Sign out
@@ -162,12 +180,12 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-white dark:bg-gray-900 shadow-sm dark:shadow-gray-800">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <div className="flex">
             <Link href="/" className="flex items-center">
-              <span className="text-xl font-bold text-blue-600">SparklingAuthority</span>
+              <span className="text-xl font-bold text-blue-600 dark:text-blue-400">SparklingAuthority</span>
             </Link>
             
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -177,14 +195,15 @@ export function Header() {
             </div>
           </div>
           
-          <div className="flex items-center">
-            <div className="hidden sm:ml-6 sm:flex sm:items-center">
+          <div className="flex items-center space-x-4">
+            <ThemeToggle />
+            <div className="hidden sm:flex sm:items-center">
               {user ? (
                 <UserMenu />
               ) : (
                 <Link
                   href="/auth/login"
-                  className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500"
+                  className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 dark:bg-blue-500 dark:hover:bg-blue-400"
                 >
                   Sign in
                 </Link>
@@ -195,7 +214,7 @@ export function Header() {
             <div className="flex items-center sm:hidden">
               <button
                 type="button"
-                className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+                className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-expanded={isMobileMenuOpen}
               >
@@ -226,7 +245,7 @@ export function Header() {
               />
             ))}
           </div>
-          <div className="border-t border-gray-200 pb-3 pt-4">
+          <div className="border-t border-gray-200 dark:border-gray-700 pb-3 pt-4">
             {user ? (
               <div className="space-y-1 px-2">
                 <div className="flex items-center px-2">
@@ -234,10 +253,10 @@ export function Header() {
                     <User className="h-8 w-8 text-gray-400" />
                   </div>
                   <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800">
+                    <div className="text-base font-medium text-gray-800 dark:text-gray-200">
                       {user.email?.split('@')[0]}
                     </div>
-                    <div className="text-sm font-medium text-gray-500">
+                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
                       {user.email}
                     </div>
                   </div>
@@ -247,7 +266,7 @@ export function Header() {
                     signOut()
                     setIsMobileMenuOpen(false)
                   }}
-                  className="flex w-full items-center px-2 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-blue-600"
+                  className="flex w-full items-center px-2 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-blue-400"
                 >
                   <LogOut className="mr-2 h-5 w-5" />
                   Sign out
@@ -258,7 +277,7 @@ export function Header() {
                 <Link
                   href="/auth/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block rounded-md bg-blue-600 px-3 py-2 text-base font-medium text-white hover:bg-blue-700"
+                  className="block rounded-md bg-blue-600 px-3 py-2 text-base font-medium text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"
                 >
                   Sign in
                 </Link>
