@@ -46,7 +46,7 @@ export function ProductsSection({
           <div className="w-72">
             <Listbox value={selectedLine} onChange={setSelectedLine}>
               <div className="relative">
-                <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white dark:bg-gray-800 py-2.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm">
+                <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white/95 dark:bg-gray-800 py-2.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm">
                   <span className="block truncate text-gray-900 dark:text-gray-100">
                     {selectedLine ? (selectedLine.is_default ? 'Original' : selectedLine.name) : 'All Products'}
                   </span>
@@ -118,11 +118,11 @@ export function ProductsSection({
           <Link
             key={product.id}
             href={`/explore/products/${product.id}`}
-            className="group block rounded-xl bg-white dark:bg-gray-800 p-5 shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 transition-all hover:shadow-md hover:ring-blue-200 dark:hover:ring-blue-500"
+            className="group block rounded-xl bg-white/95 dark:bg-gray-800 p-5 shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 transition-all hover:shadow-md hover:ring-blue-200 dark:hover:ring-blue-500"
           >
             <div className="flex items-start gap-5">
               {/* Product Image Placeholder */}
-              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-700 group-hover:bg-gray-100 dark:group-hover:bg-gray-600">
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-sky-50 dark:bg-gray-700 group-hover:bg-sky-100 dark:group-hover:bg-gray-600">
                 <div className="flex h-full w-full items-center justify-center text-xl text-gray-400 dark:text-gray-500">
                   {product.name.charAt(0)}
                 </div>
@@ -137,7 +137,7 @@ export function ProductsSection({
                     {product.flavor.map(flavor => (
                       <span 
                         key={flavor} 
-                        className="inline-block rounded-full bg-gray-50 dark:bg-gray-700 px-2.5 py-0.5 text-xs text-gray-600 dark:text-gray-400"
+                        className="inline-block rounded-full bg-sky-50 dark:bg-gray-700 px-2.5 py-0.5 text-xs text-gray-600 dark:text-gray-400"
                       >
                         {flavor}
                       </span>

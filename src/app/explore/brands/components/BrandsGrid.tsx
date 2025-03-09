@@ -21,9 +21,9 @@ export function BrandsGrid({ brands }: { brands: BrandEntry[] }) {
             ? `/explore/brands/${brand.id}/line/${brand.productLineId}`
             : `/explore/brands/${brand.id}`
           }
-          className="group flex items-center gap-4 rounded-xl bg-white dark:bg-gray-800 p-4 shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 hover:shadow-md hover:ring-blue-600 dark:hover:ring-blue-500 transition-all"
+          className="group flex items-center gap-4 rounded-xl bg-white/95 dark:bg-gray-800 p-4 shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 hover:shadow-md hover:ring-blue-600 dark:hover:ring-blue-500 transition-all"
         >
-          <div className="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-900 dark:text-gray-100 text-xl font-medium">
+          <div className="h-12 w-12 rounded-lg bg-sky-50 dark:bg-gray-700 flex items-center justify-center text-gray-900 dark:text-gray-100 text-xl font-medium">
             {brand.name.charAt(0)}
           </div>
           <div className="flex-1">

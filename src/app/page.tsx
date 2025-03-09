@@ -4,9 +4,9 @@ import { Header } from '@/components/layout/header'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-sky-50/80 dark:bg-gray-900">
       <Header />
-      <main className="flex-grow bg-white dark:bg-gray-900">
+      <main className="flex-grow bg-sky-50/80 dark:bg-gray-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
           {/* Hero Section */}
           <div className="text-center space-y-4">

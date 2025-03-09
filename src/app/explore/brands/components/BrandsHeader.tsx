@@ -26,13 +26,13 @@ export function BrandsHeader() {
             <input
               type="search"
               placeholder="Search brands..."
-              className="block w-full rounded-lg border-0 py-3 pl-10 pr-4 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm"
+              className="block w-full rounded-lg border-0 py-3 pl-10 pr-4 text-gray-900 dark:text-gray-100 bg-white/95 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm"
             />
           </div>
           
           <button
             onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white/95 dark:hover:bg-gray-800 bg-white/90 dark:bg-gray-900"
           >
             <SlidersHorizontal className="h-5 w-5" />
             Filters
@@ -41,7 +41,7 @@ export function BrandsHeader() {
 
         {/* Filter Panel */}
         {isFiltersOpen && (
-          <div className="mt-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm">
+          <div className="mt-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800 p-4 shadow-sm">
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Founded Year */}
               <div>

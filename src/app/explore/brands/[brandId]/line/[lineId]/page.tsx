@@ -50,7 +50,7 @@ export default async function ProductLinePage({ params }: Props) {
     .order('name')
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
+    <div className="min-h-screen flex flex-col bg-sky-50/80 dark:bg-gray-900">
       <Header />
       <main className="flex-grow">
         <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">

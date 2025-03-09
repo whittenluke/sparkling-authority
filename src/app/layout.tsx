@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className="light">
-      <body className={`${inter.className} min-h-screen bg-white dark:bg-gray-900`}>
+      <body className={`${inter.className} min-h-screen bg-sky-50/80 dark:bg-gray-900`}>
         <ThemeProvider defaultTheme="system" storageKey="sparkling-authority-theme">
           <AuthProvider>
             {children}
