@@ -5,6 +5,8 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 type NutritionInfo = {
   calories: number
   total_fat: number
@@ -21,14 +23,11 @@ type ProductContainer = {
   container_size: string
 }
 
-type PageProps = {
-  params: {
-    productId: string
-  }
-  searchParams?: { [key: string]: string | string[] | undefined }
-}
-
-export default async function ProductPage({ params }: PageProps) {
+export default async function ProductPage({
+  params,
+}: {
+  params: { productId: string }
+}) {
   const supabase = createServerComponentClient({ cookies })
   
   const { data: product } = await supabase

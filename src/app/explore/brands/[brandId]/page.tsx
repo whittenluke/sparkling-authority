@@ -5,14 +5,13 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { ProductsSection } from './components/ProductsSection'
 
-type PageProps = {
-  params: {
-    brandId: string
-  }
-  searchParams?: { [key: string]: string | string[] | undefined }
-}
+export const dynamic = 'force-dynamic'
 
-export default async function BrandPage({ params }: PageProps) {
+export default async function BrandPage({
+  params,
+}: {
+  params: { brandId: string }
+}) {
   const supabase = createServerComponentClient({ cookies })
   
   const { data: brand } = await supabase
