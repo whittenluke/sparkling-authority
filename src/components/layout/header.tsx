@@ -237,12 +237,12 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm dark:shadow-gray-800">
+    <header className="shadow-sm">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <div className="flex">
             <Link href="/" className="flex items-center">
-              <span className="text-xl font-bold text-blue-600 dark:text-blue-400">SparklingAuthority</span>
+              <span className="text-xl font-bold text-blue-600">SparklingAuthority</span>
             </Link>
             
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
