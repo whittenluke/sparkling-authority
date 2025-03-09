@@ -12,9 +12,9 @@ const navigation = {
     name: 'Explore',
     items: [
       { name: 'All Brands', href: '/explore/brands' },
-      { name: 'New Releases', href: '/explore/new-releases' },
       { name: 'By Flavor', href: '/explore/flavors' },
       { name: 'By Carbonation Level', href: '/explore/carbonation' },
+      { name: 'New Releases', href: '/explore/new-releases' },
       { name: 'Regional Favorites', href: '/explore/regional' },
       { name: 'Product Directory', href: '/explore/directory' },
     ],
