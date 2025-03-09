@@ -4,6 +4,16 @@ import { Footer } from '@/components/layout/footer'
 import { CarbonationSpectrum } from './components/CarbonationSpectrum'
 import { CarbonationLevels } from './components/CarbonationLevels'
 
+type Product = {
+  id: string
+  name: string
+  carbonation_level: number
+  brand: {
+    id: string
+    name: string
+  }
+}
+
 export const dynamic = 'force-dynamic'
 
 export default async function CarbonationPage() {
@@ -30,12 +40,19 @@ export default async function CarbonationPage() {
   }
 
   // Group products by carbonation level and ensure they're sorted by name
-  const productsByLevel = products.reduce((acc: { [key: number]: typeof products }, product) => {
+  const productsByLevel = products.reduce((acc: { [key: number]: Product[] }, product) => {
     const level = product.carbonation_level
     if (!acc[level]) {
       acc[level] = []
     }
-    acc[level].push(product)
+    // Transform the data to match the Product type
+    const transformedProduct: Product = {
+      id: product.id,
+      name: product.name,
+      carbonation_level: product.carbonation_level,
+      brand: product.brand[0] // Take first brand since it's coming as an array
+    }
+    acc[level].push(transformedProduct)
     // Sort each level's products by name
     acc[level].sort((a, b) => a.name.localeCompare(b.name))
     return acc

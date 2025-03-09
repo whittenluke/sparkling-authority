@@ -4,6 +4,15 @@ import { Footer } from '@/components/layout/footer'
 import { ProductList } from './components/ProductList'
 import { SearchSection } from './components/SearchSection'
 
+type Product = {
+  id: string
+  name: string
+  brand: {
+    id: string
+    name: string
+  }
+}
+
 export const dynamic = 'force-dynamic'
 
 export default async function DirectoryPage() {
@@ -61,6 +70,13 @@ export default async function DirectoryPage() {
     )
   }
 
+  // Transform products to match the expected type
+  const transformedProducts: Product[] = products.map(product => ({
+    id: product.id,
+    name: product.name,
+    brand: product.brand[0]
+  }))
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
@@ -76,7 +92,7 @@ export default async function DirectoryPage() {
 
             <SearchSection />
 
-            <ProductList products={products} />
+            <ProductList products={transformedProducts} />
           </div>
         </div>
       </main>
