@@ -10,8 +10,8 @@ export function BrandsHeader() {
     <div className="space-y-4 max-w-2xl">
       {/* Title and Description */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Brands</h1>
-        <p className="mt-2 text-lg text-gray-600 dark:text-gray-300">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Brands</h1>
+        <p className="mt-2 text-lg text-muted-foreground">
           Discover and explore the world&apos;s finest sparkling water brands.
         </p>
       </div>
@@ -21,18 +21,18 @@ export function BrandsHeader() {
         <div className="flex items-center gap-4">
           <div className="relative flex-grow">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <Search className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+              <Search className="h-5 w-5 text-muted-foreground" />
             </div>
             <input
               type="search"
               placeholder="Search brands..."
-              className="block w-full rounded-lg border-0 py-3 pl-10 pr-4 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm"
+              className="block w-full rounded-lg border border-input py-3 pl-10 pr-4 text-foreground bg-background placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm"
             />
           </div>
           
           <button
             onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 bg-white dark:bg-gray-900"
+            className="inline-flex items-center gap-2 rounded-lg border border-input px-4 py-3 text-sm font-medium text-foreground bg-background hover:bg-muted"
           >
             <SlidersHorizontal className="h-5 w-5" />
             Filters
@@ -41,12 +41,12 @@ export function BrandsHeader() {
 
         {/* Filter Panel */}
         {isFiltersOpen && (
-          <div className="mt-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm">
+          <div className="mt-4 rounded-lg border border-input bg-card p-4 shadow-sm">
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Founded Year */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Founded</label>
-                <select className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 py-2 pl-3 pr-10 text-base focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-blue-500 dark:focus:ring-blue-400 sm:text-sm">
+                <label className="block text-sm font-medium text-foreground">Founded</label>
+                <select className="mt-1 block w-full rounded-md border border-input bg-background text-foreground py-2 pl-3 pr-10 text-base focus:border-primary focus:outline-none focus:ring-primary sm:text-sm">
                   <option>Any year</option>
                   <option>Before 1900</option>
                   <option>1900-1950</option>
@@ -57,8 +57,8 @@ export function BrandsHeader() {
 
               {/* Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Type</label>
-                <select className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 py-2 pl-3 pr-10 text-base focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-blue-500 dark:focus:ring-blue-400 sm:text-sm">
+                <label className="block text-sm font-medium text-foreground">Type</label>
+                <select className="mt-1 block w-full rounded-md border border-input bg-background text-foreground py-2 pl-3 pr-10 text-base focus:border-primary focus:outline-none focus:ring-primary sm:text-sm">
                   <option>All types</option>
                   <option>Major brands</option>
                   <option>Craft/Artisanal</option>
@@ -68,8 +68,8 @@ export function BrandsHeader() {
 
               {/* Sort */}
               <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Sort by</label>
-                <select className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 py-2 pl-3 pr-10 text-base focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none focus:ring-blue-500 dark:focus:ring-blue-400 sm:text-sm">
+                <label className="block text-sm font-medium text-foreground">Sort by</label>
+                <select className="mt-1 block w-full rounded-md border border-input bg-background text-foreground py-2 pl-3 pr-10 text-base focus:border-primary focus:outline-none focus:ring-primary sm:text-sm">
                   <option>Name (A-Z)</option>
                   <option>Newest first</option>
                   <option>Most popular</option>

@@ -148,8 +148,7 @@ function MobileNavSection({ section, items, onItemClick }: {
   )
 }
 
-function UserMenu() {
-  const { user, signOut } = useAuth()
+function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () => void }) {
   const [isOpen, setIsOpen] = useState(false)
 
   if (!user) return null
@@ -237,12 +236,12 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
-    <header className="shadow-sm">
+    <header className="border-b border-border bg-background">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <div className="flex">
             <Link href="/" className="flex items-center">
-              <span className="text-xl font-bold text-blue-600">SparklingAuthority</span>
+              <span className="text-xl font-bold text-primary">SparklingAuthority</span>
             </Link>
             
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -256,11 +255,11 @@ export function Header() {
             <ThemeToggle />
             <div className="hidden sm:flex sm:items-center">
               {user ? (
-                <UserMenu />
+                <UserMenu user={user} signOut={signOut} />
               ) : (
                 <Link
                   href="/auth/login"
-                  className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 dark:bg-blue-500 dark:hover:bg-blue-400"
+                  className="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
                 >
                   Sign in
                 </Link>
@@ -270,16 +269,14 @@ export function Header() {
             {/* Mobile menu button */}
             <div className="flex items-center sm:hidden">
               <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-expanded={isMobileMenuOpen}
+                className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
               >
                 <span className="sr-only">Open main menu</span>
                 {isMobileMenuOpen ? (
-                  <X className="block h-6 w-6" aria-hidden="true" />
+                  <X className="block h-6 w-6" />
                 ) : (
-                  <Menu className="block h-6 w-6" aria-hidden="true" />
+                  <Menu className="block h-6 w-6" />
                 )}
               </button>
             </div>
@@ -287,27 +284,42 @@ export function Header() {
         </div>
 
         {/* Mobile menu */}
-        <div
-          className={`${
-            isMobileMenuOpen ? 'block' : 'hidden'
-          } sm:hidden`}
-        >
-          <div className="space-y-2 pb-3 pt-2">
-            {Object.entries(navigation).map(([key, section]) => (
-              <MobileNavSection
-                key={key}
-                section={section.name}
-                items={section.items}
-                onItemClick={() => setIsMobileMenuOpen(false)}
-              />
-            ))}
+        {isMobileMenuOpen && (
+          <div className="sm:hidden">
+            <div className="space-y-1 pb-3 pt-2">
+              {Object.entries(navigation).map(([key, section]) => (
+                section.items.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="block px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    {item.name}
+                  </Link>
+                ))
+              ))}
+            </div>
+            <div className="border-t border-border pb-3 pt-4">
+              {user ? (
+                <div className="space-y-1">
+                  <button
+                    onClick={() => signOut()}
+                    className="block w-full px-3 py-2 text-base font-medium text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="block px-3 py-2 text-base font-medium bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  Sign in
+                </Link>
+              )}
+            </div>
           </div>
-          <MobileMenu 
-            user={user} 
-            signOut={signOut} 
-            setIsMobileMenuOpen={setIsMobileMenuOpen} 
-          />
-        </div>
+        )}
       </nav>
     </header>
   )

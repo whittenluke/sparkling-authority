@@ -46,7 +46,7 @@ export default async function BrandPage({ params }: Props) {
   })
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <main className="flex-grow">
         <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
@@ -55,35 +55,35 @@ export default async function BrandPage({ params }: Props) {
             <div>
               <div className="flex items-center gap-6">
                 {/* Brand Logo/Letter */}
-                <div className="h-20 w-20 rounded-xl bg-gray-100 flex items-center justify-center text-gray-900 text-3xl font-medium">
+                <div className="h-20 w-20 rounded-xl bg-muted flex items-center justify-center text-foreground text-3xl font-medium">
                   {brand.name.charAt(0)}
                 </div>
 
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-gray-900">{brand.name}</h1>
+                  <h1 className="text-3xl font-bold tracking-tight text-foreground">{brand.name}</h1>
                   {brand.description && (
-                    <p className="mt-2 text-lg text-gray-600">{brand.description}</p>
+                    <p className="mt-2 text-lg text-muted-foreground">{brand.description}</p>
                   )}
                 </div>
               </div>
 
               {/* Brand Quick Stats */}
               <dl className="mt-6 grid grid-cols-3 gap-4">
-                <div className="rounded-lg bg-white px-4 py-3 shadow-sm ring-1 ring-gray-200">
-                  <dt className="text-sm font-medium text-gray-500">Founded</dt>
-                  <dd className="mt-1 text-lg font-medium text-gray-900">
+                <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
+                  <dt className="text-sm font-medium text-muted-foreground">Founded</dt>
+                  <dd className="mt-1 text-lg font-medium text-foreground">
                     {brand.founded_year || 'Unknown'}
                   </dd>
                 </div>
-                <div className="rounded-lg bg-white px-4 py-3 shadow-sm ring-1 ring-gray-200">
-                  <dt className="text-sm font-medium text-gray-500">Country</dt>
-                  <dd className="mt-1 text-lg font-medium text-gray-900">
+                <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
+                  <dt className="text-sm font-medium text-muted-foreground">Country</dt>
+                  <dd className="mt-1 text-lg font-medium text-foreground">
                     {brand.country_of_origin || 'Unknown'}
                   </dd>
                 </div>
-                <div className="rounded-lg bg-white px-4 py-3 shadow-sm ring-1 ring-gray-200">
-                  <dt className="text-sm font-medium text-gray-500">Products</dt>
-                  <dd className="mt-1 text-lg font-medium text-gray-900">
+                <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
+                  <dt className="text-sm font-medium text-muted-foreground">Products</dt>
+                  <dd className="mt-1 text-lg font-medium text-foreground">
                     {brand.products?.length || 0}
                   </dd>
                 </div>

@@ -1,24 +1,21 @@
 import Link from 'next/link'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
-import { ArrowLeft } from 'lucide-react'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-900">Page Not Found</h1>
-          <p className="text-lg text-gray-600">Sorry, we couldn't find the page you're looking for.</p>
-          <div className="mt-6">
-            <Link href="/" className="text-blue-600 hover:text-blue-500">
-              Go back home
-            </Link>
-          </div>
+    <div className="min-h-screen bg-background">
+      <div className="flex min-h-screen flex-col items-center justify-center text-center">
+        <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">404</h2>
+        <p className="mt-4 text-base text-muted-foreground">Page not found.</p>
+        <div className="mt-6">
+          <Link
+            href="/"
+            className="text-sm font-medium text-primary hover:text-primary/90"
+          >
+            Go back home
+            <span aria-hidden="true"> &rarr;</span>
+          </Link>
         </div>
-      </main>
-      <Footer />
+      </div>
     </div>
   )
 } 
