@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { ProductList } from './components/ProductList'
+import { SearchSection } from './components/SearchSection'
 
 export const dynamic = 'force-dynamic'
 
@@ -69,9 +70,11 @@ export default async function DirectoryPage() {
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-foreground">Product Directory</h1>
               <p className="mt-2 text-lg text-muted-foreground">
-                Browse our complete collection of sparkling waters.
+                Browse our growing list of sparkling waters.
               </p>
             </div>
+
+            <SearchSection />
 
             <ProductList products={products} />
           </div>
