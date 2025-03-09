@@ -1,9 +1,23 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { Database } from './database.types'
 
-export function createClient() {
-  return createServerComponentClient<Database>({
-    cookies
-  })
+export function createServerComponentClient() {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookies().get(name)?.value
+        },
+        set(name: string, value: string, options: any) {
+          cookies().set(name, value, options)
+        },
+        remove(name: string, options: any) {
+          cookies().set(name, '', options)
+        },
+      },
+    }
+  )
 } 
