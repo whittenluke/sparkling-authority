@@ -29,7 +29,7 @@ type Props = {
 
 export default async function ProductPage({ params }: Props) {
   const { productId } = await params
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = createServerComponentClient()
   
   const { data: product } = await supabase
     .from('products')

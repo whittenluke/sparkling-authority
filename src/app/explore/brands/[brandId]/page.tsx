@@ -13,7 +13,7 @@ type Props = {
 
 export default async function BrandPage({ params }: Props) {
   const { brandId } = await params
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = createServerComponentClient()
   
   const { data: brand } = await supabase
     .from('brands')

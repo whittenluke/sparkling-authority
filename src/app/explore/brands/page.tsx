@@ -8,7 +8,7 @@ import { Footer } from '@/components/layout/footer'
 export const dynamic = 'force-dynamic'
 
 export default async function BrandsPage() {
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = createServerComponentClient()
   
   // Get brands with their total product count
   const { data: brands } = await supabase

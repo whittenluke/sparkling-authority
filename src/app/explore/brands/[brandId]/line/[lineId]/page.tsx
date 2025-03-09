@@ -19,7 +19,7 @@ type Props = {
 
 export default async function ProductLinePage({ params }: Props) {
   const { brandId, lineId } = await params
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = createServerComponentClient()
   
   // Get brand and product line info
   const { data: brand } = await supabase
