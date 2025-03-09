@@ -50,7 +50,7 @@ export default async function CarbonationPage() {
       id: product.id,
       name: product.name,
       carbonation_level: product.carbonation_level,
-      brand: product.brand[0] // Take first brand since it's coming as an array
+      brand: product.brand // Brand is already an object, no need for [0]
     }
     acc[level].push(transformedProduct)
     // Sort each level's products by name
