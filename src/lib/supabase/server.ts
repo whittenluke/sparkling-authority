@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { Database } from './database.types'
+import type { CookieOptions } from '@supabase/ssr'
 
 export function createServerComponentClient() {
   return createServerClient(
@@ -11,10 +11,10 @@ export function createServerComponentClient() {
         get(name: string) {
           return cookies().get(name)?.value
         },
-        set(name: string, value: string, options: any) {
+        set(name: string, value: string, options: CookieOptions) {
           cookies().set(name, value, options)
         },
-        remove(name: string, options: any) {
+        remove(name: string, options: CookieOptions) {
           cookies().set(name, '', options)
         },
       },
