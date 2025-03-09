@@ -11,7 +11,7 @@ type Product = {
   brands: {
     id: string
     name: string
-  }
+  }[]
 }
 
 type CarbonationLevelsProps = {
@@ -72,8 +72,10 @@ export function CarbonationLevels({ productsByLevel }: CarbonationLevelsProps) {
                     href={`/explore/products/${product.id}`}
                     className="block rounded-lg bg-muted p-3 hover:bg-accent transition-colors"
                   >
-                    <span className="font-medium text-foreground">{product.name}</span>
-                    <span className="ml-2 text-sm text-muted-foreground">by {product.brands.name}</span>
+                    <h3 className="font-medium text-foreground group-hover:text-primary">
+                      {product.name}
+                    </h3>
+                    <span className="ml-2 text-sm text-muted-foreground">by {product.brands[0]?.name}</span>
                   </Link>
                 ))}
               </div>

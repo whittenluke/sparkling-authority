@@ -8,7 +8,7 @@ type Product = {
   brands: {
     id: string
     name: string
-  }
+  }[]
 }
 
 export function ProductList({ products }: { products: Product[] }) {
@@ -33,7 +33,7 @@ export function ProductList({ products }: { products: Product[] }) {
                 {product.name}
               </h3>
               <p className="text-sm text-muted-foreground">
-                by {product.brands.name}
+                by {product.brands[0]?.name}
               </p>
             </div>
           </div>

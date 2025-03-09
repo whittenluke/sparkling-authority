@@ -11,7 +11,7 @@ type FlavorProduct = {
   brand: {
     id: string
     name: string
-  }
+  }[]
 }
 
 export function FlavorsList({ flavors }: { flavors: string[] }) {
@@ -90,8 +90,10 @@ export function FlavorsList({ flavors }: { flavors: string[] }) {
                       href={`/explore/products/${product.id}`}
                       className="block rounded-lg bg-muted p-3 hover:bg-accent transition-colors"
                     >
-                      <span className="font-medium text-foreground">{product.name}</span>
-                      <span className="ml-2 text-sm text-muted-foreground">by {product.brand.name}</span>
+                      <h3 className="font-medium text-foreground group-hover:text-primary">
+                        {product.name}
+                      </h3>
+                      <span className="ml-2 text-sm text-muted-foreground">by {product.brand[0]?.name}</span>
                     </Link>
                   ))}
                 </div>
