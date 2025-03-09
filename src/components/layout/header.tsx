@@ -5,6 +5,7 @@ import { LogOut, Menu, Moon, Sun, User, X } from 'lucide-react'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { useState } from 'react'
 import { useTheme } from '@/components/theme-provider'
+import { User as SupabaseUser } from '@supabase/supabase-js'
 
 const navigation = {
   explore: {
@@ -176,7 +177,7 @@ function UserMenu() {
 }
 
 function MobileMenu({ user, signOut, setIsMobileMenuOpen }: { 
-  user: any
+  user: SupabaseUser | null
   signOut: () => void
   setIsMobileMenuOpen: (open: boolean) => void 
 }) {
