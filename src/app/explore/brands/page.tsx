@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { BrandsGrid } from './components/BrandsGrid'
 import { BrandsHeader } from './components/BrandsHeader'
 import { Header } from '@/components/layout/header'
@@ -6,8 +6,15 @@ import { Footer } from '@/components/layout/footer'
 
 export const dynamic = 'force-dynamic'
 
+type Brand = {
+  id: string
+  name: string
+  description: string | null
+  products: { count: number }[]
+}
+
 export default async function BrandsPage() {
-  const supabase = createServerComponentClient()
+  const supabase = createClient()
   
   // Get brands with their total product count
   const { data: brands } = await supabase
@@ -21,10 +28,10 @@ export default async function BrandsPage() {
     .order('name')
 
   // Transform data to show brands with their total product counts
-  const brandEntries = (brands || []).map(brand => ({
+  const brandEntries = (brands || []).map((brand: Brand) => ({
     id: brand.id,
     name: brand.name,
-    description: brand.description,
+    description: brand.description || undefined,
     productCount: brand.products?.[0]?.count || 0,
     isProductLine: false
   }))
@@ -43,4 +50,4 @@ export default async function BrandsPage() {
       <Footer />
     </div>
   )
-} 
+}

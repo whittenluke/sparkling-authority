@@ -175,8 +175,56 @@ function UserMenu() {
   )
 }
 
+function MobileMenu({ user, signOut, setIsMobileMenuOpen }: { 
+  user: any
+  signOut: () => void
+  setIsMobileMenuOpen: (open: boolean) => void 
+}) {
+  return (
+    <div className="border-t border-gray-200 dark:border-gray-700 pb-3 pt-4">
+      {user ? (
+        <div className="space-y-1 px-2">
+          <div className="flex items-center px-2">
+            <div className="flex-shrink-0">
+              <User className="h-8 w-8 text-gray-400" />
+            </div>
+            <div className="ml-3">
+              <div className="text-base font-medium text-gray-800 dark:text-gray-200">
+                {user.email?.split('@')[0]}
+              </div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {user.email}
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              signOut()
+              setIsMobileMenuOpen(false)
+            }}
+            className="flex w-full items-center px-2 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-blue-400"
+          >
+            <LogOut className="mr-2 h-5 w-5" />
+            Sign out
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-1 px-2">
+          <Link
+            href="/auth/login"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block rounded-md bg-blue-600 px-3 py-2 text-base font-medium text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"
+          >
+            Sign in
+          </Link>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function Header() {
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
@@ -245,45 +293,11 @@ export function Header() {
               />
             ))}
           </div>
-          <div className="border-t border-gray-200 dark:border-gray-700 pb-3 pt-4">
-            {user ? (
-              <div className="space-y-1 px-2">
-                <div className="flex items-center px-2">
-                  <div className="flex-shrink-0">
-                    <User className="h-8 w-8 text-gray-400" />
-                  </div>
-                  <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800 dark:text-gray-200">
-                      {user.email?.split('@')[0]}
-                    </div>
-                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      {user.email}
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    signOut()
-                    setIsMobileMenuOpen(false)
-                  }}
-                  className="flex w-full items-center px-2 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-blue-400"
-                >
-                  <LogOut className="mr-2 h-5 w-5" />
-                  Sign out
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-1 px-2">
-                <Link
-                  href="/auth/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block rounded-md bg-blue-600 px-3 py-2 text-base font-medium text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"
-                >
-                  Sign in
-                </Link>
-              </div>
-            )}
-          </div>
+          <MobileMenu 
+            user={user} 
+            signOut={signOut} 
+            setIsMobileMenuOpen={setIsMobileMenuOpen} 
+          />
         </div>
       </nav>
     </header>

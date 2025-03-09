@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
@@ -28,7 +28,7 @@ type Props = {
 
 export default async function ProductPage({ params }: Props) {
   const { productId } = await params
-  const supabase = createServerComponentClient()
+  const supabase = createClient()
   
   const { data: product } = await supabase
     .from('products')
