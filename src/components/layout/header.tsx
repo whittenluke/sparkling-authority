@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, Menu, User, X } from 'lucide-react'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { useState } from 'react'
 
@@ -85,6 +85,42 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
   )
 }
 
+function MobileNavSection({ section, items, onItemClick }: { 
+  section: string
+  items: { name: string; href: string }[]
+  onItemClick?: () => void 
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div>
+      <button
+        className="flex w-full items-center justify-between py-2 text-base font-medium text-gray-900"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {section}
+        <span className={`ml-2 transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+          ▼
+        </span>
+      </button>
+      {isOpen && (
+        <div className="ml-4 space-y-1">
+          {items.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className="block py-2 text-sm text-gray-600 hover:text-blue-600"
+              onClick={onItemClick}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function UserMenu() {
   const { user, signOut } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
@@ -123,6 +159,7 @@ function UserMenu() {
 
 export function Header() {
   const { user } = useAuth()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
     <header className="bg-white shadow-sm">
@@ -140,16 +177,92 @@ export function Header() {
             </div>
           </div>
           
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            {user ? (
-              <UserMenu />
-            ) : (
-              <Link
-                href="/auth/login"
-                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500"
+          <div className="flex items-center">
+            <div className="hidden sm:ml-6 sm:flex sm:items-center">
+              {user ? (
+                <UserMenu />
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500"
+                >
+                  Sign in
+                </Link>
+              )}
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="flex items-center sm:hidden">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-expanded={isMobileMenuOpen}
               >
-                Sign in
-              </Link>
+                <span className="sr-only">Open main menu</span>
+                {isMobileMenuOpen ? (
+                  <X className="block h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <Menu className="block h-6 w-6" aria-hidden="true" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        <div
+          className={`${
+            isMobileMenuOpen ? 'block' : 'hidden'
+          } sm:hidden`}
+        >
+          <div className="space-y-2 pb-3 pt-2">
+            {Object.entries(navigation).map(([key, section]) => (
+              <MobileNavSection
+                key={key}
+                section={section.name}
+                items={section.items}
+                onItemClick={() => setIsMobileMenuOpen(false)}
+              />
+            ))}
+          </div>
+          <div className="border-t border-gray-200 pb-3 pt-4">
+            {user ? (
+              <div className="space-y-1 px-2">
+                <div className="flex items-center px-2">
+                  <div className="flex-shrink-0">
+                    <User className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <div className="ml-3">
+                    <div className="text-base font-medium text-gray-800">
+                      {user.email?.split('@')[0]}
+                    </div>
+                    <div className="text-sm font-medium text-gray-500">
+                      {user.email}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    signOut()
+                    setIsMobileMenuOpen(false)
+                  }}
+                  className="flex w-full items-center px-2 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-blue-600"
+                >
+                  <LogOut className="mr-2 h-5 w-5" />
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-1 px-2">
+                <Link
+                  href="/auth/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block rounded-md bg-blue-600 px-3 py-2 text-base font-medium text-white hover:bg-blue-700"
+                >
+                  Sign in
+                </Link>
+              </div>
             )}
           </div>
         </div>
