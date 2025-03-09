@@ -12,7 +12,7 @@ const navigation = {
     name: 'Explore',
     items: [
       { name: 'All Brands', href: '/explore/brands' },
-      { name: 'New Releases', href: '/explore/new' },
+      { name: 'New Releases', href: '/explore/new-releases' },
       { name: 'By Flavor', href: '/explore/flavors' },
       { name: 'By Carbonation Level', href: '/explore/carbonation' },
       { name: 'Regional Favorites', href: '/explore/regional' },
@@ -120,34 +120,23 @@ function MobileNavSection({ section, items, onItemClick }: {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="px-2">
+    <div>
       <button
-        className="flex w-full items-center justify-between px-3 py-2 text-base font-medium text-gray-900 dark:text-gray-100 rounded-md"
+        className="flex w-full items-center justify-between py-2 text-base font-medium text-gray-900 dark:text-gray-100"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span>{section}</span>
-        <span className={`transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
-          <svg
-            className="h-5 w-5 text-gray-500"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
+        {section}
+        <span className={`ml-2 transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+          ▼
         </span>
       </button>
       {isOpen && (
-        <div className="mt-1 space-y-1 px-3">
+        <div className="ml-4 space-y-1">
           {items.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="block rounded-md py-2 pl-4 text-base text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+              className="block py-2 text-sm text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
               onClick={onItemClick}
             >
               {item.name}
@@ -299,15 +288,36 @@ export function Header() {
           <div className="sm:hidden">
             <div className="space-y-1 pb-3 pt-2">
               {Object.entries(navigation).map(([key, section]) => (
-                <MobileNavSection
-                  key={key}
-                  section={section.name}
-                  items={section.items}
-                  onItemClick={() => setIsMobileMenuOpen(false)}
-                />
+                section.items.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="block px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    {item.name}
+                  </Link>
+                ))
               ))}
             </div>
-            <MobileMenu user={user} signOut={signOut} setIsMobileMenuOpen={setIsMobileMenuOpen} />
+            <div className="border-t border-border pb-3 pt-4">
+              {user ? (
+                <div className="space-y-1">
+                  <button
+                    onClick={() => signOut()}
+                    className="block w-full px-3 py-2 text-base font-medium text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="block px-3 py-2 text-base font-medium bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  Sign in
+                </Link>
+              )}
+            </div>
           </div>
         )}
       </nav>
