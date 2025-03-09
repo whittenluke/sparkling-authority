@@ -16,7 +16,7 @@ export default async function CarbonationPage() {
       id,
       name,
       carbonation_level,
-      brands (
+      brand:brand_id (
         id,
         name
       )

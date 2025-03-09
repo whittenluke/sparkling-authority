@@ -5,10 +5,10 @@ import Link from 'next/link'
 type Product = {
   id: string
   name: string
-  brands: {
+  brand: {
     id: string
     name: string
-  }[]
+  }
 }
 
 export function ProductList({ products }: { products: Product[] }) {
@@ -33,7 +33,7 @@ export function ProductList({ products }: { products: Product[] }) {
                 {product.name}
               </h3>
               <p className="text-sm text-muted-foreground">
-                by {product.brands[0]?.name}
+                by {product.brand?.name}
               </p>
             </div>
           </div>

@@ -15,7 +15,7 @@ export default async function DirectoryPage() {
     .select(`
       id,
       name,
-      brands (
+      brand:brand_id (
         id,
         name
       )
