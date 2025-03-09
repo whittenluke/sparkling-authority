@@ -1,5 +1,4 @@
 import { createServerComponentClient } from '@/lib/supabase/server'
-import { cookies } from 'next/headers'
 import { BrandsGrid } from './components/BrandsGrid'
 import { BrandsHeader } from './components/BrandsHeader'
 import { Header } from '@/components/layout/header'

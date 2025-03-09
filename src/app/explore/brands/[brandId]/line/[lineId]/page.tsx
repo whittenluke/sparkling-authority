@@ -1,5 +1,4 @@
 import { createServerComponentClient } from '@/lib/supabase/server'
-import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
