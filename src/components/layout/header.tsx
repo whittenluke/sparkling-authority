@@ -77,7 +77,11 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="relative h-full flex items-center" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
+    <div 
+      className="relative h-full flex items-center" 
+      onMouseEnter={() => setIsOpen(true)} 
+      onMouseLeave={() => setIsOpen(false)}
+    >
       <button
         className="inline-flex items-center text-sm font-medium text-gray-900 hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
         onClick={() => setIsOpen(!isOpen)}
@@ -86,19 +90,23 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full mt-1 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
-          <div className="py-1">
-            {items.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-              >
-                {item.name}
-              </Link>
-            ))}
+        <>
+          {/* Invisible area to ensure smooth mouse movement */}
+          <div className="absolute -bottom-2 left-0 right-0 h-2 bg-transparent" />
+          <div className="absolute left-0 top-[calc(100%-2px)] w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
+            <div className="py-1">
+              {items.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )
