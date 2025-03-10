@@ -6,29 +6,20 @@ import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
-type Brand = {
-  id: string
-  name: string
-  description: string
-  founded_year: number | null
-  country_of_origin: string | null
-}
-
 type Product = {
   id: string
   name: string
   flavor: string[]
   carbonation_level: number
-  nutrition_info: any
-  containers: any
-}
-
-type ProductLine = {
-  id: string
-  name: string
-  description: string | null
-  is_default: boolean
-  products: Product[]
+  nutrition_info: {
+    calories?: number
+    ingredients?: string[]
+    serving_size?: string
+  }
+  containers: {
+    type: string
+    size: string
+  }[]
 }
 
 type Props = {
@@ -132,7 +123,7 @@ export default async function ProductLinePage({ params }: Props) {
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Products</h2>
               <div className="mt-6 space-y-4">
-                {line.products?.map((product) => (
+                {line.products?.map((product: Product) => (
                   <Link
                     key={product.id}
                     href={`/explore/products/${product.id}`}
