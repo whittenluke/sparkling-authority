@@ -11,7 +11,7 @@ type FlavorProduct = {
   brand: {
     id: string
     name: string
-  }[]
+  }
 }
 
 export function FlavorsList({ flavors }: { flavors: string[] }) {
@@ -35,7 +35,7 @@ export function FlavorsList({ flavors }: { flavors: string[] }) {
       .select(`
         id,
         name,
-        brands (
+        brand:brand_id (
           id,
           name
         )
@@ -50,7 +50,7 @@ export function FlavorsList({ flavors }: { flavors: string[] }) {
       setProducts(data.map(p => ({
         id: p.id,
         name: p.name,
-        brand: p.brands
+        brand: Array.isArray(p.brand) ? p.brand[0] : p.brand
       })))
     }
 
@@ -93,7 +93,7 @@ export function FlavorsList({ flavors }: { flavors: string[] }) {
                       <h3 className="font-medium text-foreground group-hover:text-primary">
                         {product.name}
                       </h3>
-                      <span className="ml-2 text-sm text-muted-foreground">by {product.brand[0]?.name}</span>
+                      <span className="text-sm text-muted-foreground">by {product.brand.name}</span>
                     </Link>
                   ))}
                 </div>
