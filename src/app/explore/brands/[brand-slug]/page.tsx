@@ -7,13 +7,13 @@ import { ProductsSection } from './components/ProductsSection'
 export const dynamic = 'force-dynamic'
 
 type Props = {
-  params: {
+  params: Promise<{
     'brand-slug': string
-  }
+  }>
 }
 
 export default async function BrandPage({ params }: Props) {
-  const brandSlug = params['brand-slug']
+  const { 'brand-slug': brandSlug } = await params
   const supabase = createClient()
 
   const { data: brand } = await supabase
