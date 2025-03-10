@@ -16,7 +16,7 @@ const navigation = {
       { name: 'By Carbonation Level', href: '/explore/carbonation' },
       { name: 'New Releases', href: '/explore/new-releases' },
       { name: 'Regional Favorites', href: '/explore/regional' },
-      { name: 'Product Directory', href: '/explore/directory' },
+      { name: 'Product Directory', href: '/explore/products' },
     ],
   },
   rankings: {

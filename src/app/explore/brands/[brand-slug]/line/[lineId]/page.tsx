@@ -13,40 +13,56 @@ type Product = {
 }
 
 type Props = {
-  params: Promise<{ brandId: string; lineId: string }>
+  params: Promise<{ 'brand-slug': string; lineId: string }>
 }
 
 export default async function ProductLinePage({ params }: Props) {
-  const { brandId, lineId } = await params
+  const { 'brand-slug': brandSlug, lineId } = await params
   const supabase = createClient()
   
-  // Get brand and product line info
+  // Get brand info
   const { data: brand } = await supabase
     .from('brands')
     .select(`
-      *,
-      product_lines!inner (
-        id,
-        name,
-        description
-      )
+      id,
+      name,
+      description
     `)
-    .eq('id', brandId)
-    .eq('product_lines.id', lineId)
+    .eq('slug', brandSlug)
     .single()
 
   if (!brand) {
     notFound()
   }
 
-  const productLine = brand.product_lines[0]
+  // Get line info and its products
+  const { data: line } = await supabase
+    .from('product_lines')
+    .select(`
+      id,
+      name,
+      description,
+      products (
+        id,
+        name,
+        flavor,
+        carbonation_level,
+        nutrition_info,
+        containers
+      )
+    `)
+    .eq('brand_id', brand.id)
+    .eq('id', lineId)
+    .single()
+
+  const productLine = line.products[0]
 
   // Get products for this specific line
   const { data: products } = await supabase
     .from('products')
     .select('id, name, flavor')
-    .eq('brand_id', brandId)
-    .eq('product_line_id', lineId)
+    .eq('brand_id', brand.id)
+    .eq('product_line_id', line.id)
     .order('name')
 
   return (

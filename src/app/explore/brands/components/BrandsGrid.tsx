@@ -9,6 +9,7 @@ type BrandEntry = {
   productCount: number
   isProductLine: boolean
   productLineId?: string
+  slug: string
 }
 
 export function BrandsGrid({ brands }: { brands: BrandEntry[] }) {
@@ -18,8 +19,8 @@ export function BrandsGrid({ brands }: { brands: BrandEntry[] }) {
         <Link
           key={brand.isProductLine ? `${brand.id}-${brand.productLineId}` : brand.id}
           href={brand.isProductLine 
-            ? `/explore/brands/${brand.id}/line/${brand.productLineId}`
-            : `/explore/brands/${brand.id}`
+            ? `/explore/brands/${brand.slug}/line/${brand.productLineId}`
+            : `/explore/brands/${brand.slug}`
           }
           className="group flex items-center gap-4 rounded-xl bg-card p-4 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all"
         >

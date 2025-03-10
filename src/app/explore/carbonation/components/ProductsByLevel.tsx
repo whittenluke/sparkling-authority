@@ -4,9 +4,11 @@ type Product = {
   id: string
   name: string
   carbonation_level: number
+  slug: string
   brands: {
     id: string
     name: string
+    slug: string
   }
 }
 
@@ -42,7 +44,7 @@ export function ProductsByLevel({ productsByLevel }: ProductsByLevelProps) {
               {products.map((product) => (
                 <Link
                   key={product.id}
-                  href={`/explore/products/${product.id}`}
+                  href={`/explore/brands/${product.brands.slug}/products/${product.slug}`}
                   className="block rounded-lg bg-muted p-3 hover:bg-accent transition-colors"
                 >
                   <span className="font-medium text-foreground">{product.name}</span>

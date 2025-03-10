@@ -8,9 +8,11 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 type FlavorProduct = {
   id: string
   name: string
+  slug: string
   brand: {
     id: string
     name: string
+    slug: string
   }
 }
 
@@ -35,9 +37,11 @@ export function FlavorsList({ flavors }: { flavors: string[] }) {
       .select(`
         id,
         name,
+        slug,
         brand:brand_id (
           id,
-          name
+          name,
+          slug
         )
       `)
       .contains('flavor', [flavor])
@@ -50,6 +54,7 @@ export function FlavorsList({ flavors }: { flavors: string[] }) {
       setProducts(data.map(p => ({
         id: p.id,
         name: p.name,
+        slug: p.slug,
         brand: Array.isArray(p.brand) ? p.brand[0] : p.brand
       })))
     }
@@ -87,7 +92,7 @@ export function FlavorsList({ flavors }: { flavors: string[] }) {
                   {products.map((product) => (
                     <Link
                       key={product.id}
-                      href={`/explore/products/${product.id}`}
+                      href={`/explore/brands/${product.brand.slug}/products/${product.slug}`}
                       className="block rounded-lg bg-muted p-3 hover:bg-accent transition-colors"
                     >
                       <h3 className="font-medium text-foreground group-hover:text-primary">

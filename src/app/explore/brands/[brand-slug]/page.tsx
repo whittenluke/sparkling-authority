@@ -7,11 +7,13 @@ import { ProductsSection } from './components/ProductsSection'
 export const dynamic = 'force-dynamic'
 
 type Props = {
-  params: Promise<{ brandId: string }>
+  params: {
+    'brand-slug': string
+  }
 }
 
 export default async function BrandPage({ params }: Props) {
-  const { brandId } = await params
+  const brandSlug = params['brand-slug']
   const supabase = createClient()
 
   const { data: brand } = await supabase
@@ -28,10 +30,11 @@ export default async function BrandPage({ params }: Props) {
         id,
         name,
         flavor,
-        product_line_id
+        product_line_id,
+        slug
       )
     `)
-    .eq('id', brandId)
+    .eq('slug', brandSlug)
     .single()
 
   if (!brand) {
@@ -94,6 +97,7 @@ export default async function BrandPage({ params }: Props) {
             <ProductsSection
               products={brand.products || []}
               productLines={productLines}
+              brandSlug={brandSlug}
             />
           </div>
         </div>

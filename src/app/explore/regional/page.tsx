@@ -15,7 +15,8 @@ export default async function RegionalPage() {
       id,
       name,
       description,
-      country_of_origin
+      country_of_origin,
+      slug
     `)
     .order('name')
 

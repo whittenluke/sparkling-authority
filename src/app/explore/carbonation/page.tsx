@@ -8,9 +8,11 @@ type Product = {
   id: string
   name: string
   carbonation_level: number
+  slug: string
   brand: {
     id: string
     name: string
+    slug: string
   }
 }
 
@@ -26,9 +28,11 @@ export default async function CarbonationPage() {
       id,
       name,
       carbonation_level,
+      slug,
       brand:brand_id (
         id,
-        name
+        name,
+        slug
       )
     `)
     .order('name') // Sort by name first
@@ -50,6 +54,7 @@ export default async function CarbonationPage() {
       id: product.id,
       name: product.name,
       carbonation_level: product.carbonation_level,
+      slug: product.slug,
       brand: Array.isArray(product.brand) ? product.brand[0] : product.brand
     }
     acc[level].push(transformedProduct)

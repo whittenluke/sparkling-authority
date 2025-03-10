@@ -8,9 +8,11 @@ type Product = {
   id: string
   name: string
   carbonation_level: number
+  slug: string
   brand: {
     id: string
     name: string
+    slug: string
   }
 }
 
@@ -69,7 +71,7 @@ export function CarbonationLevels({ productsByLevel }: CarbonationLevelsProps) {
                 {products.map((product) => (
                   <Link
                     key={product.id}
-                    href={`/explore/products/${product.id}`}
+                    href={`/explore/brands/${product.brand.slug}/products/${product.slug}`}
                     className="block rounded-lg bg-muted p-3 hover:bg-accent transition-colors"
                   >
                     <span className="font-medium text-foreground">{product.name}</span>

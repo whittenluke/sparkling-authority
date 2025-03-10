@@ -9,6 +9,7 @@ type Brand = {
   name: string
   description: string | null
   country_of_origin: string | null
+  slug: string
 }
 
 type RegionalBrandsProps = {
@@ -61,7 +62,7 @@ export function RegionalBrands({ brandsByCountry }: RegionalBrandsProps) {
                 {brands.map((brand) => (
                   <Link
                     key={brand.id}
-                    href={`/explore/brands/${brand.id}`}
+                    href={`/explore/brands/${brand.slug}`}
                     className="block rounded-lg bg-muted p-3 hover:bg-accent transition-colors"
                   >
                     <div>
