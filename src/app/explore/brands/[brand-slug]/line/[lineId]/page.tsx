@@ -39,14 +39,14 @@ type ProductLine = {
 }
 
 type Props = {
-  params: {
+  params: Promise<{
     'brand-slug': string
     lineId: string
-  }
+  }>
 }
 
 export default async function ProductLinePage({ params }: Props) {
-  const { 'brand-slug': brandSlug, lineId } = params
+  const { 'brand-slug': brandSlug, lineId } = await params
   const supabase = createClient()
   
   // Get brand info
