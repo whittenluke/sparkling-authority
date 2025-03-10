@@ -74,38 +74,33 @@ export function ProductsSection({ products, productLines, brandSlug }: Props) {
       )}
 
       {/* Products Grid */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {filteredProducts.map((product) => (
           <Link
             key={product.id}
             href={`/explore/brands/${brandSlug}/products/${product.slug}`}
-            className="group block rounded-xl bg-card p-5 shadow-sm ring-1 ring-border transition-all hover:shadow-md hover:ring-primary"
+            className="group flex items-center gap-4 rounded-xl bg-card p-4 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all"
           >
-            <div className="flex items-start gap-5">
-              {/* Product Image Placeholder */}
-              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted group-hover:bg-muted/80">
-                <div className="flex h-full w-full items-center justify-center text-xl text-muted-foreground">
-                  {product.name.charAt(0)}
+            <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-foreground text-xl font-medium group-hover:bg-muted/80">
+              {product.name.charAt(0)}
+            </div>
+            
+            <div className="flex-1 min-w-0">
+              <h3 className="font-medium text-foreground group-hover:text-primary">
+                {product.name}
+              </h3>
+              {product.flavor && product.flavor.length > 0 && (
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {product.flavor.map(flavor => (
+                    <span 
+                      key={flavor} 
+                      className="inline-block rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground"
+                    >
+                      {flavor}
+                    </span>
+                  ))}
                 </div>
-              </div>
-              
-              <div className="flex-1 space-y-1">
-                <h3 className="font-medium text-foreground group-hover:text-primary">
-                  {product.name}
-                </h3>
-                {product.flavor && product.flavor.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {product.flavor.map(flavor => (
-                      <span 
-                        key={flavor} 
-                        className="inline-block rounded-full bg-accent px-2.5 py-0.5 text-xs text-accent-foreground"
-                      >
-                        {flavor}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </Link>
         ))}

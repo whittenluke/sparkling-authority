@@ -14,7 +14,7 @@ type BrandEntry = {
 
 export function BrandsGrid({ brands }: { brands: BrandEntry[] }) {
   return (
-    <div className="space-y-3 max-w-2xl mx-auto">
+    <div className="space-y-3">
       {brands.map((brand) => (
         <Link
           key={brand.isProductLine ? `${brand.id}-${brand.productLineId}` : brand.id}

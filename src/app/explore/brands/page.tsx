@@ -42,14 +42,14 @@ export default async function BrandsPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <main className="flex-grow py-8">
+      <main className="flex-grow">
+        <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
           <div className="space-y-8">
             <BrandsHeader />
             <BrandsGrid brands={brandEntries} />
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
       <Footer />
     </div>
   )
