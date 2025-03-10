@@ -60,7 +60,7 @@ export default async function ProductLinePage({ params }: Props) {
       country_of_origin
     `)
     .eq('slug', brandSlug)
-    .single()
+    .single() as { data: Brand | null }
 
   if (!brand) {
     notFound()
@@ -85,7 +85,7 @@ export default async function ProductLinePage({ params }: Props) {
     `)
     .eq('brand_id', brand.id)
     .eq('id', lineId)
-    .single()
+    .single() as { data: ProductLine | null }
 
   if (!line) {
     notFound()
