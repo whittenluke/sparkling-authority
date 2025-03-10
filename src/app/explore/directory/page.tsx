@@ -74,7 +74,7 @@ export default async function DirectoryPage() {
   const transformedProducts: Product[] = products.map(product => ({
     id: product.id,
     name: product.name,
-    brand: product.brand
+    brand: Array.isArray(product.brand) ? product.brand[0] : product.brand
   }))
 
   return (
