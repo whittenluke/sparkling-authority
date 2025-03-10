@@ -202,17 +202,24 @@ export function Header() {
         {/* Mobile menu */}
         {isMobileMenuOpen && (
           <div className="sm:hidden">
-            <div className="space-y-1 pb-3 pt-2">
-              {Object.values(navigation).map(section => (
-                section.items.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="block px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-                  >
-                    {item.name}
-                  </Link>
-                ))
+            <div className="space-y-4 pb-3 pt-2">
+              {Object.entries(navigation).map(([key, section]) => (
+                <div key={key} className="px-3">
+                  <div className="text-base font-medium text-foreground mb-2">
+                    {section.name}
+                  </div>
+                  <div className="space-y-1 pl-3">
+                    {section.items.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="block py-2 text-base text-muted-foreground hover:text-foreground"
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
             <div className="border-t border-border pb-3 pt-4">
