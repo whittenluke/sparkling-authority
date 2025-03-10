@@ -6,10 +6,29 @@ import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
+type Brand = {
+  id: string
+  name: string
+  description: string
+  founded_year: number | null
+  country_of_origin: string | null
+}
+
 type Product = {
   id: string
   name: string
   flavor: string[]
+  carbonation_level: number
+  nutrition_info: any
+  containers: any
+}
+
+type ProductLine = {
+  id: string
+  name: string
+  description: string | null
+  is_default: boolean
+  products: Product[]
 }
 
 type Props = {
@@ -26,7 +45,9 @@ export default async function ProductLinePage({ params }: Props) {
     .select(`
       id,
       name,
-      description
+      description,
+      founded_year,
+      country_of_origin
     `)
     .eq('slug', brandSlug)
     .single()
@@ -42,6 +63,7 @@ export default async function ProductLinePage({ params }: Props) {
       id,
       name,
       description,
+      is_default,
       products (
         id,
         name,
@@ -55,15 +77,9 @@ export default async function ProductLinePage({ params }: Props) {
     .eq('id', lineId)
     .single()
 
-  const productLine = line.products[0]
-
-  // Get products for this specific line
-  const { data: products } = await supabase
-    .from('products')
-    .select('id, name, flavor')
-    .eq('brand_id', brand.id)
-    .eq('product_line_id', line.id)
-    .order('name')
+  if (!line) {
+    notFound()
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -81,10 +97,10 @@ export default async function ProductLinePage({ params }: Props) {
                 
                 <div>
                   <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                    {productLine.is_default ? brand.name : `${brand.name} ${productLine.name}`}
+                    {line.is_default ? brand.name : `${brand.name} ${line.name}`}
                   </h1>
-                  {productLine.description && (
-                    <p className="mt-2 text-lg text-gray-600">{productLine.description}</p>
+                  {line.description && (
+                    <p className="mt-2 text-lg text-gray-600">{line.description}</p>
                   )}
                 </div>
               </div>
@@ -106,7 +122,7 @@ export default async function ProductLinePage({ params }: Props) {
                 <div className="rounded-lg bg-white px-4 py-3 shadow-sm ring-1 ring-gray-200">
                   <dt className="text-sm font-medium text-gray-500">Products</dt>
                   <dd className="mt-1 text-lg font-medium text-gray-900">
-                    {products?.length || 0}
+                    {line.products?.length || 0}
                   </dd>
                 </div>
               </dl>
@@ -116,7 +132,7 @@ export default async function ProductLinePage({ params }: Props) {
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Products</h2>
               <div className="mt-6 space-y-4">
-                {products?.map((product: Product) => (
+                {line.products?.map((product) => (
                   <Link
                     key={product.id}
                     href={`/explore/products/${product.id}`}
@@ -136,7 +152,7 @@ export default async function ProductLinePage({ params }: Props) {
                         </h3>
                         {product.flavor && product.flavor.length > 0 && (
                           <div className="flex flex-wrap gap-2">
-                            {product.flavor.map(flavor => (
+                            {product.flavor.map((flavor: string) => (
                               <span 
                                 key={flavor} 
                                 className="inline-block rounded-full bg-gray-50 px-2.5 py-0.5 text-xs text-gray-600"
