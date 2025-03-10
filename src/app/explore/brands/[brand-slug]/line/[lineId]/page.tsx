@@ -6,6 +6,14 @@ import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
+type Brand = {
+  id: string
+  name: string
+  description: string
+  founded_year: number | null
+  country_of_origin: string | null
+}
+
 type Product = {
   id: string
   name: string
@@ -20,6 +28,14 @@ type Product = {
     type: string
     size: string
   }[]
+}
+
+type ProductLine = {
+  id: string
+  name: string
+  description: string | null
+  is_default: boolean
+  products: Product[]
 }
 
 type Props = {
