@@ -29,16 +29,15 @@ const navigation = {
       { name: 'Healthiest Options', href: '/ratings/healthiest-options' },
     ],
   },
-  resources: {
-    name: 'Resources',
+  learn: {
+    name: 'Learn',
     items: [
-      { name: 'Health Guide', href: '/resources/health' },
-      { name: 'Carbonation Explained', href: '/resources/carbonation' },
-      { name: 'Making Your Own', href: '/resources/diy' },
-      { name: 'Nutrition Facts', href: '/resources/nutrition' },
-      { name: 'Buying Guide', href: '/resources/buying' },
-      { name: 'Terminology', href: '/resources/terms' },
-      { name: 'FAQ', href: '/resources/faq' },
+      { name: 'Health Guide', href: '/learn/health' },
+      { name: 'Carbonation Explained', href: '/learn/carbonation' },
+      { name: 'How to Make Sparkling Water', href: '/learn/how-to-make-sparkling-water' },
+      { name: 'Buying Guide', href: '/learn/buying' },
+      { name: 'Terminology', href: '/learn/terms' },
+      { name: 'FAQ', href: '/learn/faqs' },
     ],
   },
   community: {
