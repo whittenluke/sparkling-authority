@@ -19,16 +19,14 @@ const navigation = {
       { name: 'Product Directory', href: '/explore/products' },
     ],
   },
-  rankings: {
-    name: 'Rankings',
+  ratings: {
+    name: 'Top Rated',
     items: [
-      { name: 'Best Overall', href: '/rankings/overall' },
-      { name: 'Best Flavor', href: '/rankings/flavor' },
-      { name: 'Strongest Carbonation', href: '/rankings/carbonation' },
-      { name: 'Best Value', href: '/rankings/value' },
-      { name: 'Healthiest Options', href: '/rankings/health' },
-      { name: "Editor's Picks", href: '/rankings/editors' },
-      { name: 'User Favorites', href: '/rankings/users' },
+      { name: 'Best Overall', href: '/ratings/best-overall' },
+      { name: 'Best Flavor', href: '/ratings/best-flavor' },
+      { name: 'Strongest Carbonation', href: '/ratings/strongest-carbonation' },
+      { name: 'Best Value', href: '/ratings/best-value' },
+      { name: 'Healthiest Options', href: '/ratings/healthiest-options' },
     ],
   },
   resources: {
