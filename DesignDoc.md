@@ -97,12 +97,33 @@
 
 ### 4. Community Section
 
-- [ ] **Discussion Forum:** User conversations
-- [ ] **Submit a Review:** User review system
-- [ ] **User Rankings:** Community-driven ratings
+- [ ] **Discussion Forum:** User conversations and discussions
+  - [ ] Topic categories
+  - [ ] User profiles
+  - [ ] Moderation tools
+- [ ] **Reviews System:**
+  - [ ] Submit reviews interface
+  - [ ] Featured reviews showcase
+  - [ ] Rating criteria and guidelines
 - [ ] **Events & Meetups:** Community gatherings
-- [ ] **Submit a Product:** Product submission system
-- [ ] **Sparkling Water News:** Industry updates
+  - [ ] Event creation and management
+  - [ ] RSVP system
+  - [ ] Location-based filtering
+- [ ] **Product Submissions:**
+  - [ ] Submission form
+  - [ ] Verification process
+  - [ ] Status tracking
+- [ ] **Deals & Discounts:**
+  - [ ] Current promotions
+  - [ ] Price tracking
+  - [ ] Deal alerts
+- [ ] **Featured Content:**
+  - [ ] Featured reviews
+  - [ ] Future featured content types
+- [ ] **Sparkling Water News:**
+  - [ ] Industry updates
+  - [ ] Brand announcements
+  - [ ] Community highlights
 
 ## Features & Implementation
 
