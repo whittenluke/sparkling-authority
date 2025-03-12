@@ -53,6 +53,7 @@ next-env.d.ts
 # Design and planning documents
 DesignDoc.md
 SchemaRoadmap.md
+DesignSystem.md
 **/design/
 **/docs/private/
 **/planning/
@@ -60,6 +61,3 @@ SchemaRoadmap.md
 # Supabase
 .supabase/
 supabase/.temp/
-DesignSystem.md
-DesignDoc.md
-DesignDoc.md
