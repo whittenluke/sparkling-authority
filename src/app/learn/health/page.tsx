@@ -1,12 +1,68 @@
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { Metadata } from 'next'
+import Image from 'next/image'
 
 export const dynamic = 'force-dynamic'
+
+// SEO metadata configuration
+export const metadata: Metadata = {
+  title: 'Is Sparkling Water Good For You? A Complete Health Guide | Sparkling Authority',
+  description: 'Discover the health benefits and risks of sparkling water in this comprehensive guide. Learn about hydration, dental health, and choosing the right carbonated water for your needs.',
+  openGraph: {
+    title: 'Is Sparkling Water Good For You? A Complete Health Guide',
+    description: 'Discover the health benefits and risks of sparkling water in this comprehensive guide. Learn about hydration, dental health, and choosing the right carbonated water for your needs.',
+    type: 'article',
+    url: 'https://sparklingauthority.com/learn/health',
+    images: [
+      {
+        url: '/images/learn/health/sparkling-water-health.webp',
+        width: 1200,
+        height: 630,
+        alt: 'Comprehensive guide to sparkling water health benefits and considerations',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Is Sparkling Water Good For You? A Complete Health Guide',
+    description: 'Discover the health benefits and risks of sparkling water in this comprehensive guide. Learn about hydration, dental health, and choosing the right carbonated water for your needs.',
+    images: ['/images/learn/health/sparkling-water-health.webp'],
+  }
+}
+
+// JSON-LD Schema markup
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Is Sparkling Water Good For You? A Complete Health Guide',
+  description: 'A comprehensive guide examining the health effects of sparkling water, from its nutritional profile to considerations for dental and renal health.',
+  image: 'https://sparklingauthority.com/images/learn/health/sparkling-water-health.webp',
+  datePublished: new Date().toISOString().split('T')[0],
+  dateModified: new Date().toISOString().split('T')[0],
+  author: {
+    '@type': 'Organization',
+    name: 'Sparkling Authority',
+    url: 'https://sparklingauthority.com'
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Sparkling Authority'
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': 'https://sparklingauthority.com/learn/health'
+  }
+}
 
 export default async function HealthGuidePage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <main className="flex-grow">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
           <article className="prose prose-lg prose-gray dark:prose-invert max-w-none">
@@ -14,9 +70,18 @@ export default async function HealthGuidePage() {
               <h1 className="text-4xl font-bold tracking-tight text-foreground">
                 Is Sparkling Water Good For You? A Complete Health Guide
               </h1>
-              <p className="mt-4 text-lg text-muted-foreground">
+              <p className="mt-4 mb-8 text-lg text-muted-foreground">
                 As consumers increasingly seek healthier alternatives to sugary beverages, sparkling water has surged in popularity. But is carbonated water good for you? This comprehensive guide examines the health effects of sparkling water, from its nutritional profile to considerations for dental and renal health, helping you make informed decisions about your hydration choices.
               </p>
+              <div className="aspect-[1200/630] relative overflow-hidden rounded-lg">
+                <Image
+                  src="/images/learn/health/sparkling-water-health.webp"
+                  alt="Comprehensive guide to sparkling water health benefits and considerations"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
             </header>
 
             <section id="introduction" className="mb-12 text-foreground dark:text-gray-200">
