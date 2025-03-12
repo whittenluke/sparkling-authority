@@ -30,10 +30,21 @@
   - [x] OAuth providers (Google, Facebook, Twitter)
   - [x] Protected routes
   - [ ] Role-based access control
-- [ ] **Content Management:** Notion API
-  - [ ] Expert articles integration
-  - [ ] Markdown support
+- [ ] **Content Management:** Decap CMS
+  - [ ] Admin interface setup (/admin route)
+  - [ ] Git-based content storage
+  - [ ] Markdown/MDX support
   - [ ] Media handling
+  - Collections:
+    - [ ] Learn section articles
+    - [ ] News updates
+    - [ ] Guides
+    - [ ] Educational content
+  - Integration:
+    - [ ] Next.js content components
+    - [ ] MDX rendering setup
+    - [ ] Image optimization
+    - [ ] Preview functionality
 - [ ] **Performance & SEO:**
   - [x] Server-side rendering
   - [ ] Meta tags optimization
@@ -133,15 +144,32 @@
 
 ### 2. Expert Content
 
-- [ ] **Article Types:**
-  - [ ] Product reviews and comparisons
-  - [ ] Health and nutrition guides
-  - [ ] Industry news and trends
-  - [ ] Educational content
+- [ ] **Content Types:**
+  - [ ] Learn Section
+    - Health Guide
+    - Carbonation Explained
+    - How to Make Sparkling Water
+    - Buying Guide
+    - Terminology
+    - FAQ
+  - [ ] Sparkling Water News
 - [ ] **Content Management:**
-  - [ ] Notion API integration
-  - [ ] SEO optimization
-  - [ ] Rich media support
+  - [ ] Decap CMS Setup
+    - Install dependencies
+    - Configure admin interface
+    - Set up authentication
+  - [ ] Content Structure
+    - Define collections
+    - Create content models
+    - Set up media handling
+  - [ ] Integration
+    - MDX components
+    - Content rendering
+    - Preview system
+  - [ ] Workflow
+    - Draft/publish system
+    - Content review process
+    - Media optimization
 
 ### 3. Product Database
 
