@@ -67,7 +67,7 @@ export default async function CarbonationExplainedPage() {
       <main className="flex-grow">
         <ArticleLayout
           title="The History and Science of Carbonation: Everything You Need to Know"
-          description="Carbonation—the effervescent quality that gives sparkling water its distinctive fizz—represents a fascinating intersection of chemistry, physics, and human innovation. From its early developments in the 17th century to today's sophisticated production methods, carbonation has evolved into both an art and a science."
+          description="Carbonation—the effervescent quality that gives sparkling water its distinctive fizz—represents a fascinating intersection of chemistry, physics, and human innovation. From its early developments in the 17th century to today&apos;s sophisticated production methods, carbonation has evolved into both an art and a science."
           url="https://sparklingauthority.com/learn/carbonation"
           publishedAt="2024-03-21"
           updatedAt="2024-03-21"
@@ -80,7 +80,7 @@ export default async function CarbonationExplainedPage() {
         >
           <section id="introduction" className="mb-12">
             <p className="mb-6">
-              From its early developments in the 17th century to today's sophisticated production methods, carbonation has evolved into both an art and a science. This comprehensive exploration examines the historical development, scientific principles, and modern applications of carbonation, revealing how this effervescent quality continues to captivate consumers and drive innovation in the beverage industry.
+              From its early developments in the 17th century to today&apos;s sophisticated production methods, carbonation has evolved into both an art and a science. This comprehensive exploration examines the historical development, scientific principles, and modern applications of carbonation, revealing how this effervescent quality continues to captivate consumers and drive innovation in the beverage industry.
             </p>
           </section>
 
@@ -91,10 +91,10 @@ export default async function CarbonationExplainedPage() {
             <div className="flex flex-col md:flex-row gap-8 items-start mb-6">
               <div className="md:w-2/3">
                 <p className="mb-6">
-                  The story of carbonation begins earlier than many realize, with the pioneering work of Christopher Merret (1614-1695). On December 17, 1662, Merret presented a groundbreaking paper to the newly formed Royal Society documenting how "sugar and molasses were being added to wines of all sorts to make them sparkling"<a href="#ref-1" className="text-xs align-super">[1]</a>. This documentation predated the commonly attributed invention of champagne by Dom Perignon by approximately 30 years, challenging the popular narrative about champagne's origins.
+                  The story of carbonation begins earlier than many realize, with the pioneering work of Christopher Merret (1614-1695). On December 17, 1662, Merret presented a groundbreaking paper to the newly formed Royal Society documenting how &ldquo;sugar and molasses were being added to wines of all sorts to make them sparkling&rdquo;<a href="#ref-1" className="text-xs align-super">[1]</a>. This documentation predated the commonly attributed invention of champagne by Dom Perignon by approximately 30 years, challenging the popular narrative about champagne&apos;s origins.
                 </p>
                 <p className="mb-6">
-                  Merret's innovation occurred within a specific historical context that made England surprisingly well-positioned for this breakthrough. At the time, England was producing exceptionally strong glass bottles unlike the fragile French glass that often resulted in "explosions of flying glass." English glassmakers had developed superior manufacturing techniques partly due to necessity—the Royal Navy had banned using oak for anything other than shipbuilding, forcing glassmakers to use coal instead of charcoal for their furnaces<a href="#ref-2" className="text-xs align-super">[2]</a>.
+                  Merret&apos;s innovation occurred within a specific historical context that made England surprisingly well-positioned for this breakthrough. At the time, England was producing exceptionally strong glass bottles unlike the fragile French glass that often resulted in &ldquo;explosions of flying glass.&rdquo; English glassmakers had developed superior manufacturing techniques partly due to necessity—the Royal Navy had banned using oak for anything other than shipbuilding, forcing glassmakers to use coal instead of charcoal for their furnaces<a href="#ref-2" className="text-xs align-super">[2]</a>.
                 </p>
               </div>
               <div className="md:w-1/3">
@@ -134,38 +134,38 @@ export default async function CarbonationExplainedPage() {
               </div>
               <div className="md:w-2/3">
                 <p className="mb-6">
-                  The next major development in carbonation history came in 1767 when Joseph Priestley (1733-1804), an English clergyman and scientist, discovered a method of artificially infusing water with carbon dioxide. Priestley's discovery occurred while he was living next to the Old Red Lion Brewery "at the back of a house on Meadow Lane, near the River Aire" in Leeds, England, where he observed the fermentation process of beer<a href="#ref-5" className="text-xs align-super">[5]</a>.
+                  The next major development in carbonation history came in 1767 when Joseph Priestley (1733-1804), an English clergyman and scientist, discovered a method of artificially infusing water with carbon dioxide. Priestley&apos;s discovery occurred while he was living next to the Old Red Lion Brewery &ldquo;at the back of a house on Meadow Lane, near the River Aire&rdquo; in Leeds, England, where he observed the fermentation process of beer<a href="#ref-5" className="text-xs align-super">[5]</a>.
                 </p>
                 <p className="mb-6">
-                  Priestley conducted his initial experiments by hanging a vessel filled with water over a fermentation vat at the brewery. He noticed that the air blanketing the fermenting beer had unique properties and discovered that water absorbed the carbon dioxide, creating a pleasant-tasting liquid<a href="#ref-6" className="text-xs align-super">[6]</a>. This initial observation led to further experimentation with a more controlled method of producing carbon dioxide by "dripping vitriol (sulphuric acid) into powdered chalk (calcium carbonate)"<a href="#ref-7" className="text-xs align-super">[7]</a>.
+                  Priestley conducted his initial experiments by hanging a vessel filled with water over a fermentation vat at the brewery. He noticed that the air blanketing the fermenting beer had unique properties and discovered that water absorbed the carbon dioxide, creating a pleasant-tasting liquid<a href="#ref-6" className="text-xs align-super">[6]</a>. This initial observation led to further experimentation with a more controlled method of producing carbon dioxide by &ldquo;dripping vitriol (sulphuric acid) into powdered chalk (calcium carbonate)&rdquo;<a href="#ref-7" className="text-xs align-super">[7]</a>.
                 </p>
               </div>
             </div>
 
             <p className="mb-6">
-              In March 1772, Priestley had a significant opportunity to showcase his invention when he dined with the Duke of Northumberland. The guests were served distilled seawater, which they found "perfectly drinkable, but tasteless and flat." Priestley announced that he could improve the water, and the following day demonstrated his carbonation technique at his friend Joseph Johnson's house, impressing those in attendance<a href="#ref-7" className="text-xs align-super">[7]</a>.
+              In March 1772, Priestley had a significant opportunity to showcase his invention when he dined with the Duke of Northumberland. The guests were served distilled seawater, which they found &ldquo;perfectly drinkable, but tasteless and flat.&rdquo; Priestley announced that he could improve the water, and the following day demonstrated his carbonation technique at his friend Joseph Johnson&apos;s house, impressing those in attendance<a href="#ref-7" className="text-xs align-super">[7]</a>.
             </p>
 
             <p className="mb-6">
-              This led to further recognition, including an invitation to demonstrate at the Royal College of Physicians. In June 1772, Priestley published his groundbreaking pamphlet titled "Directions for Impregnating Water with Fixed Air," which was quickly translated into French and distributed in Paris. The pamphlet was dedicated to the Earl of Sandwich, First Lord Commissioner of the Admiralty, as Priestley hoped his carbonation method might have applications for improving water used at sea<a href="#ref-8" className="text-xs align-super">[8]</a>.
+              This led to further recognition, including an invitation to demonstrate at the Royal College of Physicians. In June 1772, Priestley published his groundbreaking pamphlet titled &ldquo;Directions for Impregnating Water with Fixed Air,&rdquo; which was quickly translated into French and distributed in Paris. The pamphlet was dedicated to the Earl of Sandwich, First Lord Commissioner of the Admiralty, as Priestley hoped his carbonation method might have applications for improving water used at sea<a href="#ref-8" className="text-xs align-super">[8]</a>.
             </p>
 
             <div className="relative w-full max-w-[800px] mx-auto my-12">
               <div style={{ paddingTop: 'calc(650 / 800 * 100%)' }} className="relative rounded-lg overflow-hidden">
                 <Image
                   src="/images/learn/carbonation/historical-carbonation-equipment.webp"
-                  alt="Joseph Priestley's original carbonation apparatus from his experiments"
+                  alt="Joseph Priestley&apos;s original carbonation apparatus from his experiments"
                   fill
                   className="object-cover"
                 />
               </div>
               <p className="text-sm text-muted-foreground mt-2 text-center">
-                The original apparatus designed by Joseph Priestley for his carbonation experiments, featuring the innovative system of "dripping vitriol into powdered chalk" to generate carbon dioxide.
+                The original apparatus designed by Joseph Priestley for his carbonation experiments, featuring the innovative system of &ldquo;dripping vitriol into powdered chalk&rdquo; to generate carbon dioxide.
               </p>
             </div>
 
             <p className="mb-6">
-              While Priestley himself didn't attempt to commercialize his discovery, his work had far-reaching implications. He shared his method with Captain James Cook for his second voyage to the Pacific, hoping it might help prevent scurvy (though this application proved unsuccessful)<a href="#ref-6" className="text-xs align-super">[6]</a>. More significantly, his invention laid the groundwork for the commercial sparkling water industry, with Johann Jacob Schweppe later acknowledging Priestley as "the father of our industry"<a href="#ref-3" className="text-xs align-super">[3]</a>.
+              While Priestley himself didn&apos;t attempt to commercialize his discovery, his work had far-reaching implications. He shared his method with Captain James Cook for his second voyage to the Pacific, hoping it might help prevent scurvy (though this application proved unsuccessful)<a href="#ref-6" className="text-xs align-super">[6]</a>. More significantly, his invention laid the groundwork for the commercial sparkling water industry, with Johann Jacob Schweppe later acknowledging Priestley as &ldquo;the father of our industry&rdquo;<a href="#ref-3" className="text-xs align-super">[3]</a>.
             </p>
           </section>
 
@@ -186,7 +186,7 @@ export default async function CarbonationExplainedPage() {
             </div>
 
             <p className="mb-6">
-              The solubility of carbon dioxide in water is governed by Henry's Law, which states that the amount of dissolved gas is proportional to its partial pressure above the liquid<a href="#ref-9" className="text-xs align-super">[9]</a>. This principle explains why carbonated beverages stay carbonated when sealed but gradually lose their fizz when opened.
+              The solubility of carbon dioxide in water is governed by Henry&apos;s Law, which states that the amount of dissolved gas is proportional to its partial pressure above the liquid<a href="#ref-9" className="text-xs align-super">[9]</a>. This principle explains why carbonated beverages stay carbonated when sealed but gradually lose their fizz when opened.
             </p>
           </section>
 
@@ -219,7 +219,7 @@ export default async function CarbonationExplainedPage() {
             <h2 id="production" className="text-2xl font-semibold mb-6">Modern Production Methods</h2>
             
             <p className="mb-6">
-              The production of carbonated water has evolved dramatically from Priestley's rudimentary setup to today's sophisticated industrial processes that ensure consistency, safety, and efficiency. Modern production methods incorporate advanced technology while still adhering to the basic principles of dissolving carbon dioxide in water under pressure<a href="#ref-3" className="text-xs align-super">[3]</a>.
+              The production of carbonated water has evolved dramatically from Priestley&apos;s rudimentary setup to today&apos;s sophisticated industrial processes that ensure consistency, safety, and efficiency. Modern production methods incorporate advanced technology while still adhering to the basic principles of dissolving carbon dioxide in water under pressure<a href="#ref-3" className="text-xs align-super">[3]</a>.
             </p>
 
             <h3 id="production-industrial" className="text-xl font-medium mb-4">Industrial Carbonation Systems</h3>
@@ -236,7 +236,7 @@ export default async function CarbonationExplainedPage() {
               className="object-cover"
             />
             <p className="text-sm text-muted-foreground mt-2 text-center">
-              State-of-the-art industrial carbonation equipment used in modern beverage production facilities, showcasing the technological evolution from Priestley's early experiments.
+              State-of-the-art industrial carbonation equipment used in modern beverage production facilities, showcasing the technological evolution from Priestley&apos;s early experiments.
             </p>
           </div>
 
@@ -256,10 +256,10 @@ export default async function CarbonationExplainedPage() {
           <section id="conclusion" className="mb-12">
             <h2 id="conclusion" className="text-2xl font-semibold mb-6">Conclusion</h2>
             <p className="mb-6">
-              The journey of carbonation from accidental discovery to sophisticated industrial process exemplifies how scientific understanding, technological innovation, and consumer preferences can transform a simple chemical reaction into a global beverage phenomenon. From Christopher Merret's documentation of secondary fermentation in the 17th century to Joseph Priestley's experiments with "fixed air" and today's precision carbonation technologies, our understanding and application of carbonation principles have continuously evolved.
+              The journey of carbonation from accidental discovery to sophisticated industrial process exemplifies how scientific understanding, technological innovation, and consumer preferences can transform a simple chemical reaction into a global beverage phenomenon. From Christopher Merret&apos;s documentation of secondary fermentation in the 17th century to Joseph Priestley&apos;s experiments with &ldquo;fixed air&rdquo; and today&apos;s precision carbonation technologies, our understanding and application of carbonation principles have continuously evolved.
             </p>
             <p className="mb-6">
-              As carbonation technology continues to evolve, innovations focusing on sustainability, customization, and enhanced sensory experiences promise to maintain the relevance and appeal of carbonated beverages for future generations. The fundamental appeal of carbonation—the lively, refreshing quality it brings to beverages—remains as compelling today as when Priestley first noted the "peculiar satisfaction" he found in drinking his accidental creation.
+              As carbonation technology continues to evolve, innovations focusing on sustainability, customization, and enhanced sensory experiences promise to maintain the relevance and appeal of carbonated beverages for future generations. The fundamental appeal of carbonation—the lively, refreshing quality it brings to beverages—remains as compelling today as when Priestley first noted the &ldquo;peculiar satisfaction&rdquo; he found in drinking his accidental creation.
             </p>
           </section>
 
