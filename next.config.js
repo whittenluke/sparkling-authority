@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',  // Enable static exports
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: true, // This is required for static images to work on Netlify
   },
   // Ensure trailing slashes for consistent routing
   trailingSlash: true,
