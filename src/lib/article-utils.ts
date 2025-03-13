@@ -15,9 +15,20 @@ export function formatArticleDate(date: string): string {
 }
 
 export function generateTableOfContents(content: string): { id: string; text: string; level: number }[] {
-  // This is a placeholder - actual implementation would parse content for h2/h3 tags
-  // and return structured TOC data
-  return [];
+  // Basic implementation to extract headings from content
+  const headingRegex = /<h([2-3])\s+id="([^"]+)"[^>]*>([^<]+)<\/h[2-3]>/g;
+  const toc: { id: string; text: string; level: number }[] = [];
+  
+  let match;
+  while ((match = headingRegex.exec(content)) !== null) {
+    toc.push({
+      level: parseInt(match[1]),
+      id: match[2],
+      text: match[3].trim()
+    });
+  }
+  
+  return toc;
 }
 
 export function getArticleSchema(article: ArticleMetadata): Record<string, unknown> {

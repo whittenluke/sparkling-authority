@@ -2,7 +2,6 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Metadata } from 'next'
 import Image from 'next/image'
-import { SocialShare } from '@/components/article/SocialShare'
 import { ArticleLayout } from '@/components/article/ArticleLayout'
 
 export const dynamic = 'force-dynamic'
@@ -98,10 +97,10 @@ export default async function HealthGuidePage() {
             
             <ul className="space-y-4 mb-6">
               <li>
-                <strong>Seltzer Water</strong>: The simplest form of carbonated water, seltzer is plain water infused with carbon dioxide. While traditional seltzer contains no additives, the market now includes many flavored seltzer water options. These beverages maintain their health benefits as long as they're free from added sugars or artificial sweeteners. Many health-conscious consumers prefer seltzer as a pure, calorie-free option that can be easily made at home using a sparkling water maker.
+                <strong>Seltzer Water</strong>: The simplest form of carbonated water, seltzer is plain water infused with carbon dioxide. While traditional seltzer contains no additives, the market now includes many flavored seltzer water options. These beverages maintain their health benefits as long as they&apos;re free from added sugars or artificial sweeteners. Many health-conscious consumers prefer seltzer as a pure, calorie-free option that can be easily made at home using a sparkling water maker.
               </li>
               <li>
-                <strong>Natural Sparkling Water</strong>: Sourced from mineral springs, natural sparkling water contains dissolved minerals that contribute to its unique taste profile and potential health benefits. These minerals, including calcium, magnesium, and bicarbonates, occur naturally and can vary significantly between brands. Some popular sparkling water brands enhance their products' natural carbonation while maintaining the original mineral content, offering a balance between authenticity and consistent fizz.
+                <strong>Natural Sparkling Water</strong>: Sourced from mineral springs, natural sparkling water contains dissolved minerals that contribute to its unique taste profile and potential health benefits. These minerals, including calcium, magnesium, and bicarbonates, occur naturally and can vary significantly between brands. Some popular sparkling water brands enhance their products&apos; natural carbonation while maintaining the original mineral content, offering a balance between authenticity and consistent fizz.
               </li>
               <li>
                 <strong>Club Soda</strong>: Unlike seltzer or natural sparkling water, club soda is engineered to include specific mineral salts. The addition of sodium bicarbonate, potassium sulfate, and other minerals gives club soda its characteristic taste and slight mineral tang. While these added minerals can contribute to daily nutrient intake, individuals monitoring their sodium intake should be aware of the higher mineral content.
@@ -122,7 +121,7 @@ export default async function HealthGuidePage() {
 
             <h3 id="composition-choices" className="text-xl font-medium mb-4">Making Informed Choices</h3>
             <p className="mb-6">
-              When selecting carbonated waters, consider both personal preferences and health goals. For those using a sparkling water maker at home, starting with quality filtered water and experimenting with natural flavoring agents like fresh fruit or herbs can provide a healthy and cost-effective alternative to commercial options. If choosing among sparkling water brands, examine labels carefully for added ingredients that might affect the beverage's health profile.
+              When selecting carbonated waters, consider both personal preferences and health goals. For those using a sparkling water maker at home, starting with quality filtered water and experimenting with natural flavoring agents like fresh fruit or herbs can provide a healthy and cost-effective alternative to commercial options. If choosing among sparkling water brands, examine labels carefully for added ingredients that might affect the beverage&apos;s health profile.
             </p>
           </section>
 
@@ -131,7 +130,7 @@ export default async function HealthGuidePage() {
             
             <h3 id="hydration-efficacy" className="text-xl font-medium mb-4">Hydration Efficacy and Body Response</h3>
             <p className="mb-6">
-              A common concern among consumers is whether carbonated water provides the same hydration benefits as still water. A comprehensive 2016 randomized trial demonstrated that sparkling water hydrates just as effectively as still water<a href="#ref-1" className="text-xs align-super">[1]</a>. The study found no significant difference in hydration markers between participants who consumed carbonated versus still water, confirming that carbonation doesn't impair the body's ability to absorb and utilize water for hydration.
+              A common concern among consumers is whether carbonated water provides the same hydration benefits as still water. A comprehensive 2016 randomized trial demonstrated that sparkling water hydrates just as effectively as still water<a href="#ref-1" className="text-xs align-super">[1]</a>. The study found no significant difference in hydration markers between participants who consumed carbonated versus still water, confirming that carbonation doesn&apos;t impair the body&apos;s ability to absorb and utilize water for hydration.
             </p>
 
             <h3 id="hydration-minerals" className="text-xl font-medium mb-4">Mineral Content and Health Impact</h3>
@@ -141,7 +140,7 @@ export default async function HealthGuidePage() {
 
             <h3 id="hydration-strategies" className="text-xl font-medium mb-4">Enhanced Hydration Strategies</h3>
             <p className="mb-6">
-              For those wondering "is carbonated water good for you?" in terms of daily hydration, research suggests several advantages. The effervescence can make drinking water more enjoyable, potentially increasing overall fluid intake. Some studies indicate that the carbonation might enhance the feeling of fullness, which could support healthy weight management when used as a replacement for caloric beverages<a href="#ref-4" className="text-xs align-super">[4]</a>.
+              For those wondering &quot;is carbonated water good for you?&quot; in terms of daily hydration, research suggests several advantages. The effervescence can make drinking water more enjoyable, potentially increasing overall fluid intake. Some studies indicate that the carbonation might enhance the feeling of fullness, which could support healthy weight management when used as a replacement for caloric beverages<a href="#ref-4" className="text-xs align-super">[4]</a>.
             </p>
           </section>
 
@@ -155,12 +154,12 @@ export default async function HealthGuidePage() {
 
             <h3 id="benefits-weight" className="text-xl font-medium mb-4">Weight Management and Metabolic Health</h3>
             <p className="mb-6">
-              Clinical research has shown promising results regarding sparkling water's role in weight management. Studies indicate that the carbonation in sparkling water can enhance satiety signals, potentially reducing overall caloric intake<a href="#ref-4" className="text-xs align-super">[4]</a>. This effect may be particularly beneficial when using sparkling water as a replacement for sugar-sweetened beverages. The carbonation appears to activate stretch receptors in the stomach, creating a feeling of fullness that can help manage appetite between meals. Furthermore, the absence of calories, sugar, and artificial sweeteners in plain sparkling water makes it an excellent choice for individuals managing their weight or blood sugar levels.
+              Clinical research has shown promising results regarding sparkling water&apos;s role in weight management. Studies indicate that the carbonation in sparkling water can enhance satiety signals, potentially reducing overall caloric intake<a href="#ref-4" className="text-xs align-super">[4]</a>. This effect may be particularly beneficial when using sparkling water as a replacement for sugar-sweetened beverages. The carbonation appears to activate stretch receptors in the stomach, creating a feeling of fullness that can help manage appetite between meals. Furthermore, the absence of calories, sugar, and artificial sweeteners in plain sparkling water makes it an excellent choice for individuals managing their weight or blood sugar levels.
             </p>
 
             <h3 id="benefits-minerals" className="text-xl font-medium mb-4">Mineral Absorption and Bone Health</h3>
             <p className="mb-6">
-              Unlike acidic soft drinks that can potentially harm bone density due to their phosphoric acid content, mineral-rich sparkling waters may actually support bone health<a href="#ref-5" className="text-xs align-super">[5]</a>. Research has shown that the bioavailability of calcium and magnesium in some sparkling mineral waters is comparable to that of dairy products. The presence of bicarbonate ions in many sparkling waters may also help neutralize acid in the body, potentially contributing to better bone mineral preservation. However, it's important to note that mineral content varies significantly between brands, making label reading essential for those seeking these specific health benefits.
+              Unlike acidic soft drinks that can potentially harm bone density due to their phosphoric acid content, mineral-rich sparkling waters may actually support bone health<a href="#ref-5" className="text-xs align-super">[5]</a>. Research has shown that the bioavailability of calcium and magnesium in some sparkling mineral waters is comparable to that of dairy products. The presence of bicarbonate ions in many sparkling waters may also help neutralize acid in the body, potentially contributing to better bone mineral preservation. However, it&apos;s important to note that mineral content varies significantly between brands, making label reading essential for those seeking these specific health benefits.
             </p>
           </section>
 
@@ -183,7 +182,7 @@ export default async function HealthGuidePage() {
 
             <h3 id="risks-digestive" className="text-xl font-medium mb-4">Digestive System Impact</h3>
             <p className="mb-6">
-              While many people find that carbonated water aids digestion, some individuals may experience adverse effects. Research indicates that carbonation can affect the lower esophageal sphincter, potentially exacerbating symptoms in those with acid reflux or GERD<a href="#ref-7" className="text-xs align-super">[7]</a>. Additionally, the gas content may cause bloating or discomfort in individuals with sensitive digestive systems or irritable bowel syndrome (IBS). These effects appear to be highly individual, suggesting that consumers should pay attention to their body's responses and adjust consumption accordingly.
+              While many people find that carbonated water aids digestion, some individuals may experience adverse effects. Research indicates that carbonation can affect the lower esophageal sphincter, potentially exacerbating symptoms in those with acid reflux or GERD<a href="#ref-7" className="text-xs align-super">[7]</a>. Additionally, the gas content may cause bloating or discomfort in individuals with sensitive digestive systems or irritable bowel syndrome (IBS). These effects appear to be highly individual, suggesting that consumers should pay attention to their body&apos;s responses and adjust consumption accordingly.
             </p>
 
             <h3 id="risks-kidney" className="text-xl font-medium mb-4">Kidney and Bone Health Considerations</h3>
@@ -213,7 +212,7 @@ export default async function HealthGuidePage() {
             </p>
             <ul className="list-disc pl-6 mb-6">
               <li><strong>Athletes</strong>: May benefit from mineral-rich varieties for electrolyte replacement, particularly after intense exercise.</li>
-              <li><strong>Individuals with Digestive Sensitivities</strong>: Should introduce carbonated beverages gradually and monitor their body's response.</li>
+              <li><strong>Individuals with Digestive Sensitivities</strong>: Should introduce carbonated beverages gradually and monitor their body&apos;s response.</li>
               <li><strong>Those with Dental Concerns</strong>: Should prioritize plain varieties and maintain good oral hygiene practices.</li>
             </ul>
           </section>
@@ -230,7 +229,7 @@ export default async function HealthGuidePage() {
           <section id="conclusion" className="mb-12">
             <h2 id="conclusion" className="text-2xl font-semibold mb-6">Conclusion: Making Informed Choices</h2>
             <p className="mb-6">
-              The scientific evidence overwhelmingly supports sparkling water as a healthy hydration option when chosen and consumed thoughtfully. Whether selecting from commercial sparkling water brands or using a home sparkling water maker, the key lies in understanding your personal health needs and choosing products that align with them. While the question "is sparkling water good for you?" can't be answered with a simple yes or no, research indicates that plain carbonated water can be a beneficial addition to a healthy diet, particularly as a replacement for sugar-sweetened beverages.
+              The scientific evidence overwhelmingly supports sparkling water as a healthy hydration option when chosen and consumed thoughtfully. Whether selecting from commercial sparkling water brands or using a home sparkling water maker, the key lies in understanding your personal health needs and choosing products that align with them. While the question &quot;is sparkling water good for you?&quot; can&apos;t be answered with a simple yes or no, research indicates that plain carbonated water can be a beneficial addition to a healthy diet, particularly as a replacement for sugar-sweetened beverages.
             </p>
             <p className="mb-6">
               For optimal health benefits, focus on plain or naturally flavored options, be mindful of mineral content if you have specific health concerns, and consider timing and consumption patterns to minimize any potential risks. With these guidelines in mind, sparkling water can be a refreshing, healthy part of your daily hydration routine.
