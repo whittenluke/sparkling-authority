@@ -37,7 +37,6 @@ const navigation = {
       { name: 'How to Make Sparkling Water', href: '/learn/how-to-make-sparkling-water' },
       { name: 'Buying Guide', href: '/learn/buying' },
       { name: 'Terminology', href: '/learn/terms' },
-      { name: 'FAQ', href: '/learn/faqs' },
     ],
   },
   community: {
