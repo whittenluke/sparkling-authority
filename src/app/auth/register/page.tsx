@@ -10,6 +10,7 @@ export default function RegisterPage() {
   const { signUp, signIn } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -17,17 +18,23 @@ export default function RegisterPage() {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
+    setSuccess(false)
 
     try {
-      const { error: signUpError } = await signUp(email, password)
-      if (signUpError) throw signUpError
+      const { error: signUpError, user } = await signUp(email, password)
+      if (signUpError) {
+        console.error('Detailed signup error:', signUpError)
+        throw signUpError
+      }
 
-      // On successful registration, redirect to login
-      router.push('/auth/login?registered=true')
-      router.refresh()
-    } catch (err) {
+      // Show success message instead of redirecting
+      setSuccess(true)
+      // Don't redirect - wait for email confirmation
+      // router.push('/auth/login?registered=true')
+      // router.refresh()
+    } catch (err: any) {
       console.error('Registration error:', err)
-      setError('Failed to create account')
+      setError(err?.message || 'Failed to create account')
     } finally {
       setIsLoading(false)
     }
@@ -65,6 +72,14 @@ export default function RegisterPage() {
           {error && (
             <div className="rounded-md bg-destructive/10 p-4">
               <div className="text-sm text-destructive">{error}</div>
+            </div>
+          )}
+
+          {success && (
+            <div className="rounded-md bg-green-50 dark:bg-green-900/10 p-4">
+              <div className="text-sm text-green-800 dark:text-green-300">
+                Success! Please check your email for a confirmation link to complete your registration.
+              </div>
             </div>
           )}
 
@@ -157,8 +172,7 @@ export default function RegisterPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
-                  placeholder="••••••••"
+                  className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
                 />
               </div>
             </div>
