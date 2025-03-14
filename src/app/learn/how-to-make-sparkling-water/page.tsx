@@ -17,10 +17,10 @@ export const metadata: Metadata = {
     url: 'https://sparklingauthority.com/learn/how-to-make-sparkling-water',
     images: [
       {
-        url: '/images/learn/how-to-make/sparkling-water-maker.webp',
+        url: '/images/learn/how-to-make-sparkling-water/soda-machine-kitchen.webp',
         width: 1200,
         height: 630,
-        alt: 'Modern sparkling water maker with a bottle of freshly carbonated water',
+        alt: 'Modern sparkling water maker in a stylish kitchen setting',
       },
     ],
   },
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'How to Make Sparkling Water: Your Complete Guide to Creating Sparkling Water at Home',
     description: 'Learn how to make sparkling water at home with our comprehensive guide covering equipment selection, carbonation methods, and mineral enhancement techniques.',
-    images: ['/images/learn/how-to-make/sparkling-water-maker.webp'],
+    images: ['/images/learn/how-to-make-sparkling-water/soda-machine-kitchen.webp'],
   }
 }
 
@@ -38,7 +38,7 @@ const jsonLd = {
   '@type': 'HowTo',
   name: 'How to Make Sparkling Water at Home',
   description: 'A comprehensive guide to creating sparkling water at home using various methods, from commercial machines to DIY solutions.',
-  image: 'https://sparklingauthority.com/images/learn/how-to-make/sparkling-water-maker.webp',
+  image: 'https://sparklingauthority.com/images/learn/how-to-make-sparkling-water/soda-machine-kitchen.webp',
   datePublished: new Date().toISOString().split('T')[0],
   dateModified: new Date().toISOString().split('T')[0],
   author: {
@@ -71,11 +71,11 @@ export default async function HowToMakeSparklingWaterPage() {
           url="https://sparklingauthority.com/learn/how-to-make-sparkling-water"
           publishedAt="2024-03-21"
           updatedAt="2024-03-21"
-          category="guides"
+          category="science"
           tags={["sparkling water", "carbonation", "DIY", "home brewing", "soda makers", "equipment", "how-to"]}
           heroImage={{
-            src: "/images/learn/how-to-make/sparkling-water-maker.webp",
-            alt: "Modern sparkling water maker with a bottle of freshly carbonated water"
+            src: "/images/learn/how-to-make-sparkling-water/soda-machine-kitchen.webp",
+            alt: "Modern sparkling water maker in a stylish kitchen setting"
           }}
         >
           <section id="introduction" className="mb-12">
@@ -88,7 +88,7 @@ export default async function HowToMakeSparklingWaterPage() {
             <h2 id="science" className="text-2xl font-semibold mb-6">The Science Behind Carbonation</h2>
             
             <p className="mb-6">
-              The delightful fizz of sparkling water comes from dissolved carbon dioxide (CO₂) gas in water under pressure. When CO₂ is forced into water under pressure, the gas molecules dissolve, creating carbonation. Once the pressure is released—such as when opening a bottle—the gas forms bubbles that rise to the surface, producing the characteristic effervescence.
+              The delightful fizz of sparkling water comes from dissolved carbon dioxide (CO₂) gas in water under pressure. When CO₂ is forced into water under pressure, the gas molecules dissolve, creating carbonation. Once the pressure is released—such as when opening a bottle—the gas forms bubbles that rise to the surface, producing the characteristic effervescence. For a deeper dive into the fascinating chemistry and physics behind this process, check out our detailed guide on <a href="/learn/carbonation" className="text-primary hover:text-primary/80 underline">the history and science of carbonation</a>.
             </p>
 
             <p className="mb-6">
@@ -263,6 +263,81 @@ export default async function HowToMakeSparklingWaterPage() {
             <p className="mb-6">
               This method produces a slightly different type of carbonation, with smaller bubbles and a mild yeast flavor. It is not suitable for those who prefer purely neutral sparkling water but offers an interesting alternative for those interested in natural processes.
             </p>
+          </section>
+
+          <section id="safety" className="mb-12">
+            <h2 id="safety" className="text-2xl font-semibold mb-6">Safety and Best Practices</h2>
+            
+            <p className="mb-6">
+              While making sparkling water at home is generally safe, proper handling of equipment and understanding of safety protocols ensures both optimal results and user protection. Each carbonation method comes with its own set of safety considerations that should be carefully observed.
+            </p>
+
+            <h3 id="safety-co2" className="text-xl font-medium mb-4">CO₂ Handling and Storage</h3>
+            <div className="bg-muted p-6 rounded-lg mb-6">
+              <h4 className="font-medium mb-3">Essential CO₂ Safety Guidelines:</h4>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong>Storage Location:</strong> Keep CO₂ cylinders in well-ventilated areas, secured upright to prevent falling.</li>
+                <li><strong>Temperature Control:</strong> Avoid storing cylinders in areas exceeding 120°F (49°C) as pressure increases with temperature.</li>
+                <li><strong>Cylinder Inspection:</strong> Regularly check for damage, rust, or dents that could compromise cylinder integrity.</li>
+                <li><strong>Transport Safety:</strong> Always transport cylinders secured and upright, with valve caps in place.</li>
+              </ul>
+            </div>
+
+            <h3 id="safety-pressure" className="text-xl font-medium mb-4">Pressure Management</h3>
+            <p className="mb-6">
+              Understanding and managing pressure is crucial for safe carbonation. Never exceed manufacturer-recommended pressure limits for your equipment. For commercial soda makers, this typically means following the recommended number of CO₂ bursts. For kegging systems, maintain pressure within safe operating ranges—usually between 15-45 PSI depending on your setup and intended use.
+            </p>
+
+            <div className="bg-muted p-6 rounded-lg mb-6">
+              <h4 className="font-medium mb-3">Pressure Safety Checklist:</h4>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong>Regular Inspections:</strong> Check all pressure-bearing components, including gaskets, O-rings, and seals.</li>
+                <li><strong>Pressure Release:</strong> Always depressurize systems slowly and safely when disconnecting components.</li>
+                <li><strong>Gauge Monitoring:</strong> Keep pressure gauges in good working order and regularly verify their accuracy.</li>
+                <li><strong>Emergency Procedures:</strong> Know how to quickly shut off gas flow in case of leaks or equipment failure.</li>
+              </ul>
+            </div>
+
+            <h3 id="safety-equipment" className="text-xl font-medium mb-4">Equipment Maintenance</h3>
+            <p className="mb-6">
+              Regular maintenance ensures both safety and optimal performance. Establish a routine cleaning and inspection schedule for all components that come into contact with water or CO₂. This includes bottles, kegs, lines, and dispensing equipment.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <h4 className="font-medium mb-2">Commercial Makers:</h4>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>Clean bottles after each use</li>
+                  <li>Check nozzle cleanliness regularly</li>
+                  <li>Inspect bottle integrity monthly</li>
+                  <li>Replace carbonation components as recommended</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">Kegging Systems:</h4>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>Sanitize kegs between batches</li>
+                  <li>Replace O-rings annually</li>
+                  <li>Clean beer lines monthly</li>
+                  <li>Check regulator accuracy quarterly</li>
+                </ul>
+              </div>
+            </div>
+
+            <h3 id="safety-quality" className="text-xl font-medium mb-4">Water Quality and Food Safety</h3>
+            <p className="mb-6">
+              Maintaining high water quality is essential for both safety and taste. Use only potable water sources and consider additional filtration for optimal results. When adding minerals or flavorings, ensure all additives are food-grade and properly measured to avoid over-mineralization.
+            </p>
+
+            <div className="bg-muted p-6 rounded-lg mb-6">
+              <h4 className="font-medium mb-3">Quality Control Measures:</h4>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong>Water Testing:</strong> Regularly test water quality, especially when using well water or changing water sources.</li>
+                <li><strong>Sanitization:</strong> Use food-grade sanitizers and follow proper contact times for all equipment.</li>
+                <li><strong>Storage:</strong> Keep carbonated water in clean, sealed containers and consume within recommended timeframes.</li>
+                <li><strong>Temperature Control:</strong> Maintain proper storage temperatures to prevent bacterial growth and maintain carbonation.</li>
+              </ul>
+            </div>
           </section>
 
           <section id="conclusion" className="mb-12">
