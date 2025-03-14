@@ -1,7 +1,6 @@
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Metadata } from 'next'
-import Image from 'next/image'
 import { ArticleLayout } from '@/components/article/ArticleLayout'
 
 export const dynamic = 'force-dynamic'
@@ -67,7 +66,7 @@ export default async function TerminologyPage() {
       <main className="flex-grow">
         <ArticleLayout
           title="Sparkling Water Terminology: A Comprehensive Glossary"
-          description="Sparkling water isn't just water with bubbles—it's a fascinating world of science, culture, and innovation. In this glossary, we break down every term you might encounter when exploring sparkling water. From its chemical properties and production methods to the names used in bars and around the world, this guide will help you speak with authority about your favorite fizzy beverage."
+          description="Sparkling water isn&apos;t just water with bubbles—it&apos;s a fascinating world of science, culture, and innovation. In this glossary, we break down every term you might encounter when exploring sparkling water. From its chemical properties and production methods to the names used in bars and around the world, this guide will help you speak with authority about your favorite fizzy beverage."
           url="https://sparklingauthority.com/learn/terms"
           publishedAt="2024-03-21"
           updatedAt="2024-03-21"
@@ -445,7 +444,7 @@ export default async function TerminologyPage() {
                 <h3 className="text-xl font-medium mb-4 text-primary">Historical Origins</h3>
                 <div className="space-y-3">
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Joseph Priestley and Carbonation:</span> In the 18th century, Joseph Priestley discovered a method to infuse water with CO₂, setting the stage for the modern sparkling water industry.</p>
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Gasogene Invention:</span> The gasogene, a late Victorian apparatus, was used to carbonate water on demand—an early precursor to today's home carbonation systems.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Gasogene Invention:</span> The gasogene, a late Victorian apparatus, was used to carbonate water on demand—an early precursor to today&apos;s home carbonation systems.</p>
                 </div>
               </div>
 
@@ -514,7 +513,7 @@ export default async function TerminologyPage() {
             <div className="text-sm space-y-2 text-muted-foreground">
               <p id="ref-1">[1]: <a href="https://en.wikipedia.org/wiki/Carbonated_water" className="hover:text-blue-500">Wikipedia: Carbonated Water</a></p>
               <p id="ref-2">[2]: <a href="https://en.wikipedia.org/wiki/Mineral_water" className="hover:text-blue-500">Wikipedia: Mineral Water</a></p>
-              <p id="ref-3">[3]: <a href="https://www.seriouseats.com/sparkling-water-differences" className="hover:text-blue-500">Serious Eats: Sparkling Water, Sparkling Mineral Water, Club Soda, Seltzer, and Tonic Water: What's the Difference?</a></p>
+              <p id="ref-3">[3]: <a href="https://www.seriouseats.com/sparkling-water-differences" className="hover:text-blue-500">Serious Eats: Sparkling Water, Sparkling Mineral Water, Club Soda, Seltzer, and Tonic Water: What&apos;s the Difference?</a></p>
               <p id="ref-4">[4]: <a href="https://garnishblog.com/carbonated-waters" className="hover:text-blue-500">Bar School: Carbonated Waters – Garnish Blog</a></p>
             </div>
           </section>
