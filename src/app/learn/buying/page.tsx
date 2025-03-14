@@ -1,7 +1,6 @@
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Metadata } from 'next'
-import Image from 'next/image'
 import { ArticleLayout } from '@/components/article/ArticleLayout'
 
 export const dynamic = 'force-dynamic'
@@ -67,7 +66,7 @@ export default async function BuyingGuidePage() {
       <main className="flex-grow">
         <ArticleLayout
           title="The Ultimate Sparkling Water Buying Guide: Expert Tips for Choosing the Right One"
-          description="Whether you're looking for a fizzy, refreshing alternative to still water or a healthier replacement for soda, sparkling water is an excellent choice. The market is now overflowing with different types of sparkling water, making it more important than ever to know what to look for. This buying guide will provide expert tips on understanding labels, finding the best value, and selecting the right sparkling water for your taste and lifestyle."
+          description="Whether you&apos;re looking for a fizzy, refreshing alternative to still water or a healthier replacement for soda, sparkling water is an excellent choice. The market is now overflowing with different types of sparkling water, making it more important than ever to know what to look for. This buying guide will provide expert tips on understanding labels, finding the best value, and selecting the right sparkling water for your taste and lifestyle."
           url="https://sparklingauthority.com/learn/buying"
           publishedAt="2024-03-21"
           updatedAt="2024-03-21"
@@ -80,7 +79,7 @@ export default async function BuyingGuidePage() {
         >
           <section id="introduction" className="mb-12">
             <p className="mb-6">
-              Whether you're looking for a fizzy, refreshing alternative to still water or a healthier replacement for soda, sparkling water is an excellent choice. The market is now overflowing with different types of sparkling water, making it more important than ever to know what to look for. This buying guide will provide expert tips on understanding labels, finding the best value, and selecting the right sparkling water for your taste and lifestyle.
+              Whether you&apos;re looking for a fizzy, refreshing alternative to still water or a healthier replacement for soda, sparkling water is an excellent choice. The market is now overflowing with different types of sparkling water, making it more important than ever to know what to look for. This buying guide will provide expert tips on understanding labels, finding the best value, and selecting the right sparkling water for your taste and lifestyle.
             </p>
           </section>
 
@@ -88,7 +87,7 @@ export default async function BuyingGuidePage() {
             <h2 id="labels" className="text-2xl font-semibold mb-6">Understanding Sparkling Water Labels</h2>
             
             <p className="mb-6">
-              When browsing sparkling water options, you'll notice different terms used to describe them. Understanding these labels is key to choosing the best product for you.
+              When browsing sparkling water options, you&apos;ll notice different terms used to describe them. Understanding these labels is key to choosing the best product for you.
             </p>
 
             <ul className="space-y-4 mb-6">
@@ -99,10 +98,10 @@ export default async function BuyingGuidePage() {
                 <strong>Mineral Content</strong>: Many natural sparkling waters contain essential minerals like calcium, magnesium, and potassium, which influence the taste. Higher calcium levels give a slightly sweet taste, while sodium makes the water taste saltier. Magnesium can add a slightly bitter edge.
               </li>
               <li>
-                <strong>Added Minerals and Carbonation</strong>: Not all sparkling waters are naturally carbonated. Some brands add carbon dioxide after extraction to increase the fizziness. Check the label for terms like "carbonated water" versus "naturally sparkling" or "natural mineral water" to know the source of carbonation.
+                <strong>Added Minerals and Carbonation</strong>: Not all sparkling waters are naturally carbonated. Some brands add carbon dioxide after extraction to increase the fizziness. Check the label for terms like &quot;carbonated water&quot; versus &quot;naturally sparkling&quot; or &quot;natural mineral water&quot; to know the source of carbonation.
               </li>
               <li>
-                <strong>Flavors and Additives</strong>: Many flavored sparkling waters contain "natural flavors," which can vary significantly. Some brands use essential oils and real fruit extracts, while others use artificial additives and sweeteners. If you prefer a more natural option, look for products with clearly labeled ingredients and avoid artificial sweeteners such as aspartame or high-fructose corn syrup.
+                <strong>Flavors and Additives</strong>: Many flavored sparkling waters contain &quot;natural flavors,&quot; which can vary significantly. Some brands use essential oils and real fruit extracts, while others use artificial additives and sweeteners. If you prefer a more natural option, look for products with clearly labeled ingredients and avoid artificial sweeteners such as aspartame or high-fructose corn syrup.
               </li>
             </ul>
           </section>
@@ -122,7 +121,7 @@ export default async function BuyingGuidePage() {
 
             <h3 id="health-bone" className="text-xl font-medium mb-4">Bone Health and Mineral Absorption</h3>
             <p className="mb-6">
-              There's a common myth that sparkling water weakens bones, but studies have found no evidence to support this claim. Research indicates that plain carbonated water does not negatively impact calcium levels or bone density. The confusion likely comes from studies on cola beverages, which contain phosphoric acid that may affect bone health.
+              There&apos;s a common myth that sparkling water weakens bones, but studies have found no evidence to support this claim. Research indicates that plain carbonated water does not negatively impact calcium levels or bone density. The confusion likely comes from studies on cola beverages, which contain phosphoric acid that may affect bone health.
             </p>
 
             <h3 id="health-special" className="text-xl font-medium mb-4">Special Health Considerations</h3>
@@ -149,7 +148,7 @@ export default async function BuyingGuidePage() {
             <h2 id="value" className="text-2xl font-semibold mb-6">Best Value for Your Money</h2>
             
             <p className="mb-6">
-              With so many options on the market, choosing a sparkling water that fits your budget without sacrificing quality is important. Here's what to keep in mind:
+              With so many options on the market, choosing a sparkling water that fits your budget without sacrificing quality is important. Here&apos;s what to keep in mind:
             </p>
 
             <ul className="list-disc pl-6 mb-6">
@@ -179,14 +178,14 @@ export default async function BuyingGuidePage() {
             <h2 id="packaging" className="text-2xl font-semibold mb-6">Packaging Considerations</h2>
             
             <p className="mb-6">
-              When choosing sparkling water, the packaging matters too. Here's what to keep in mind:
+              When choosing sparkling water, the packaging matters too. Here&apos;s what to keep in mind:
             </p>
 
             <ul className="list-disc pl-6 mb-6">
               <li><strong>Aluminum Cans vs. Glass Bottles</strong>: Aluminum cans are more lightweight and recyclable, making them a more convenient and eco-friendly option for many. Glass bottles often preserve the original taste better but can be more expensive.</li>
               <li><strong>Plastic Bottles</strong>: These are lightweight and shatterproof, making them easy for on-the-go hydration, but plastic can sometimes leach chemicals or leach carbonation over time.</li>
               <li><strong>Multi-Packs vs. Individual Bottles</strong>: Bulk packs usually offer better value, but they require more storage space.</li>
-              <li><strong>Size Matters</strong>: If you don't drink a lot of sparkling water quickly, smaller cans or bottles might be the better option to preserve carbonation.</li>
+              <li><strong>Size Matters</strong>: If you don&apos;t drink a lot of sparkling water quickly, smaller cans or bottles might be the better option to preserve carbonation.</li>
             </ul>
           </section>
 

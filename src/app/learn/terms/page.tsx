@@ -85,9 +85,9 @@ export default async function TerminologyPage() {
               <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-medium mb-4 text-primary">Sparkling Water</h3>
                 <div className="space-y-3">
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Water that has been infused with carbon dioxide (CO₂) to create a bubbly, effervescent texture.</p>
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> Often used interchangeably with carbonated water, sparkling water is enjoyed for its refreshing mouthfeel and can be found in both flavored and unflavored varieties.</p>
-                  <p><span className="font-semibold text-muted-foreground">Note:</span> In many regions, "sparkling water" also serves as a catchall term for any bubbly water product.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Water that has been infused with carbon dioxide (&quot;CO2&quot;) under pressure. This process creates the characteristic &quot;fizz&quot; and effervescence that makes sparkling water so refreshing.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> The term &quot;sparkling water&quot; encompasses various types of carbonated water, including naturally carbonated mineral water, artificially carbonated water, and flavored varieties.</p>
+                  <p><span className="font-semibold text-muted-foreground">Note:</span> In many regions, &quot;sparkling water&quot; also serves as a catchall term for any bubbly water product.</p>
                 </div>
               </div>
 
@@ -95,7 +95,7 @@ export default async function TerminologyPage() {
                 <h3 className="text-xl font-medium mb-4 text-primary">Carbonated Water</h3>
                 <div className="space-y-3">
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Water that contains dissolved carbon dioxide gas.</p>
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> Carbonated water is the scientific basis for sparkling water. The process of carbonation produces tiny bubbles, giving the water its distinct "fizz."</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> Carbonated water is the scientific basis for sparkling water. The process of carbonation produces tiny bubbles, giving the water its distinct &quot;fizz.&quot;</p>
                   <p><span className="font-semibold text-muted-foreground">Related Terms:</span> Sparkling water, fizzy water.</p>
                 </div>
               </div>
@@ -112,7 +112,7 @@ export default async function TerminologyPage() {
                 <h3 className="text-xl font-medium mb-4 text-primary">Fizz</h3>
                 <div className="space-y-3">
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Informal term for the rapid escape of gas bubbles from carbonated water.</p>
-                  <p><span className="font-semibold text-muted-foreground">Description:</span> "Fizz" is both a noun and a verb used to describe the bubbly sensation you experience when you sip sparkling water.</p>
+                  <p><span className="font-semibold text-muted-foreground">Description:</span> &quot;Fizz&quot; is both a noun and a verb used to describe the bubbly sensation you experience when you sip sparkling water.</p>
                 </div>
               </div>
             </div>
@@ -133,7 +133,7 @@ export default async function TerminologyPage() {
               <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-medium mb-4 text-primary">Natural vs. Artificial Carbonation</h3>
                 <div className="space-y-3">
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Natural Carbonation:</span> Occurs when water from an underground spring contains dissolved CO₂ that comes directly from the earth. These waters are often labeled as "naturally sparkling mineral water."</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Natural Carbonation:</span> Occurs when water from an underground spring contains dissolved CO₂ that comes directly from the earth. These waters are often labeled as &quot;naturally sparkling mineral water.&quot;</p>
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Artificial Carbonation:</span> Happens when CO₂ is mechanically infused into water after extraction. This method is common in commercial production of seltzer and club soda.</p>
                 </div>
               </div>
@@ -159,7 +159,7 @@ export default async function TerminologyPage() {
                 <ul className="space-y-4 divide-y divide-muted">
                   <li className="pt-4 first:pt-0">
                     <span className="font-semibold text-primary block mb-2">Reverse Osmosis:</span>
-                    <p>A water purification process that removes impurities and minerals. Sparkling water made with reverse osmosis water is often "remineralized" afterward to add back desirable minerals.</p>
+                    <p>A water purification process that removes impurities and minerals. Sparkling water made with reverse osmosis water is often &quot;remineralized&quot; afterward to add back desirable minerals.</p>
                   </li>
                   <li className="pt-4">
                     <span className="font-semibold text-primary block mb-2">Remineralization:</span>
@@ -185,8 +185,8 @@ export default async function TerminologyPage() {
               <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-medium mb-4 text-primary">Seltzer</h3>
                 <div className="space-y-3">
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Carbonated water without added minerals.</p>
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> Seltzer is often considered the "blank slate" of fizzy waters. It's artificially carbonated and has a very neutral taste, making it versatile for both drinking and mixing in cocktails.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> The term &quot;seltzer&quot; refers to artificially carbonated water with no added minerals.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> Seltzer is often considered the &quot;blank slate&quot; of fizzy waters. It&apos;s artificially carbonated and has a very neutral taste, making it versatile for both drinking and mixing in cocktails.</p>
                   <p><span className="font-semibold text-muted-foreground">Usage Tip:</span> Ideal for when you want the bubbles without additional flavors or saltiness.</p>
                 </div>
               </div>
@@ -194,7 +194,7 @@ export default async function TerminologyPage() {
               <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-medium mb-4 text-primary">Club Soda</h3>
                 <div className="space-y-3">
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Carbonated water to which minerals (such as sodium bicarbonate, sodium citrate, or potassium sulfate) have been added.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> &quot;Club soda&quot; is artificially carbonated water with added minerals.</p>
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> The added minerals give club soda a slightly salty, tangy flavor that can complement certain recipes and cocktails.</p>
                   <p><span className="font-semibold text-muted-foreground">Usage Tip:</span> Excellent in cocktails like a Tom Collins or when a slight mineral taste is desired.</p>
                 </div>
@@ -203,7 +203,7 @@ export default async function TerminologyPage() {
               <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-medium mb-4 text-primary">Mineral Water</h3>
                 <div className="space-y-3">
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Water that naturally contains dissolved minerals and, in some cases, natural carbonation from an underground spring.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> &quot;Mineral water&quot; contains naturally occurring minerals and may be naturally or artificially carbonated.</p>
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> Sparkling mineral water is prized for its unique flavor profile, which reflects the geological characteristics of its source. While often more expensive, its natural bubbles and mineral content offer a refined drinking experience.</p>
                   <p><span className="font-semibold text-muted-foreground">Usage Tip:</span> Often served on its own to enjoy its subtle taste nuances.</p>
                 </div>
@@ -221,7 +221,7 @@ export default async function TerminologyPage() {
               <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-medium mb-4 text-primary">Tonic Water</h3>
                 <div className="space-y-3">
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> A carbonated beverage that contains quinine and is typically sweetened.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> &quot;Tonic water&quot; is carbonated water with added quinine and often sweeteners.</p>
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> Tonic water is distinct from other sparkling waters due to its bittersweet taste, which comes from quinine—a compound originally used for malaria treatment. It is a key ingredient in classic cocktails like the gin and tonic.</p>
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Usage Tip:</span> Best used in cocktails where its distinct flavor can shine; not interchangeable with plain sparkling water.</p>
                   <p><span className="font-semibold text-muted-foreground">Additional Info:</span> Tonic water has a higher sugar content and is not recommended for those seeking a pure hydration experience.</p>
@@ -231,7 +231,7 @@ export default async function TerminologyPage() {
               <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-medium mb-4 text-primary">Sparkling Spring Water</h3>
                 <div className="space-y-3">
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Water sourced from a natural spring that contains naturally occurring carbonation and minerals.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> &quot;Sparkling spring water&quot; comes from a natural spring and is carbonated.</p>
                   <p><span className="font-semibold text-muted-foreground">Description:</span> This type of water combines the benefits of mineral water and sparkling water. The carbonation is often less aggressive, and the natural mineral content can impart a subtle flavor that varies from one source to another.</p>
                 </div>
               </div>
@@ -301,7 +301,7 @@ export default async function TerminologyPage() {
                 <h3 className="text-xl font-medium mb-4 text-primary">Schorle</h3>
                 <div className="space-y-3">
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> A German term for a drink made by diluting fruit juice or wine with sparkling water.</p>
-                  <p><span className="font-semibold text-muted-foreground">Description:</span> Commonly consumed in Germany and other parts of Europe, schorle (or "Fruchtschorle" when made with fruit juice) is a refreshing, lower-alcohol alternative to undiluted beverages.</p>
+                  <p><span className="font-semibold text-muted-foreground">Description:</span> Commonly consumed in Germany and other parts of Europe, schorle (or &quot;Fruchtschorle&quot; when made with fruit juice) is a refreshing, lower-alcohol alternative to undiluted beverages.</p>
                 </div>
               </div>
 
@@ -323,7 +323,7 @@ export default async function TerminologyPage() {
                 <h3 className="text-xl font-medium mb-4 text-primary">Fizzy Water</h3>
                 <div className="space-y-3">
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> A colloquial term for any water that contains bubbles.</p>
-                  <p><span className="font-semibold text-muted-foreground">Description:</span> Although not a technical term, "fizzy water" is widely understood in everyday conversation to mean any type of carbonated water.</p>
+                  <p><span className="font-semibold text-muted-foreground">Description:</span> Although not a technical term, &quot;fizzy water&quot; is widely understood in everyday conversation to mean any type of carbonated water.</p>
                 </div>
               </div>
 
@@ -331,7 +331,7 @@ export default async function TerminologyPage() {
                 <h3 className="text-xl font-medium mb-4 text-primary">Bubbly</h3>
                 <div className="space-y-3">
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Another informal term used to describe sparkling or carbonated water.</p>
-                  <p><span className="font-semibold text-muted-foreground">Description:</span> "Bubbly" emphasizes the playful, effervescent nature of the drink and is often used in marketing to evoke a sense of fun and refreshment.</p>
+                  <p><span className="font-semibold text-muted-foreground">Description:</span> &quot;Bubbly&quot; emphasizes the playful, effervescent nature of the drink and is often used in marketing to evoke a sense of fun and refreshment.</p>
                 </div>
               </div>
 
@@ -339,7 +339,7 @@ export default async function TerminologyPage() {
                 <h3 className="text-xl font-medium mb-4 text-primary">Water with Gas</h3>
                 <div className="space-y-3">
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> A literal translation sometimes used in non-English-speaking countries.</p>
-                  <p><span className="font-semibold text-muted-foreground">Description:</span> This term is used to indicate that the water contains dissolved carbon dioxide, though it is less common in English than "sparkling water" or "seltzer."</p>
+                  <p><span className="font-semibold text-muted-foreground">Description:</span> This term is used to indicate that the water contains dissolved carbon dioxide, though it is less common in English than &quot;sparkling water&quot; or &quot;seltzer.&quot;</p>
                 </div>
               </div>
 
@@ -347,7 +347,7 @@ export default async function TerminologyPage() {
                 <h3 className="text-xl font-medium mb-4 text-primary">Phosphate (in historical context)</h3>
                 <div className="space-y-3">
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> A term once used to describe certain carbonated water products that contained added phosphates.</p>
-                  <p><span className="font-semibold text-muted-foreground">Description:</span> Although rare today, some older recipes and historical references mention "phosphate" in the context of carbonated waters, particularly when used in medicinal or health-related applications.</p>
+                  <p><span className="font-semibold text-muted-foreground">Description:</span> Although rare today, some older recipes and historical references mention &quot;phosphate&quot; in the context of carbonated waters, particularly when used in medicinal or health-related applications.</p>
                 </div>
               </div>
 
@@ -412,7 +412,7 @@ export default async function TerminologyPage() {
                   </li>
                   <li className="pt-4">
                     <span className="font-semibold text-primary block mb-2">Key Point:</span>
-                    <p>The taste and mouthfeel can differ greatly between these two, with natural sparkling mineral water often considered more "authentic."</p>
+                    <p>The taste and mouthfeel can differ greatly between these two, with natural sparkling mineral water often considered more &quot;authentic.&quot;</p>
                   </li>
                 </ul>
               </div>
@@ -430,7 +430,7 @@ export default async function TerminologyPage() {
                   </li>
                   <li className="pt-4">
                     <span className="font-semibold text-primary block mb-2">Key Point:</span>
-                    <p>Tonic water's unique taste makes it ideal for specific cocktails (like gin and tonic) but not a direct substitute for plain sparkling water.</p>
+                    <p>Tonic water&apos;s unique taste makes it ideal for specific cocktails (like gin and tonic) but not a direct substitute for plain sparkling water.</p>
                   </li>
                 </ul>
               </div>
@@ -452,8 +452,8 @@ export default async function TerminologyPage() {
               <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-medium mb-4 text-primary">Regional Terminology</h3>
                 <div className="space-y-3">
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Seltzer:</span> The term originated from the German town of Selters, known for its naturally carbonated springs. Over time, "seltzer" became a generic term in North America for artificially carbonated water.</p>
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Sparkling Water:</span> Often preferred in upscale restaurants and among health-conscious consumers, especially in regions where the term "mineral water" carries a premium connotation.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Seltzer:</span> The term originated from the German town of Selters, known for its naturally carbonated springs. Over time, &quot;seltzer&quot; became a generic term in North America for artificially carbonated water.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Sparkling Water:</span> Often preferred in upscale restaurants and among health-conscious consumers, especially in regions where the term &quot;mineral water&quot; carries a premium connotation.</p>
                   <p className="mb-2"><span className="font-semibold text-muted-foreground">Club Soda:</span> Historically associated with cocktail culture, especially in bars where the mineral content was appreciated for enhancing mixed drinks.</p>
                 </div>
               </div>
@@ -471,7 +471,7 @@ export default async function TerminologyPage() {
               <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-medium mb-4 text-primary">At Home</h3>
                 <div className="space-y-3">
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Use a home carbonation system</span> to experiment with different levels of fizz and even try your hand at creating your own "remixed" sparkling water by adding natural fruit juices or a squeeze of lemon.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Use a home carbonation system</span> to experiment with different levels of fizz and even try your hand at creating your own &quot;remixed&quot; sparkling water by adding natural fruit juices or a squeeze of lemon.</p>
                 </div>
               </div>
 
@@ -485,7 +485,7 @@ export default async function TerminologyPage() {
               <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
                 <h3 className="text-xl font-medium mb-4 text-primary">For Health</h3>
                 <div className="space-y-3">
-                  <p className="mb-2"><span className="font-semibold text-muted-foreground">If you're monitoring your mineral intake,</span> check the labels on sparkling mineral waters versus club soda. Each offers a unique profile that can support your hydration goals without unnecessary additives.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">If you&apos;re monitoring your mineral intake,</span> check the labels on sparkling mineral waters versus club soda. Each offers a unique profile that can support your hydration goals without unnecessary additives.</p>
                 </div>
               </div>
             </div>
