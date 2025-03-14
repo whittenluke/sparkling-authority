@@ -71,7 +71,7 @@ export default async function BuyingGuidePage() {
           url="https://sparklingauthority.com/learn/buying"
           publishedAt="2024-03-21"
           updatedAt="2024-03-21"
-          category="guides"
+          category="science"
           tags={["buying guide", "sparkling water", "mineral content", "carbonation", "health", "value"]}
           heroImage={{
             src: "/images/learn/buying/sparkling-water-selection.webp",
