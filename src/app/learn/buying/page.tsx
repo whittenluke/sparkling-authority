@@ -96,13 +96,13 @@ export default async function BuyingGuidePage() {
                 <strong>Carbonation Source</strong>: Some sparkling waters, like Perrier or San Pellegrino, are naturally carbonated, meaning they contain mineral-rich carbon dioxide gas from underground springs. Others, such as club soda, are artificially carbonated with injected CO₂, which often creates a sharper fizziness.
               </li>
               <li>
-                <strong>Mineral Content</strong>: Many natural sparkling waters contain essential minerals like calcium, magnesium, and potassium, which influence the taste. Higher calcium levels give a slightly sweet taste, while sodium makes the water taste saltier. Magnesium can add a slightly bitter edge<a href="#ref-3" className="text-xs align-super">[3]</a>.
+                <strong>Mineral Content</strong>: Many natural sparkling waters contain essential minerals like calcium, magnesium, and potassium, which influence the taste. Higher calcium levels give a slightly sweet taste, while sodium makes the water taste saltier. Magnesium can add a slightly bitter edge.
               </li>
               <li>
-                <strong>Added Minerals and Carbonation</strong>: Not all sparkling waters are naturally carbonated. Some brands add carbon dioxide after extraction to increase the fizziness. Check the label for terms like "carbonated water" versus "naturally sparkling" or "natural mineral water" to know the source of carbonation<a href="#ref-3" className="text-xs align-super">[3]</a>.
+                <strong>Added Minerals and Carbonation</strong>: Not all sparkling waters are naturally carbonated. Some brands add carbon dioxide after extraction to increase the fizziness. Check the label for terms like "carbonated water" versus "naturally sparkling" or "natural mineral water" to know the source of carbonation.
               </li>
               <li>
-                <strong>Flavors and Additives</strong>: Many flavored sparkling waters contain "natural flavors," which can vary significantly. Some brands use essential oils and real fruit extracts, while others use artificial additives and sweeteners. If you prefer a more natural option, look for products with clearly labeled ingredients and avoid artificial sweeteners such as aspartame or high-fructose corn syrup<a href="#ref-4" className="text-xs align-super">[4]</a>.
+                <strong>Flavors and Additives</strong>: Many flavored sparkling waters contain "natural flavors," which can vary significantly. Some brands use essential oils and real fruit extracts, while others use artificial additives and sweeteners. If you prefer a more natural option, look for products with clearly labeled ingredients and avoid artificial sweeteners such as aspartame or high-fructose corn syrup.
               </li>
             </ul>
           </section>
@@ -112,22 +112,22 @@ export default async function BuyingGuidePage() {
             
             <h3 id="health-hydration" className="text-xl font-medium mb-4">Hydration Effectiveness</h3>
             <p className="mb-6">
-              One common concern is whether sparkling water hydrates as effectively as still water. Research has confirmed that sparkling water hydrates just as well as still water<a href="#ref-5" className="text-xs align-super">[5]</a>. However, the carbonation can create a feeling of fullness, potentially reducing overall water intake in some cases.
+              One common concern is whether sparkling water hydrates as effectively as still water. Research has confirmed that sparkling water hydrates just as well as still water. However, the carbonation can create a feeling of fullness, potentially reducing overall water intake in some cases.
             </p>
 
             <h3 id="health-dental" className="text-xl font-medium mb-4">Dental Health Considerations</h3>
             <p className="mb-6">
-              Some worry that the acidity of carbonated water might erode tooth enamel over time. While sparkling water is slightly more acidic than still water, its effect on teeth is minimal compared to sugary sodas. However, flavored sparkling waters with added citric acid can be more erosive, so opting for plain varieties is a safer choice<a href="#ref-5" className="text-xs align-super">[5]</a>.
+              Some worry that the acidity of carbonated water might erode tooth enamel over time. While sparkling water is slightly more acidic than still water, its effect on teeth is minimal compared to sugary sodas. However, flavored sparkling waters with added citric acid can be more erosive, so opting for plain varieties is a safer choice.
             </p>
 
             <h3 id="health-bone" className="text-xl font-medium mb-4">Bone Health and Mineral Absorption</h3>
             <p className="mb-6">
-              There's a common myth that sparkling water weakens bones, but studies have found no evidence to support this claim. Research indicates that plain carbonated water does not negatively impact calcium levels or bone density<a href="#ref-5" className="text-xs align-super">[5]</a>. The confusion likely comes from studies on cola beverages, which contain phosphoric acid that may affect bone health<a href="#ref-6" className="text-xs align-super">[6]</a>.
+              There's a common myth that sparkling water weakens bones, but studies have found no evidence to support this claim. Research indicates that plain carbonated water does not negatively impact calcium levels or bone density. The confusion likely comes from studies on cola beverages, which contain phosphoric acid that may affect bone health.
             </p>
 
             <h3 id="health-special" className="text-xl font-medium mb-4">Special Health Considerations</h3>
             <p className="mb-6">
-              For individuals with kidney stones or other health conditions, mineral content is important. Research shows that certain minerals in sparkling water, such as high sodium or sulfate levels, may contribute to kidney stone formation in some individuals<a href="#ref-6" className="text-xs align-super">[6]</a>. Checking the mineral profile can help select a water that aligns with personal health needs.
+              For individuals with kidney stones or other health conditions, mineral content is important. Research shows that certain minerals in sparkling water, such as high sodium or sulfate levels, may contribute to kidney stone formation in some individuals. Checking the mineral profile can help select a water that aligns with personal health needs.
             </p>
           </section>
 
@@ -171,7 +171,7 @@ export default async function BuyingGuidePage() {
               <li><strong>Flavor Profiles</strong>: If you like a crisp, strong carbonation, go for brands like Topo Chico. If you prefer a softer mouthfeel, try a naturally carbonated water like Gerolsteiner.</li>
               <li><strong>Mineral Content</strong>: Different brands source water from various natural springs, leading to unique mineral compositions and tastes. Experiment with different sources to find your favorite balance of minerals.</li>
               <li><strong>Flavored vs. Unflavored</strong>: While flavored sparkling waters can be a nice change of pace, they sometimes contain natural flavors that vary in intensity. Read labels carefully to determine if they align with your taste preferences.</li>
-              <li><strong>Sweeteners</strong>: Some sparkling waters contain artificial sweeteners, such as aspartame or sucralose. If you prefer a purer, unadulterated taste, opt for unsweetened, naturally flavored sparkling waters<a href="#ref-4" className="text-xs align-super">[4]</a>.</li>
+              <li><strong>Sweeteners</strong>: Some sparkling waters contain artificial sweeteners, such as aspartame or sucralose. If you prefer a purer, unadulterated taste, opt for unsweetened, naturally flavored sparkling waters.</li>
             </ul>
           </section>
 
@@ -196,20 +196,6 @@ export default async function BuyingGuidePage() {
             <p className="mb-6">
               Choosing the right sparkling water involves considering taste preferences, carbonation levels, mineral content, health factors, and value for money. Whether you opt for an everyday budget option or a premium brand with a rich history, the perfect sparkling water for you is out there. By understanding labels, experimenting with flavors, and knowing what to look for, you can make an informed decision that enhances your hydration experience.
             </p>
-          </section>
-
-          <section id="references" className="mt-16 pt-8 border-t border-muted">
-            <h2 className="sr-only">References</h2>
-            <div className="text-sm space-y-2 text-muted-foreground">
-              <p id="ref-1">[1]: <a href="https://www.consumerreports.org/health/soda/best-sparkling-water-a1865257596/" className="hover:text-blue-500">Consumer Reports: Best Sparkling Water</a></p>
-              <p id="ref-2">[2]: <a href="https://som.yale.edu/blog/sparkling-water-beliefs-and-barriers" className="hover:text-blue-500">Yale SOM: Sparkling Water Beliefs and Barriers</a></p>
-              <p id="ref-3">[3]: <a href="https://www.sommcademy.com/en/post/label_of_a_mineral_water" className="hover:text-blue-500">Understanding Mineral Water Labels</a></p>
-              <p id="ref-4">[4]: <a href="https://www.planzdiet.com/how-to-buy-sparkling-water/" className="hover:text-blue-500">How to Buy Sparkling Water</a></p>
-              <p id="ref-5">[5]: <a href="https://www.livescience.com/62351-does-sparkling-water-hydrate-you.html" className="hover:text-blue-500">LiveScience: Does Sparkling Water Hydrate You?</a></p>
-              <p id="ref-6">[6]: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8097654/" className="hover:text-blue-500">PMC: Mineral Content Analysis in Commercial Sparkling Waters</a></p>
-              <p id="ref-7">[7]: <a href="https://www.reddit.com/r/Homebrewing/comments/5mz6iw/water_profile_for_perfect_sparkling_water_with/" className="hover:text-blue-500">Reddit: Water Profile for Perfect Sparkling Water</a></p>
-              <p id="ref-8">[8]: <a href="https://sporked.com/article/best-seltzer/" className="hover:text-blue-500">Sporked: Best Seltzer Water Brands</a></p>
-            </div>
           </section>
         </ArticleLayout>
       </main>
