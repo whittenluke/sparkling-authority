@@ -42,12 +42,9 @@ const navigation = {
   community: {
     name: 'Community',
     items: [
-      { name: 'Discussion Forum', href: '/community/forum' },
       { name: 'Submit a Review', href: '/community/reviews/submit' },
-      { name: 'Featured Reviews', href: '/community/reviews/featured' },
-      { name: 'Events & Meetups', href: '/community/events' },
       { name: 'Submit a Product', href: '/community/products/submit' },
-      { name: 'Deals & Discounts', href: '/community/deals' },
+      { name: 'Featured Reviews', href: '/community/reviews/featured' },
       { name: 'Sparkling Water News', href: '/community/news' },
     ],
   },
