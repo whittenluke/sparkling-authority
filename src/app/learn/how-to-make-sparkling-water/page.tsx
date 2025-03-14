@@ -207,6 +207,18 @@ export default async function HowToMakeSparklingWaterPage() {
               </div>
             </div>
 
+            <div className="aspect-[1200/630] relative overflow-hidden rounded-lg my-12">
+              <Image
+                src="/images/learn/how-to-make-sparkling-water/close-up-bubbles.webp"
+                alt="Close-up view of carbonation bubbles rising in sparkling water"
+                fill
+                className="object-cover"
+              />
+              <p className="text-sm text-muted-foreground mt-2 text-center">
+                Microscopic view of carbonation bubbles forming and rising through sparkling water, demonstrating the physical principles of bubble formation.
+              </p>
+            </div>
+
             <h3 id="methods-bottle" className="text-xl font-medium mb-4">3. DIY Carbonation with a Plastic Bottle</h3>
             <p className="mb-6">
               Another budget-friendly option involves using a soda bottle and a CO₂ tank. This method is popular among homebrewing enthusiasts and allows for small-batch carbonation without the need for expensive equipment.
