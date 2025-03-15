@@ -1,13 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { AuthError } from '@supabase/supabase-js'
 
 export default function RegisterPage() {
-  const router = useRouter()
   const { signUp, signIn } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
