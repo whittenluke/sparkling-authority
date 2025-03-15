@@ -61,3 +61,7 @@ DesignSystem.md
 # Supabase
 .supabase/
 supabase/.temp/
+
+# Email templates
+/email-templates/
+email-templates/
