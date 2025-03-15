@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/lib/supabase/auth-context'
+import { AuthError } from '@supabase/supabase-js'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -21,7 +22,7 @@ export default function RegisterPage() {
     setSuccess(false)
 
     try {
-      const { error: signUpError, user } = await signUp(email, password)
+      const { error: signUpError } = await signUp(email, password)
       if (signUpError) {
         console.error('Detailed signup error:', signUpError)
         throw signUpError
@@ -29,12 +30,9 @@ export default function RegisterPage() {
 
       // Show success message instead of redirecting
       setSuccess(true)
-      // Don't redirect - wait for email confirmation
-      // router.push('/auth/login?registered=true')
-      // router.refresh()
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Registration error:', err)
-      setError(err?.message || 'Failed to create account')
+      setError(err instanceof AuthError ? err.message : 'Failed to create account')
     } finally {
       setIsLoading(false)
     }
