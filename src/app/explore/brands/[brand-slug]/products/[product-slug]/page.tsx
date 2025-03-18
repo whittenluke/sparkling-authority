@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
-import { notFound } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { QuickRating } from '@/components/products/QuickRating'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -22,12 +22,15 @@ type ProductContainer = {
   container_size: string
 }
 
-type Props = {
-  params: Promise<{ 'brand-slug': string; 'product-slug': string }>
+interface Props {
+  params: {
+    'brand-slug': string
+    'product-slug': string
+  }
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = await params
+  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = params
   const supabase = createClient()
   
   // First get the brand to ensure it exists
@@ -38,7 +41,7 @@ export default async function ProductPage({ params }: Props) {
     .single()
 
   if (!brand) {
-    notFound()
+    return <div>Brand not found</div>
   }
 
   // Then get the product using both brand ID and product slug
@@ -54,6 +57,10 @@ export default async function ProductPage({ params }: Props) {
       product_containers (
         container_type,
         container_size
+      ),
+      brands (
+        name,
+        slug
       )
     `)
     .eq('brand_id', brand.id)
@@ -61,7 +68,7 @@ export default async function ProductPage({ params }: Props) {
     .single()
 
   if (!product) {
-    notFound()
+    return <div>Product not found</div>
   }
 
   const nutrition: NutritionInfo = product.nutrition_info
@@ -74,6 +81,35 @@ export default async function ProductPage({ params }: Props) {
     acc[container.container_type].push(container.container_size);
     return acc;
   }, {} as { [key: string]: string[] });
+
+  // Fetch rating data
+  const { data: ratingData } = await supabase
+    .from('product_ratings')
+    .select('rating')
+    .eq('product_id', product.id)
+
+  // Calculate average rating
+  const ratings = ratingData?.map(r => r.rating) || []
+  const averageRating = ratings.length > 0 
+    ? ratings.reduce((a, b) => a + b, 0) / ratings.length 
+    : undefined
+
+  // Get user's rating if they're logged in
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  let userRating
+  if (session?.user) {
+    const { data: userRatingData } = await supabase
+      .from('product_ratings')
+      .select('rating')
+      .eq('product_id', product.id)
+      .eq('user_id', session.user.id)
+      .single()
+    
+    userRating = userRatingData?.rating
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -128,12 +164,21 @@ export default async function ProductPage({ params }: Props) {
                 
                 <div>
                   <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
-                  <p className="mt-2 text-lg text-muted-foreground">{product.description}</p>
-                  {product.product_lines && (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {product.product_lines.name} Line
-                    </p>
-                  )}
+                  <p className="mt-2 text-lg text-muted-foreground">
+                    by {product.brands.name}
+                  </p>
+                  
+                  {/* Rating Section */}
+                  <div className="mt-4">
+                    <QuickRating
+                      productId={product.id}
+                      productName={product.name}
+                      brandName={product.brands.name}
+                      initialRating={userRating}
+                      averageRating={averageRating}
+                      totalRatings={ratings.length}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -241,6 +286,30 @@ export default async function ProductPage({ params }: Props) {
               <p className="mt-2 text-sm text-muted-foreground">
                 {nutrition.ingredients}
               </p>
+            </div>
+
+            {/* Product Details */}
+            <div className="bg-card rounded-lg shadow-sm ring-1 ring-border overflow-hidden">
+              <div className="px-4 py-5 sm:px-6">
+                <h3 className="text-lg font-medium leading-6 text-foreground">Product Details</h3>
+              </div>
+              <div className="border-t border-border">
+                <dl>
+                  <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt className="text-sm font-medium text-muted-foreground">Brand</dt>
+                    <dd className="mt-1 text-sm text-foreground sm:col-span-2 sm:mt-0">
+                      {product.brands.name}
+                    </dd>
+                  </div>
+                  <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt className="text-sm font-medium text-muted-foreground">Description</dt>
+                    <dd className="mt-1 text-sm text-foreground sm:col-span-2 sm:mt-0">
+                      {product.description}
+                    </dd>
+                  </div>
+                  {/* Add more product details as needed */}
+                </dl>
+              </div>
             </div>
 
             {/* Placeholder for future sections */}
