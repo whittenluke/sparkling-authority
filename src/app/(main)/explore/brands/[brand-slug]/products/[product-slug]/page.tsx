@@ -3,6 +3,7 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { QuickRating } from '@/components/products/QuickRating'
 import Link from 'next/link'
+import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,15 +24,14 @@ type ProductContainer = {
 }
 
 type Props = {
-  params: {
+  params: Promise<{
     'brand-slug': string
     'product-slug': string
-  }
-  searchParams: { [key: string]: string | string[] | undefined }
+  }>
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = params
+  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = await params
   const supabase = createClient()
   
   // First get the brand to ensure it exists
