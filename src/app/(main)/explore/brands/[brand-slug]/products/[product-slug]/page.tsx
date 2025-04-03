@@ -22,11 +22,12 @@ type ProductContainer = {
   container_size: string
 }
 
-interface Props {
+type Props = {
   params: {
     'brand-slug': string
     'product-slug': string
   }
+  searchParams: { [key: string]: string | string[] | undefined }
 }
 
 export default async function ProductPage({ params }: Props) {
