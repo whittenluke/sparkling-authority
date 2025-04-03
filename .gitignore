@@ -54,6 +54,7 @@ next-env.d.ts
 DesignDoc.md
 SchemaRoadmap.md
 DesignSystem.md
+UpdateStructureRM.md
 **/design/
 **/docs/private/
 **/planning/

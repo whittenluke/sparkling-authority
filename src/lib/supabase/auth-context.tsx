@@ -7,7 +7,7 @@ import { createClientComponentClient } from './client'
 type AuthContextType = {
   user: User | null
   loading: boolean
-  signIn: (provider: 'google' | 'facebook' | 'twitter') => Promise<void>
+  signIn: (provider: 'google' | 'facebook' | 'twitter', redirectTo?: string) => Promise<void>
   signInWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null, user: User | null }>
   signOut: () => Promise<void>
@@ -38,11 +38,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [supabase.auth])
 
-  const signIn = async (provider: 'google' | 'facebook' | 'twitter') => {
+  const signIn = async (provider: 'google' | 'facebook' | 'twitter', redirectTo?: string) => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo || '/')}`
       }
     })
     if (error) throw error

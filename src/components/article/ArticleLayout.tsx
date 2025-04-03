@@ -57,15 +57,15 @@ export function ArticleLayout({
   }, []);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
-      <div className="lg:grid lg:grid-cols-[16rem_1fr] lg:gap-8">
-        {headings.length > 0 && (
-          <div className="hidden lg:block">
-            <TableOfContents headings={headings} />
-          </div>
-        )}
-        
-        <article className="prose prose-lg max-w-none [&>*]:text-foreground [&_p]:text-foreground/90 [&_li]:text-foreground/90 [&_strong]:text-foreground">
+    <>
+      {headings.length > 0 && (
+        <aside className="hidden lg:block fixed left-8 top-24 w-[240px]">
+          <TableOfContents headings={headings} />
+        </aside>
+      )}
+      
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+        <article className="prose prose-lg [&>*]:text-foreground [&_p]:text-foreground/90 [&_li]:text-foreground/90 [&_strong]:text-foreground">
           <header className="not-prose mb-12">
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
               <span className="capitalize">{category}</span>
@@ -132,6 +132,6 @@ export function ArticleLayout({
           </div>
         </article>
       </div>
-    </div>
+    </>
   );
 } 
