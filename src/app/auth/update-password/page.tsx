@@ -4,22 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClientComponentClient } from '@/lib/supabase/client'
-import { Metadata } from 'next'
-import { UpdatePasswordForm } from '@/components/auth/UpdatePasswordForm'
-
-export const metadata: Metadata = {
-  title: 'Update Password | Sparkling Authority',
-  description: 'Update your Sparkling Authority account password securely.',
-  robots: {
-    index: false,
-    follow: false,
-  },
-}
-
-interface ErrorState {
-  message: string;
-  code?: string;
-}
+import { AuthError } from '@supabase/supabase-js'
 
 export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('')
@@ -77,27 +62,24 @@ export default function UpdatePasswordPage() {
       setTimeout(() => {
         router.push('/auth/login')
       }, 3000)
-    } catch (err: any) {
+    } catch (err) {
       console.error('Password update error:', err)
-      setError(err.message || 'Failed to update password')
+      const authError = err as AuthError
+      setError(authError.message || 'Failed to update password')
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="container max-w-lg mx-auto px-4 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Update Your Password
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          Enter your current password and choose a new one.
+    <div className="w-full max-w-md space-y-8">
+      <div>
+        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-foreground">
+          Update your password
+        </h2>
+        <p className="mt-2 text-center text-sm text-muted-foreground">
+          Enter your new password below.
         </p>
-      </div>
-
-      <div className="bg-card rounded-lg border shadow-sm p-6">
-        <UpdatePasswordForm />
       </div>
 
       {error && (
@@ -113,6 +95,54 @@ export default function UpdatePasswordPage() {
           </div>
         </div>
       )}
+
+      <form className="mt-8 space-y-6" onSubmit={handleUpdatePassword}>
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-foreground">
+              New Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="new-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="confirm-password" className="block text-sm font-medium text-foreground">
+              Confirm New Password
+            </label>
+            <input
+              id="confirm-password"
+              name="confirm-password"
+              type="password"
+              autoComplete="new-password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
+              placeholder="••••••••"
+            />
+          </div>
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            {isLoading ? 'Updating...' : 'Update Password'}
+          </button>
+        </div>
+      </form>
 
       <div className="text-center mt-4">
         <Link href="/auth/login" className="font-medium text-primary hover:text-primary/90">
