@@ -1,8 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { createClientComponentClient } from '@/lib/supabase/client'
 import { Metadata } from 'next'
 import { ResetPasswordForm } from '@/components/auth/ResetPasswordForm'
 
@@ -15,41 +12,7 @@ export const metadata: Metadata = {
   },
 }
 
-interface ErrorState {
-  message: string;
-  code?: string;
-}
-
 export default function ResetPasswordPage() {
-  const [email, setEmail] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
-  const supabase = createClientComponentClient()
-
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
-    
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback?next=/auth/update-password`,
-      })
-      
-      if (error) {
-        throw error
-      }
-      
-      setSuccess(true)
-    } catch (err: any) {
-      console.error('Password reset error:', err)
-      setError(err.message || 'Failed to send password reset email')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   return (
     <div className="container max-w-lg mx-auto px-4 py-8">
       <div className="text-center mb-8">
