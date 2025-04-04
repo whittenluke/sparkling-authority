@@ -59,7 +59,7 @@ export function ArticleLayout({
   return (
     <>
       {headings.length > 0 && (
-        <aside className="hidden lg:block fixed left-8 top-24 w-[240px]">
+        <aside className="hidden lg:block fixed left-[calc(50%-560px)] top-24 w-[240px]">
           <TableOfContents headings={headings} />
         </aside>
       )}
