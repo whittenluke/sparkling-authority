@@ -1,6 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 import { ProductList } from './components/ProductList'
 import { SearchSection } from './components/SearchSection'
 
@@ -34,38 +32,26 @@ export default async function DirectoryPage() {
   if (error) {
     console.error('Error fetching products:', error)
     return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <Header />
-        <main className="flex-grow">
-          <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
-            <div className="text-center">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">Error Loading Products</h1>
-              <p className="mt-2 text-lg text-muted-foreground">
-                Sorry, we encountered an error while loading the product directory. Please try again later.
-              </p>
-            </div>
-          </div>
-        </main>
-        <Footer />
+      <div className="space-y-8">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Error Loading Products</h1>
+          <p className="mt-2 text-lg text-muted-foreground">
+            Sorry, we encountered an error while loading the product directory. Please try again later.
+          </p>
+        </div>
       </div>
     )
   }
 
   if (!products || products.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <Header />
-        <main className="flex-grow">
-          <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
-            <div className="text-center">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">Product Directory</h1>
-              <p className="mt-2 text-lg text-muted-foreground">
-                No products found. Check back soon as we add more products to our collection.
-              </p>
-            </div>
-          </div>
-        </main>
-        <Footer />
+      <div className="space-y-8">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Product Directory</h1>
+          <p className="mt-2 text-lg text-muted-foreground">
+            No products found. Check back soon as we add more products to our collection.
+          </p>
+        </div>
       </div>
     )
   }
@@ -78,25 +64,17 @@ export default async function DirectoryPage() {
   }))
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Header />
-      <main className="flex-grow">
-        <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
-          <div className="space-y-8">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">Product Directory</h1>
-              <p className="mt-2 text-lg text-muted-foreground">
-                Browse our growing list of sparkling waters.
-              </p>
-            </div>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Product Directory</h1>
+        <p className="mt-2 text-lg text-muted-foreground">
+          Browse our growing list of sparkling waters.
+        </p>
+      </div>
 
-            <SearchSection />
+      <SearchSection />
 
-            <ProductList products={transformedProducts} />
-          </div>
-        </div>
-      </main>
-      <Footer />
+      <ProductList products={transformedProducts} />
     </div>
   )
 } 

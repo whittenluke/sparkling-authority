@@ -1,6 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 import { CarbonationSpectrum } from './components/CarbonationSpectrum'
 import { CarbonationLevels } from './components/CarbonationLevels'
 
@@ -35,7 +33,7 @@ export default async function CarbonationPage() {
         slug
       )
     `)
-    .order('name') // Sort by name first
+    .order('name')
     .order('carbonation_level')
 
   if (error) {
@@ -64,39 +62,31 @@ export default async function CarbonationPage() {
   }, {})
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Header />
-      <main className="flex-grow">
-        <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
-          <div className="space-y-12">
-            {/* Page Header */}
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">Carbonation Levels</h1>
-              <p className="mt-2 text-lg text-muted-foreground">
-                Discover sparkling waters based on their carbonation intensity, from subtle bubbles to intense effervescence.
-              </p>
-            </div>
+    <div className="space-y-12">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Carbonation Levels</h1>
+        <p className="mt-2 text-lg text-muted-foreground">
+          Discover sparkling waters based on their carbonation intensity, from subtle bubbles to intense effervescence.
+        </p>
+      </div>
 
-            {/* Understanding Carbonation */}
-            <div>
-              <h2 className="text-xl font-semibold text-foreground mb-6">Understanding Carbonation Levels</h2>
-              <div className="rounded-xl bg-card p-6">
-                <p className="text-sm text-muted-foreground mb-6">
-                  Click on any level in the spectrum below to learn more about its carbonation intensity.
-                </p>
-                <CarbonationSpectrum />
-              </div>
-            </div>
-
-            {/* Browse by Level */}
-            <div>
-              <h2 className="text-xl font-semibold text-foreground mb-6">Browse by Carbonation Level</h2>
-              <CarbonationLevels productsByLevel={productsByLevel} />
-            </div>
-          </div>
+      {/* Understanding Carbonation */}
+      <div>
+        <h2 className="text-xl font-semibold text-foreground mb-6">Understanding Carbonation Levels</h2>
+        <div className="rounded-xl bg-card p-6">
+          <p className="text-sm text-muted-foreground mb-6">
+            Click on any level in the spectrum below to learn more about its carbonation intensity.
+          </p>
+          <CarbonationSpectrum />
         </div>
-      </main>
-      <Footer />
+      </div>
+
+      {/* Browse by Level */}
+      <div>
+        <h2 className="text-xl font-semibold text-foreground mb-6">Browse by Carbonation Level</h2>
+        <CarbonationLevels productsByLevel={productsByLevel} />
+      </div>
     </div>
   )
 } 
