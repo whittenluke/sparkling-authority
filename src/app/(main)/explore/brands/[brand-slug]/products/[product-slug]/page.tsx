@@ -72,14 +72,14 @@ type ProductContainer = {
 }
 
 type Props = {
-  params: Promise<{
+  params: {
     'brand-slug': string
     'product-slug': string
-  }>
+  }
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = await params
+  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = params
   const supabase = createClient()
   
   // First get the brand to ensure it exists

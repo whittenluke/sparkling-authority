@@ -6,9 +6,11 @@ import { Metadata } from 'next'
 type Product = {
   id: string
   name: string
+  slug: string
   brand: {
     id: string
     name: string
+    slug: string
   }
 }
 
@@ -41,9 +43,11 @@ export default async function DirectoryPage() {
     .select(`
       id,
       name,
+      slug,
       brand:brand_id (
         id,
-        name
+        name,
+        slug
       )
     `)
     .order('name')
@@ -79,6 +83,7 @@ export default async function DirectoryPage() {
   const transformedProducts: Product[] = products.map(product => ({
     id: product.id,
     name: product.name,
+    slug: product.slug,
     brand: Array.isArray(product.brand) ? product.brand[0] : product.brand
   }))
 
