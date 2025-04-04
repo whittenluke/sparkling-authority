@@ -359,16 +359,6 @@ export default async function ProductPage({ params }: Props) {
                 </dl>
               </div>
             </div>
-
-            {/* Placeholder for future sections */}
-            <div className="rounded-lg bg-muted px-4 py-6">
-              <div className="text-center">
-                <h3 className="text-sm font-medium text-foreground">Coming Soon</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Reviews, ratings, and price tracking features are on the way!
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </main>
