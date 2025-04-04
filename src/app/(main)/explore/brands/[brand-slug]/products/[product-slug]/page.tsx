@@ -7,6 +7,39 @@ import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = await params
+  const supabase = createClient()
+  
+  const { data: brand } = await supabase
+    .from('brands')
+    .select('name')
+    .eq('slug', brandSlug)
+    .single()
+
+  const { data: product } = await supabase
+    .from('products')
+    .select('name, description')
+    .eq('slug', productSlug)
+    .single()
+
+  return {
+    title: `${product?.name} by ${brand?.name} | Sparkling Authority`,
+    description: product?.description || `Discover ${product?.name} by ${brand?.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
+    openGraph: {
+      title: `${product?.name} by ${brand?.name}`,
+      description: product?.description || `Discover ${product?.name} by ${brand?.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
+      type: 'website',
+      url: `https://sparklingauthority.com/explore/brands/${brandSlug}/products/${productSlug}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product?.name} by ${brand?.name}`,
+      description: product?.description || `Discover ${product?.name} by ${brand?.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
+    }
+  }
+}
+
 type NutritionInfo = {
   calories: number
   total_fat: number
