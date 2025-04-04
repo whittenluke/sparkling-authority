@@ -4,7 +4,6 @@ import { useAuth } from '@/lib/supabase/auth-context'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { createClientComponentClient } from '@/lib/supabase/client'
-import { User } from '@supabase/supabase-js'
 
 interface Profile {
   id: string
