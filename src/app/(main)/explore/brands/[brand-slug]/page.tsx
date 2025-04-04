@@ -51,8 +51,7 @@ export default async function BrandPage({ params }: Props) {
 
   const { data: brand } = await supabase
     .from('brands')
-    .select(`
-      *,
+    .select(`      *,
       product_lines (
         id,
         name,
