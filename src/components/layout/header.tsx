@@ -124,6 +124,14 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
           <div className="py-1">
+            <Link
+              href="/profile"
+              className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+              onClick={() => setIsOpen(false)}
+            >
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </Link>
             <button
               onClick={() => {
                 signOut()
@@ -219,6 +227,12 @@ export function Header() {
             <div className="border-t border-border pb-3 pt-4">
               {user ? (
                 <div className="space-y-1">
+                  <Link
+                    href="/profile"
+                    className="block px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
+                  >
+                    Profile
+                  </Link>
                   <button
                     onClick={() => signOut()}
                     className="block w-full px-3 py-2 text-base font-medium text-destructive hover:bg-destructive hover:text-destructive-foreground"

@@ -29,8 +29,30 @@ export async function GET(request: Request) {
       }
     )
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
+    const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (!error && session?.user) {
+      // Create profile if it doesn't exist
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', session.user.id)
+        .single()
+
+      if (!profile) {
+        // Create profile with username from email
+        const username = session.user.email?.split('@')[0] || 'user'
+        await supabase
+          .from('profiles')
+          .insert({
+            id: session.user.id,
+            username: username,
+            display_name: username,
+            is_admin: false,
+            reputation_score: 0
+          })
+      }
+
       return NextResponse.redirect(new URL(next, requestUrl.origin))
     }
   }
