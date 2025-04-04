@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { CarbonationSpectrum } from './components/CarbonationSpectrum'
 import { CarbonationLevels } from './components/CarbonationLevels'
+import { Metadata } from 'next'
 
 type Product = {
   id: string
@@ -11,6 +12,24 @@ type Product = {
     id: string
     name: string
     slug: string
+  }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Carbonation Levels | Sparkling Authority',
+    description: 'Discover sparkling waters based on their carbonation intensity, from subtle bubbles to intense effervescence. Find your perfect level of fizz.',
+    openGraph: {
+      title: 'Carbonation Levels | Sparkling Authority',
+      description: 'Discover sparkling waters based on their carbonation intensity, from subtle bubbles to intense effervescence. Find your perfect level of fizz.',
+      type: 'website',
+      url: 'https://sparklingauthority.com/explore/carbonation',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Carbonation Levels | Sparkling Authority',
+      description: 'Discover sparkling waters based on their carbonation intensity, from subtle bubbles to intense effervescence. Find your perfect level of fizz.',
+    }
   }
 }
 

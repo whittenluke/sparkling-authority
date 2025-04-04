@@ -1,7 +1,26 @@
 import { createClient } from '@/lib/supabase/server'
 import { RegionalBrands } from './components/RegionalBrands'
+import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Regional Favorites | Sparkling Authority',
+    description: 'Explore sparkling water brands from around the world. Discover regional specialties and unique flavors from different countries.',
+    openGraph: {
+      title: 'Regional Favorites | Sparkling Authority',
+      description: 'Explore sparkling water brands from around the world. Discover regional specialties and unique flavors from different countries.',
+      type: 'website',
+      url: 'https://sparklingauthority.com/explore/regional',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Regional Favorites | Sparkling Authority',
+      description: 'Explore sparkling water brands from around the world. Discover regional specialties and unique flavors from different countries.',
+    }
+  }
+}
 
 export default async function RegionalPage() {
   const supabase = createClient()

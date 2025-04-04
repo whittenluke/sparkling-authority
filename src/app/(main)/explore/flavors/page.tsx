@@ -1,7 +1,26 @@
 import { createClient } from '@/lib/supabase/server'
 import { FlavorsList } from './components/FlavorsList'
+import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Flavors | Sparkling Authority',
+    description: 'Explore sparkling waters by their unique flavors. From classic citrus to exotic fruit blends, find your perfect flavor match.',
+    openGraph: {
+      title: 'Flavors | Sparkling Authority',
+      description: 'Explore sparkling waters by their unique flavors. From classic citrus to exotic fruit blends, find your perfect flavor match.',
+      type: 'website',
+      url: 'https://sparklingauthority.com/explore/flavors',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Flavors | Sparkling Authority',
+      description: 'Explore sparkling waters by their unique flavors. From classic citrus to exotic fruit blends, find your perfect flavor match.',
+    }
+  }
+}
 
 export default async function FlavorsPage() {
   const supabase = createClient()

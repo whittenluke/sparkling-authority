@@ -1,4 +1,24 @@
+import { Metadata } from 'next'
+
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'New Releases | Sparkling Authority',
+    description: 'Stay up to date with the latest sparkling water products and brands. Discover new flavors, brands, and innovations in the sparkling water world.',
+    openGraph: {
+      title: 'New Releases | Sparkling Authority',
+      description: 'Stay up to date with the latest sparkling water products and brands. Discover new flavors, brands, and innovations in the sparkling water world.',
+      type: 'website',
+      url: 'https://sparklingauthority.com/explore/new-releases',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'New Releases | Sparkling Authority',
+      description: 'Stay up to date with the latest sparkling water products and brands. Discover new flavors, brands, and innovations in the sparkling water world.',
+    }
+  }
+}
 
 export default async function NewReleasesPage() {
   return (

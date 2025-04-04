@@ -6,34 +6,51 @@ import { Metadata } from 'next'
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = await params
+  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = params
   const supabase = createClient()
   
+  // First get the brand to ensure it exists
   const { data: brand } = await supabase
     .from('brands')
-    .select('name')
+    .select('id, name')
     .eq('slug', brandSlug)
     .single()
 
+  if (!brand) {
+    return {
+      title: 'Brand Not Found | Sparkling Authority',
+      description: 'The requested brand could not be found.'
+    }
+  }
+
+  // Then get the product using both brand ID and product slug
   const { data: product } = await supabase
     .from('products')
     .select('name, description')
+    .eq('brand_id', brand.id)
     .eq('slug', productSlug)
     .single()
 
+  if (!product) {
+    return {
+      title: 'Product Not Found | Sparkling Authority',
+      description: 'The requested product could not be found.'
+    }
+  }
+
   return {
-    title: `${product?.name} by ${brand?.name} | Sparkling Authority`,
-    description: product?.description || `Discover ${product?.name} by ${brand?.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
+    title: `${product.name} by ${brand.name} | Sparkling Authority`,
+    description: product.description || `Discover ${product.name} by ${brand.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
     openGraph: {
-      title: `${product?.name} by ${brand?.name}`,
-      description: product?.description || `Discover ${product?.name} by ${brand?.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
+      title: `${product.name} by ${brand.name}`,
+      description: product.description || `Discover ${product.name} by ${brand.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
       type: 'website',
       url: `https://sparklingauthority.com/explore/brands/${brandSlug}/products/${productSlug}`,
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${product?.name} by ${brand?.name}`,
-      description: product?.description || `Discover ${product?.name} by ${brand?.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
+      title: `${product.name} by ${brand.name}`,
+      description: product.description || `Discover ${product.name} by ${brand.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
     }
   }
 }

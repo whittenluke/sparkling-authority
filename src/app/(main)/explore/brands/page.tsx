@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { BrandsGrid } from './components/BrandsGrid'
 import { BrandsHeader } from './components/BrandsHeader'
+import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,6 +11,24 @@ type Brand = {
   description: string | null
   products: { count: number }[]
   slug: string
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Brands | Sparkling Authority',
+    description: 'Discover and explore the world\'s finest sparkling water brands. Browse our comprehensive collection of brands and their products.',
+    openGraph: {
+      title: 'Brands | Sparkling Authority',
+      description: 'Discover and explore the world\'s finest sparkling water brands. Browse our comprehensive collection of brands and their products.',
+      type: 'website',
+      url: 'https://sparklingauthority.com/explore/brands',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Brands | Sparkling Authority',
+      description: 'Discover and explore the world\'s finest sparkling water brands. Browse our comprehensive collection of brands and their products.',
+    }
+  }
 }
 
 export default async function BrandsPage() {
