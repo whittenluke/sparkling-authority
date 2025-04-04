@@ -76,12 +76,21 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
       onMouseEnter={() => setIsOpen(true)} 
       onMouseLeave={() => setIsOpen(false)}
     >
-      <button
-        className="inline-flex items-center text-sm font-medium text-gray-900 hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {section}
-      </button>
+      {section === 'Explore' ? (
+        <Link
+          href="/explore/products"
+          className="inline-flex items-center text-sm font-medium text-gray-900 hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
+        >
+          {section}
+        </Link>
+      ) : (
+        <button
+          className="inline-flex items-center text-sm font-medium text-gray-900 hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {section}
+        </button>
+      )}
 
       {isOpen && (
         <>
