@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { QuickRating } from '@/components/products/QuickRating'
 import Link from 'next/link'
 import { Metadata } from 'next'
+import { Star } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -139,7 +140,16 @@ export default async function ProductPage({ params }: Props) {
   // Fetch rating data - include both approved reviews and user's own reviews
   const { data: ratingData } = await supabase
     .from('reviews')
-    .select('overall_rating, review_text, user_id')
+    .select(`
+      overall_rating,
+      review_text,
+      user_id,
+      is_approved,
+      created_at,
+      profiles!user_id (
+        display_name
+      )
+    `)
     .eq('product_id', product.id)
     .or(`is_approved.eq.true${session?.user ? `,user_id.eq.${session.user.id}` : ''}`)
 
@@ -231,6 +241,13 @@ export default async function ProductPage({ params }: Props) {
                   </div>
                 </div>
               </div>
+
+              {/* Description */}
+              {product.description && (
+                <p className="mt-6 text-muted-foreground">
+                  {product.description}
+                </p>
+              )}
 
               {/* Product Quick Stats */}
               <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -338,27 +355,38 @@ export default async function ProductPage({ params }: Props) {
               </p>
             </div>
 
-            {/* Product Details */}
-            <div className="bg-card rounded-lg shadow-sm ring-1 ring-border overflow-hidden">
-              <div className="px-4 py-5 sm:px-6">
-                <h3 className="text-lg font-medium leading-6 text-foreground">Product Details</h3>
-              </div>
-              <div className="border-t border-border">
-                <dl>
-                  <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-muted-foreground">Brand</dt>
-                    <dd className="mt-1 text-sm text-foreground sm:col-span-2 sm:mt-0">
-                      {product.brands.name}
-                    </dd>
+            {/* Reviews Section */}
+            <div className="mt-8">
+              <h2 className="text-lg font-medium text-foreground">Reviews</h2>
+              <div className="mt-4 space-y-6">
+                {ratingData?.filter(r => r.review_text?.trim() && (r.is_approved || r.user_id === session?.user?.id)).map((review) => (
+                  <div key={review.user_id} className="rounded-lg bg-card p-4 shadow-sm ring-1 ring-border">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-foreground">
+                        {review.profiles?.display_name || 'Anonymous'}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        • {new Date(review.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex gap-0.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-4 w-4 ${
+                            star <= review.overall_rating
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'fill-transparent text-yellow-400/25'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className="mt-2 text-foreground">{review.review_text}</p>
                   </div>
-                  <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-muted-foreground">Description</dt>
-                    <dd className="mt-1 text-sm text-foreground sm:col-span-2 sm:mt-0">
-                      {product.description}
-                    </dd>
-                  </div>
-                  {/* Add more product details as needed */}
-                </dl>
+                ))}
+                {(!ratingData || ratingData.filter(r => r.review_text?.trim() && (r.is_approved || r.user_id === session?.user?.id)).length === 0) && (
+                  <p className="text-muted-foreground">No reviews yet. Be the first to review this product!</p>
+                )}
               </div>
             </div>
           </div>

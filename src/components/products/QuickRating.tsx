@@ -11,9 +11,10 @@ interface QuickRatingProps {
   productName: string
   brandName: string
   initialRating?: number
-  averageRating?: number
-  totalRatings?: number
   initialReview?: string
+  averageRating?: number
+  totalRatings: number
+  totalReviews: number
 }
 
 export function QuickRating({ 
