@@ -1,21 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { useAuth } from '@/lib/supabase/auth-context'
-import { useRouter } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  MessageSquare, 
-  FileText, 
-  Users, 
-  Settings,
-  ChevronLeft,
-  Menu,
-  X
-} from 'lucide-react'
-import Link from 'next/link'
 import { Header } from '@/components/layout/header'
+import { useAuth } from '@/lib/supabase/auth-context'
+import { isAdmin } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
+import { LayoutDashboard, MessageSquare, Users, Settings, FileText } from 'lucide-react'
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -24,10 +15,35 @@ interface AdminLayoutProps {
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const { user } = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Check if user is admin
-  if (!user || user.email !== 'whittenluke@gmail.com') {
-    redirect('/')
+  useEffect(() => {
+    async function checkAdmin() {
+      if (!user?.email) {
+        redirect('/')
+        return
+      }
+
+      const adminStatus = await isAdmin(user.email)
+      if (!adminStatus) {
+        redirect('/')
+        return
+      }
+
+      setIsAuthorized(true)
+      setIsLoading(false)
+    }
+
+    checkAdmin()
+  }, [user?.email])
+
+  if (isLoading) {
+    return null // Or a loading spinner
+  }
+
+  if (!isAuthorized) {
+    return null
   }
 
   return (

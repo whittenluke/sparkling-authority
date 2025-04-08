@@ -3,9 +3,10 @@
 import Link from 'next/link'
 import { LogOut, Menu, Moon, Sun, User, X, LayoutDashboard } from 'lucide-react'
 import { useAuth } from '@/lib/supabase/auth-context'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTheme } from '@/components/theme-provider'
 import { User as SupabaseUser } from '@supabase/supabase-js'
+import { isAdmin } from '@/lib/supabase/admin'
 
 const navigation = {
   explore: {
@@ -117,11 +118,19 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
 
 function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () => void }) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isAdminUser, setIsAdminUser] = useState(false)
+
+  useEffect(() => {
+    async function checkAdminStatus() {
+      if (user?.email) {
+        const adminStatus = await isAdmin(user.email)
+        setIsAdminUser(adminStatus)
+      }
+    }
+    checkAdminStatus()
+  }, [user?.email])
 
   if (!user) return null
-
-  // TODO: Replace with proper admin role check
-  const isAdmin = user.email === 'whittenluke@gmail.com'
 
   return (
     <div className="relative">
@@ -144,7 +153,7 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
               <User className="mr-2 h-4 w-4" />
               Profile
             </Link>
-            {isAdmin && (
+            {isAdminUser && (
               <Link
                 href="/admin"
                 className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
