@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { LogOut, Menu, Moon, Sun, User, X } from 'lucide-react'
+import { LogOut, Menu, Moon, Sun, User, X, LayoutDashboard } from 'lucide-react'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { useState } from 'react'
 import { useTheme } from '@/components/theme-provider'
@@ -120,6 +120,9 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
 
   if (!user) return null
 
+  // TODO: Replace with proper admin role check
+  const isAdmin = user.email === 'whittenluke@gmail.com'
+
   return (
     <div className="relative">
       <button
@@ -141,6 +144,16 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
               <User className="mr-2 h-4 w-4" />
               Profile
             </Link>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                onClick={() => setIsOpen(false)}
+              >
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                Admin Dashboard
+              </Link>
+            )}
             <button
               onClick={() => {
                 signOut()
@@ -164,9 +177,9 @@ export function Header() {
 
   return (
     <header className="border-b border-border bg-background">
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 justify-between">
-          <div className="flex">
+      <nav className="flex h-16">
+        <div className="flex flex-1 items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <span className="text-xl font-bold text-primary">SparklingAuthority</span>
             </Link>
