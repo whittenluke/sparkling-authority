@@ -368,6 +368,11 @@ export default async function ProductPage({ params }: Props) {
                       <span className="text-sm text-muted-foreground">
                         • {new Date(review.created_at).toLocaleDateString()}
                       </span>
+                      {session?.user?.id === review.user_id && !review.is_approved && (
+                        <span className="inline-flex items-center rounded-full bg-yellow-400/10 px-2 py-0.5 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-400/20">
+                          Pending Review
+                        </span>
+                      )}
                     </div>
                     <div className="mt-2 flex gap-0.5">
                       {[1, 2, 3, 4, 5].map((star) => (
