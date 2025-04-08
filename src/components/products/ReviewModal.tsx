@@ -93,21 +93,28 @@ export function ReviewModal({
           .eq('id', existingReview.id)
       } else {
         // Insert new review
-        await supabase
+        const { data: newReview, error: reviewError } = await supabase
           .from('reviews')
           .insert({
-            user_id: user.id,
             product_id: productId,
+            user_id: user.id,
             overall_rating: rating,
             review_text: review,
-            is_approved: true,
+            is_approved: false,
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
-      }
+          .select()
+          .single()
 
-      router.refresh()
-      onClose()
+        if (reviewError) {
+          console.error('Error submitting review:', reviewError)
+          setError('Failed to submit review. Please try again.')
+        } else {
+          router.refresh()
+          onClose()
+        }
+      }
     } catch (err) {
       console.error('Error submitting review:', err)
       setError('Failed to submit review. Please try again.')
