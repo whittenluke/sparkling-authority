@@ -13,6 +13,7 @@ interface QuickRatingProps {
   initialRating?: number
   averageRating?: number
   totalRatings?: number
+  initialReview?: string
 }
 
 export function QuickRating({ 
@@ -21,7 +22,8 @@ export function QuickRating({
   brandName,
   initialRating,
   averageRating,
-  totalRatings 
+  totalRatings,
+  initialReview
 }: QuickRatingProps) {
   const { user } = useAuth()
   const router = useRouter()
@@ -79,7 +81,7 @@ export function QuickRating({
           className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/90"
         >
           <MessageSquare className="h-4 w-4" />
-          {initialRating ? 'Update Review' : 'Write a Review'}
+          {initialReview ? 'Update Review' : 'Write a Review'}
         </button>
       </div>
 
@@ -91,6 +93,7 @@ export function QuickRating({
         productName={productName}
         brandName={brandName}
         initialRating={initialRating}
+        initialReview={initialReview}
       />
     </div>
   )

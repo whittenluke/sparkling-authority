@@ -91,6 +91,9 @@ export function ReviewModal({
             updated_at: new Date().toISOString()
           })
           .eq('id', existingReview.id)
+        
+        router.refresh()
+        onClose()
       } else {
         // Insert new review
         const { data: newReview, error: reviewError } = await supabase

@@ -131,12 +131,17 @@ export default async function ProductPage({ params }: Props) {
     return acc;
   }, {} as { [key: string]: string[] });
 
-  // Fetch rating data
+  // Get user's session
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  // Fetch rating data - include both approved reviews and user's own reviews
   const { data: ratingData } = await supabase
     .from('reviews')
-    .select('overall_rating')
+    .select('overall_rating, review_text, user_id')
     .eq('product_id', product.id)
-    .eq('is_approved', true)
+    .or(`is_approved.eq.true${session?.user ? `,user_id.eq.${session.user.id}` : ''}`)
 
   // Calculate average rating
   const ratings = ratingData?.map(r => r.overall_rating) || []
@@ -144,22 +149,16 @@ export default async function ProductPage({ params }: Props) {
     ? ratings.reduce((a, b) => a + b, 0) / ratings.length 
     : undefined
 
-  // Get user's rating if they're logged in
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  // Count reviews (rows with review_text)
+  const reviewCount = ratingData?.filter(r => r.review_text?.trim()).length || 0
 
-  let userRating
-  if (session?.user) {
-    const { data: userRatingData } = await supabase
-      .from('reviews')
-      .select('overall_rating')
-      .eq('product_id', product.id)
-      .eq('user_id', session.user.id)
-      .single()
-    
-    userRating = userRatingData?.overall_rating
-  }
+  // Get user's rating from the fetched data
+  const userReview = session?.user 
+    ? ratingData?.find(r => r.user_id === session.user.id)
+    : null
+
+  const userRating = userReview?.overall_rating
+  const userReviewText = userReview?.review_text
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -224,8 +223,10 @@ export default async function ProductPage({ params }: Props) {
                       productName={product.name}
                       brandName={product.brands.name}
                       initialRating={userRating}
+                      initialReview={userReviewText}
                       averageRating={averageRating}
                       totalRatings={ratings.length}
+                      totalReviews={reviewCount}
                     />
                   </div>
                 </div>
