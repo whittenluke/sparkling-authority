@@ -133,12 +133,13 @@ export default async function ProductPage({ params }: Props) {
 
   // Fetch rating data
   const { data: ratingData } = await supabase
-    .from('product_ratings')
-    .select('rating')
+    .from('reviews')
+    .select('overall_rating')
     .eq('product_id', product.id)
+    .eq('is_approved', true)
 
   // Calculate average rating
-  const ratings = ratingData?.map(r => r.rating) || []
+  const ratings = ratingData?.map(r => r.overall_rating) || []
   const averageRating = ratings.length > 0 
     ? ratings.reduce((a, b) => a + b, 0) / ratings.length 
     : undefined
@@ -151,13 +152,13 @@ export default async function ProductPage({ params }: Props) {
   let userRating
   if (session?.user) {
     const { data: userRatingData } = await supabase
-      .from('product_ratings')
-      .select('rating')
+      .from('reviews')
+      .select('overall_rating')
       .eq('product_id', product.id)
       .eq('user_id', session.user.id)
       .single()
     
-    userRating = userRatingData?.rating
+    userRating = userRatingData?.overall_rating
   }
 
   return (
