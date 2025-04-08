@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Star } from 'lucide-react'
 import { createClientComponentClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -34,7 +34,28 @@ export function ReviewModal({
   const supabase = createClientComponentClient()
   const { user } = useAuth()
 
+  // Track initial values
+  const [initialValues, setInitialValues] = useState({
+    rating: initialRating,
+    review: initialReview
+  })
+
+  // Reset form when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setRating(initialRating)
+      setReview(initialReview)
+      setInitialValues({
+        rating: initialRating,
+        review: initialReview
+      })
+    }
+  }, [isOpen, initialRating, initialReview])
+
   if (!isOpen) return null
+
+  // Check if there are actual changes
+  const hasChanges = rating !== initialValues.rating || review !== initialValues.review
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -193,7 +214,7 @@ export function ReviewModal({
               </button>
               <button
                 type="submit"
-                disabled={rating === 0 || isSubmitting}
+                disabled={!hasChanges || rating === 0 || isSubmitting}
                 className="px-4 py-2 text-sm font-medium rounded-md 
                          bg-primary text-primary-foreground hover:bg-primary/90
                          disabled:opacity-50 disabled:cursor-not-allowed
