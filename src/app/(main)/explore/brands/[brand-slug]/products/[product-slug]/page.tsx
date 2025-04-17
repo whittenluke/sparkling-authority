@@ -13,7 +13,7 @@ type Props = {
     'brand-slug': string
     'product-slug': string
   }
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams?: { [key: string]: string | string[] | undefined }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
