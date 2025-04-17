@@ -96,12 +96,13 @@ type ReviewData = {
 export default async function ProductPage({ params, searchParams }: Props): Promise<React.ReactElement> {
   const supabase = createClient()
   const { data: { session } } = await supabase.auth.getSession()
+  const resolvedParams = await params
   
   // First get the brand to ensure it exists
   const { data: brand } = await supabase
     .from('brands')
     .select('id, name, description')
-    .eq('slug', await params['brand-slug'])
+    .eq('slug', resolvedParams['brand-slug'])
     .single()
 
   if (!brand) {
@@ -128,7 +129,7 @@ export default async function ProductPage({ params, searchParams }: Props): Prom
       )
     `)
     .eq('brand_id', brand.id)
-    .eq('slug', await params['product-slug'])
+    .eq('slug', resolvedParams['product-slug'])
     .single()
 
   if (!product) {
@@ -202,7 +203,7 @@ export default async function ProductPage({ params, searchParams }: Props): Prom
                 </li>
                 <li>
                   <Link 
-                    href={`/explore/brands/${await params['brand-slug']}`}
+                    href={`/explore/brands/${resolvedParams['brand-slug']}`}
                     className="text-sm font-medium text-muted-foreground hover:text-foreground"
                   >
                     {brand.name}
