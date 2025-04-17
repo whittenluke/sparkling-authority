@@ -3,7 +3,7 @@
 import { Header } from '@/components/layout/header'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { isAdmin } from '@/lib/supabase/admin'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { LayoutDashboard, MessageSquare, Users, Settings, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
@@ -14,20 +14,20 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const { user } = useAuth()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isAuthorized, setIsAuthorized] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     async function checkAdmin() {
       if (!user?.email) {
-        redirect('/')
+        router.push('/')
         return
       }
 
       const adminStatus = await isAdmin(user.email)
       if (!adminStatus) {
-        redirect('/')
+        router.push('/')
         return
       }
 
@@ -36,7 +36,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
 
     checkAdmin()
-  }, [user?.email])
+  }, [user?.email, router])
 
   if (isLoading) {
     return null // Or a loading spinner

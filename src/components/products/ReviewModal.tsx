@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { X, Star } from 'lucide-react'
 import { createClientComponentClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -40,24 +40,7 @@ export function ReviewModal({
     review: initialReview
   })
 
-  // Reset form when modal opens/closes
-  useEffect(() => {
-    if (isOpen) {
-      setRating(initialRating)
-      setReview(initialReview)
-      setInitialValues({
-        rating: initialRating,
-        review: initialReview
-      })
-    }
-  }, [isOpen, initialRating, initialReview])
-
-  if (!isOpen) return null
-
-  // Check if there are actual changes
-  const hasChanges = rating !== initialValues.rating || review !== initialValues.review
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     if (rating === 0) {
       setError('Please select a rating')
@@ -96,7 +79,7 @@ export function ReviewModal({
         onClose()
       } else {
         // Insert new review
-        const { data: newReview, error: reviewError } = await supabase
+        const { error: reviewError } = await supabase
           .from('reviews')
           .insert({
             product_id: productId,
@@ -124,7 +107,24 @@ export function ReviewModal({
     } finally {
       setIsSubmitting(false)
     }
-  }
+  }, [rating, review, user, productId, supabase, router, onClose])
+
+  // Reset form when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setRating(initialRating)
+      setReview(initialReview)
+      setInitialValues({
+        rating: initialRating,
+        review: initialReview
+      })
+    }
+  }, [isOpen, initialRating, initialReview])
+
+  // Calculate if there are actual changes
+  const hasChanges = rating !== initialValues.rating || review !== initialValues.review
+
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">

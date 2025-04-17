@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClientComponentClient } from '@/lib/supabase/client'
-import { User } from '@supabase/supabase-js'
 import { Check, X, Inbox } from 'lucide-react'
 
 interface Review {
@@ -24,7 +23,7 @@ export default function AdminReviews() {
   const [error, setError] = useState<string | null>(null)
   const supabase = createClientComponentClient()
 
-  async function loadPendingReviews() {
+  const loadPendingReviews = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('reviews')
@@ -70,7 +69,11 @@ export default function AdminReviews() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    loadPendingReviews()
+  }, [loadPendingReviews])
 
   async function approveReview(reviewId: number) {
     try {
@@ -92,10 +95,6 @@ export default function AdminReviews() {
       setError('An unexpected error occurred')
     }
   }
-
-  useEffect(() => {
-    loadPendingReviews()
-  }, [])
 
   if (loading) {
     return (
