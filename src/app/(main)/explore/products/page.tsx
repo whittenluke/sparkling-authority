@@ -15,20 +15,14 @@ export default function ProductsPage() {
         <SearchSection onSearchChange={setSearchQuery} />
       </div>
 
-      {searchQuery && (
-        <div className="space-y-4">
+      <div className="space-y-4">
+        {searchQuery && (
           <h2 className="text-lg font-semibold">
-            {searchQuery ? `Search Results for "${searchQuery}"` : 'All Products'}
+            Search Results for "{searchQuery}"
           </h2>
-          <ProductList searchQuery={searchQuery} />
-        </div>
-      )}
-
-      {!searchQuery && (
-        <div className="text-center text-muted-foreground mt-12">
-          <p>Enter a search term to discover products</p>
-        </div>
-      )}
+        )}
+        <ProductList searchQuery={searchQuery} />
+      </div>
     </div>
   )
 } 
