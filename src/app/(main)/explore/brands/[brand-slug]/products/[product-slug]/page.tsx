@@ -9,15 +9,15 @@ import { notFound } from 'next/navigation'
 export const dynamic = 'force-dynamic'
 
 type Props = {
-  params: {
+  params: Promise<{
     'brand-slug': string
     'product-slug': string
-  }
+  }>
   searchParams?: { [key: string]: string | string[] | undefined }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = params
+  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = await params
   const supabase = createClient()
   
   // First get the brand to ensure it exists
@@ -101,7 +101,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
   const { data: brand } = await supabase
     .from('brands')
     .select('id, name, description')
-    .eq('slug', params['brand-slug'])
+    .eq('slug', await params['brand-slug'])
     .single()
 
   if (!brand) {
@@ -128,7 +128,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
       )
     `)
     .eq('brand_id', brand.id)
-    .eq('slug', params['product-slug'])
+    .eq('slug', await params['product-slug'])
     .single()
 
   if (!product) {
@@ -202,7 +202,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                 </li>
                 <li>
                   <Link 
-                    href={`/explore/brands/${params['brand-slug']}`}
+                    href={`/explore/brands/${await params['brand-slug']}`}
                     className="text-sm font-medium text-muted-foreground hover:text-foreground"
                   >
                     {brand.name}
