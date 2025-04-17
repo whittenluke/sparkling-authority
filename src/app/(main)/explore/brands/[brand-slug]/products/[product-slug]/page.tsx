@@ -13,7 +13,7 @@ type Props = {
     'brand-slug': string
     'product-slug': string
   }>
-  searchParams?: { [key: string]: string | string[] | undefined }
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -93,7 +93,7 @@ type ReviewData = {
   } | null
 }
 
-export default async function ProductPage({ params }: Props): Promise<React.ReactElement> {
+export default async function ProductPage({ params, searchParams }: Props): Promise<React.ReactElement> {
   const supabase = createClient()
   const { data: { session } } = await supabase.auth.getSession()
   
