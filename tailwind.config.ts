@@ -9,7 +9,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'clash-display': ['Clash Display', 'sans-serif'],
+        'plus-jakarta': ['var(--font-plus-jakarta)', 'sans-serif'],
+      },
       colors: {
+        'blue-dark': '#0369a1',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

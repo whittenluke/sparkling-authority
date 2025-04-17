@@ -58,7 +58,7 @@ function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="relative h-10 w-10 rounded-md text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+      className="relative h-10 w-10 rounded-md text-primary hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800"
     >
       <div className="relative h-full w-full">
         <Sun className="absolute inset-0 h-full w-full rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 p-2" />
@@ -81,13 +81,13 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
       {section === 'Explore' ? (
         <Link
           href="/explore/products"
-          className="inline-flex items-center text-sm font-medium text-gray-900 hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
+          className="inline-flex items-center text-lg font-clash-display font-medium text-primary hover:text-primary/90 dark:text-gray-100 dark:hover:text-blue-400"
         >
           {section}
         </Link>
       ) : (
         <button
-          className="inline-flex items-center text-sm font-medium text-gray-900 hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
+          className="inline-flex items-center text-lg font-clash-display font-medium text-primary hover:text-primary/90 dark:text-gray-100 dark:hover:text-blue-400"
           onClick={() => setIsOpen(!isOpen)}
         >
           {section}
@@ -104,7 +104,7 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="block px-4 py-2 text-base font-clash-display text-primary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                   {item.name}
                 </Link>
@@ -187,7 +187,7 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
-    <header className="border-b border-border bg-background">
+    <header className="bg-transparent">
       <nav className="flex min-h-[80px]">
         <div className="flex flex-1 items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center">
@@ -197,7 +197,7 @@ export function Header() {
                 alt="Sparkling Authority"
                 width={500}
                 height={110}
-                className="h-16 w-auto"
+                className="h-12 w-auto"
                 priority
               />
               <span className="sr-only">SparklingAuthority</span>
