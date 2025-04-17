@@ -23,7 +23,7 @@ export function Footer() {
               />
             </div>
             <p className="text-sm text-muted-foreground">
-              Your trusted guide to the world of sparkling water.
+              Your Definitive Guide to Sparkling Water
             </p>
           </div>
           <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">

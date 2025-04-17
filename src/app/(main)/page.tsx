@@ -32,16 +32,19 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Mission Statement */}
-      <div className="mt-24 bg-primary/5 rounded-2xl p-8">
+      {/* Mission Statement - Desktop */}
+      <div className="hidden sm:block mt-24 bg-primary/5 rounded-2xl p-8">
         <h2 className="font-clash-display text-2xl font-medium text-primary mb-4">Why Sparkling Authority?</h2>
         <p className="font-plus-jakarta text-lg leading-8 text-primary/80">
-          At Sparkling Authority, we&apos;re dedicated to exploring and documenting the diverse world of sparkling water. Through meticulous testing and detailed reviews, we provide comprehensive insights into flavor profiles, carbonation levels, and mineral compositions across brands and products. Whether you&apos;re discovering new options, comparing popular favorites, or deepening your appreciation for subtle differences, our platform offers the expertise and community to enhance your sparkling water experience.
+          At Sparkling Authority, we&apos;re dedicated to exploring the diverse world of sparkling water. Through testing and detailed reviews, we provide insights into flavor profiles, carbonation, and mineral composition across brands and products.
+        </p>
+        <p className="font-plus-jakarta text-lg leading-8 text-primary/80 mt-4">
+          Whether you&apos;re discovering new options, comparing popular favorites, or deepening your appreciation for subtle differences, our platform offers the expertise and community to enhance your sparkling water experience.
         </p>
       </div>
 
       {/* Main Navigation Cards */}
-      <div className="mt-24 mb-24 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-24 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         <Link href="/explore/brands" className="group relative block rounded-2xl bg-card p-6 shadow-sm ring-1 ring-border hover:ring-primary">
           <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
             <Crown className="h-7 w-7" />
@@ -83,6 +86,17 @@ export default function Home() {
           </div>
           <h3 className="text-xl font-clash-display font-medium text-primary">Regional Favorites</h3>
         </Link>
+      </div>
+
+      {/* Mission Statement - Mobile */}
+      <div className="sm:hidden mt-24 bg-primary/5 rounded-2xl p-8">
+        <h2 className="font-clash-display text-2xl font-medium text-primary mb-4">Why Sparkling Authority?</h2>
+        <p className="font-plus-jakarta text-lg leading-8 text-primary/80">
+          At Sparkling Authority, we&apos;re dedicated to exploring the diverse world of sparkling water. Through testing and detailed reviews, we provide insights into flavor profiles, carbonation, and mineral composition across brands and products.
+        </p>
+        <p className="font-plus-jakarta text-lg leading-8 text-primary/80 mt-4">
+          Whether you&apos;re discovering new options, comparing popular favorites, or deepening your appreciation for subtle differences, our platform offers the expertise and community to enhance your sparkling water experience.
+        </p>
       </div>
     </>
   )
