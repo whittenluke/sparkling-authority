@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Star } from 'lucide-react'
+import { PostgrestError } from '@supabase/supabase-js'
 
 type Brand = {
   id: string
@@ -42,7 +43,7 @@ export default async function BestOverallPage() {
         overall_rating,
         is_approved
       )
-    `) as { data: Product[] | null, error: any }
+    `) as { data: Product[] | null, error: PostgrestError | null }
 
   if (error) {
     console.error('Error fetching products:', error)

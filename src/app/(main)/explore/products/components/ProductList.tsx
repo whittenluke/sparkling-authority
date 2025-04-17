@@ -100,7 +100,7 @@ export function ProductList({ searchQuery }: ProductListProps) {
       setHasMore(transformedProducts.length === PRODUCTS_PER_PAGE)
       return transformedProducts
     } catch (err) {
-      setError('An unexpected error occurred')
+      setError('An unexpected error occurred: ' + (err instanceof Error ? err.message : String(err)))
       return []
     } finally {
       setLoading(false)
