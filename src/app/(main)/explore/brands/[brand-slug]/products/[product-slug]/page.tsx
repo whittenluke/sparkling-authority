@@ -149,7 +149,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
 
   // Fetch rating data - include both approved reviews and user's own reviews
   const { data: ratingData } = await supabase
-    .from('product_ratings')
+    .from('reviews')
     .select(`
       user_id,
       created_at,
@@ -369,35 +369,47 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
             <div className="mt-8">
               <h2 className="text-lg font-medium text-foreground">Reviews</h2>
               <div className="mt-4 space-y-6">
-                {ratingData?.filter(r => r.review_text?.trim() && (r.is_approved || r.user_id === session?.user?.id)).map((review) => (
-                  <div key={review.user_id} className="rounded-lg bg-card p-4 shadow-sm ring-1 ring-border">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">
-                        {review.profiles?.display_name || 'Anonymous'}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        • {new Date(review.created_at).toLocaleDateString()}
-                      </span>
-                      {session?.user?.id === review.user_id && !review.is_approved && (
-                        <span className="inline-flex items-center rounded-full bg-yellow-400/10 px-2 py-0.5 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-400/20">
-                          Pending Review
+                {ratingData
+                  ?.filter(r => 
+                    // Must have review text
+                    r.review_text?.trim() && 
+                    // And must be either approved or be the user's own review
+                    (r.is_approved || r.user_id === session?.user?.id)
+                  )
+                  .map((review) => (
+                    <div key={review.user_id} className="rounded-lg bg-card p-4 shadow-sm ring-1 ring-border">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-foreground">
+                          {review.profiles?.display_name || 'Anonymous'}
                         </span>
+                        <span className="text-sm text-muted-foreground">
+                          • {new Date(review.created_at).toLocaleDateString()}
+                        </span>
+                        {session?.user?.id === review.user_id && !review.is_approved && (
+                          <span className="inline-flex items-center rounded-full bg-yellow-400/10 px-2 py-0.5 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-400/20">
+                            Pending Review
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-2 flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`h-4 w-4 ${
+                              star <= review.overall_rating
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'fill-transparent text-yellow-400/25'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      {review.review_text && (
+                        <p className="mt-3 text-foreground">
+                          {review.review_text}
+                        </p>
                       )}
                     </div>
-                    <div className="mt-2 flex gap-0.5">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          className={`h-4 w-4 ${
-                            star <= review.overall_rating
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'fill-transparent text-yellow-400/25'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           </div>
