@@ -9,6 +9,11 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get('code')
   const next = requestUrl.searchParams.get('next') || '/'
 
+  // Get the host from the request
+  const host = request.headers.get('host')
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  const baseUrl = `${protocol}://${host}`
+
   if (code) {
     const cookieStore = cookies()
     const supabase = createServerClient(
@@ -53,10 +58,11 @@ export async function GET(request: Request) {
           })
       }
 
-      return NextResponse.redirect(new URL(next, requestUrl.origin))
+      // Use the baseUrl for the redirect
+      return NextResponse.redirect(new URL(next, baseUrl))
     }
   }
 
   // Return to home page if something went wrong
-  return NextResponse.redirect(new URL('/', requestUrl.origin))
+  return NextResponse.redirect(new URL('/', baseUrl))
 } 

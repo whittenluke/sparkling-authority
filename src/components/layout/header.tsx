@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { LogOut, Menu, Moon, Sun, User, X, LayoutDashboard } from 'lucide-react'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { useState, useEffect } from 'react'
@@ -182,18 +183,27 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
 
 export function Header() {
   const { user, signOut } = useAuth()
+  const { theme } = useTheme()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
     <header className="border-b border-border bg-background">
-      <nav className="flex h-16">
+      <nav className="flex min-h-[80px]">
         <div className="flex flex-1 items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <span className="text-xl font-bold text-primary">SparklingAuthority</span>
+              <Image
+                src={theme === 'dark' ? '/images/logos/logo-dark.png' : '/images/logos/logo-light.png'}
+                alt="Sparkling Authority"
+                width={500}
+                height={110}
+                className="h-16 w-auto"
+                priority
+              />
+              <span className="sr-only">SparklingAuthority</span>
             </Link>
             
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+            <div className="hidden sm:ml-12 sm:flex sm:space-x-10">
               {Object.entries(navigation).map(([key, section]) => (
                 <NavDropdown key={key} section={section.name} items={section.items} />
               ))}
