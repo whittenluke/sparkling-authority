@@ -36,7 +36,7 @@ export default function Home() {
       <div className="mt-24 bg-primary/5 rounded-2xl p-8">
         <h2 className="font-clash-display text-2xl font-medium text-primary mb-4">Why Sparkling Authority?</h2>
         <p className="font-plus-jakarta text-lg leading-8 text-primary/80">
-          At Sparkling Authority, we're dedicated to exploring and documenting the diverse world of sparkling water. Through meticulous testing and detailed reviews, we provide comprehensive insights into flavor profiles, carbonation levels, and mineral compositions across brands and products. Whether you're discovering new options, comparing popular favorites, or deepening your appreciation for subtle differences, our platform offers the expertise and community to enhance your sparkling water experience.
+          At Sparkling Authority, we&apos;re dedicated to exploring and documenting the diverse world of sparkling water. Through meticulous testing and detailed reviews, we provide comprehensive insights into flavor profiles, carbonation levels, and mineral compositions across brands and products. Whether you're discovering new options, comparing popular favorites, or deepening your appreciation for subtle differences, our platform offers the expertise and community to enhance your sparkling water experience.
         </p>
       </div>
 
