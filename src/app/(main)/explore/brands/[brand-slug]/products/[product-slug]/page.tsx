@@ -3,6 +3,7 @@ import { QuickRating } from '@/components/products/QuickRating'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { Star } from 'lucide-react'
+import { notFound } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
@@ -72,22 +73,33 @@ type ProductContainer = {
   container_size: string
 }
 
+type ReviewData = {
+  user_id: string
+  created_at: string
+  overall_rating: number
+  review_text: string | null
+  is_approved: boolean
+  profiles: {
+    display_name: string | null
+  } | null
+}
+
 type Props = {
-  params: Promise<{
+  params: {
     'brand-slug': string
     'product-slug': string
-  }>
+  }
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = await params
   const supabase = createClient()
+  const { data: { session } } = await supabase.auth.getSession()
   
   // First get the brand to ensure it exists
   const { data: brand } = await supabase
     .from('brands')
     .select('id, name, description')
-    .eq('slug', brandSlug)
+    .eq('slug', params['brand-slug'])
     .single()
 
   if (!brand) {
@@ -114,11 +126,11 @@ export default async function ProductPage({ params }: Props) {
       )
     `)
     .eq('brand_id', brand.id)
-    .eq('slug', productSlug)
+    .eq('slug', params['product-slug'])
     .single()
 
   if (!product) {
-    return <div>Product not found</div>
+    notFound()
   }
 
   const nutrition: NutritionInfo = product.nutrition_info
@@ -132,26 +144,21 @@ export default async function ProductPage({ params }: Props) {
     return acc;
   }, {} as { [key: string]: string[] });
 
-  // Get user's session
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-
   // Fetch rating data - include both approved reviews and user's own reviews
   const { data: ratingData } = await supabase
-    .from('reviews')
+    .from('product_ratings')
     .select(`
+      user_id,
+      created_at,
       overall_rating,
       review_text,
-      user_id,
       is_approved,
-      created_at,
-      profiles!user_id (
+      profiles (
         display_name
       )
     `)
     .eq('product_id', product.id)
-    .or(`is_approved.eq.true${session?.user ? `,user_id.eq.${session.user.id}` : ''}`)
+    .order('created_at', { ascending: false }) as { data: ReviewData[] | null }
 
   // Calculate average rating
   const ratings = ratingData?.map(r => r.overall_rating) || []
@@ -193,7 +200,7 @@ export default async function ProductPage({ params }: Props) {
                 </li>
                 <li>
                   <Link 
-                    href={`/explore/brands/${brandSlug}`}
+                    href={`/explore/brands/${params['brand-slug']}`}
                     className="text-sm font-medium text-muted-foreground hover:text-foreground"
                   >
                     {brand.name}
