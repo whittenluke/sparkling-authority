@@ -2,6 +2,25 @@ import Link from 'next/link'
 import { Crown, Cherry, Grid3x3, Sparkles, PartyPopper, MapPin, Star, Sparkles as SparklesIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 
+type Brand = {
+  id: string
+  name: string
+  slug: string
+}
+
+type Product = {
+  id: string
+  name: string
+  slug: string
+  brand: Brand
+  reviews?: Array<{
+    overall_rating: number
+    is_approved: boolean
+  }>
+  averageRating?: number
+  ratingCount?: number
+}
+
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
@@ -23,7 +42,7 @@ export default async function Home() {
         overall_rating,
         is_approved
       )
-    `)
+    `) as { data: Product[] | null }
 
   // Calculate average ratings and sort
   const topProducts = products ? products.map(product => {

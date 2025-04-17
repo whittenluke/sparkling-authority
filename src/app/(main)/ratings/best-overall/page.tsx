@@ -2,6 +2,25 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Star } from 'lucide-react'
 
+type Brand = {
+  id: string
+  name: string
+  slug: string
+}
+
+type Product = {
+  id: string
+  name: string
+  slug: string
+  brand: Brand
+  reviews?: Array<{
+    overall_rating: number
+    is_approved: boolean
+  }>
+  averageRating?: number
+  ratingCount?: number
+}
+
 export const dynamic = 'force-dynamic'
 
 export default async function BestOverallPage() {
@@ -23,7 +42,7 @@ export default async function BestOverallPage() {
         overall_rating,
         is_approved
       )
-    `)
+    `) as { data: Product[] | null, error: any }
 
   if (error) {
     console.error('Error fetching products:', error)
@@ -40,7 +59,7 @@ export default async function BestOverallPage() {
   }
 
   // Calculate average ratings and sort
-  const productsWithRatings = products.map(product => {
+  const productsWithRatings = products?.map(product => {
     // Use ALL ratings regardless of approval status - approval only matters for review text
     const ratings = product.reviews?.map(r => r.overall_rating) || []
     const averageRating = ratings.length > 0 
@@ -59,7 +78,7 @@ export default async function BestOverallPage() {
       }
       return b.ratingCount - a.ratingCount
     })
-    .slice(0, 5)
+    .slice(0, 5) || []
 
   return (
     <div className="space-y-8">

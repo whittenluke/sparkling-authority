@@ -18,7 +18,7 @@ export default function ProductsPage() {
       <div className="space-y-4">
         {searchQuery && (
           <h2 className="text-lg font-semibold">
-            Search Results for "{searchQuery}"
+            Search Results for &quot;{searchQuery}&quot;
           </h2>
         )}
         <ProductList searchQuery={searchQuery} />

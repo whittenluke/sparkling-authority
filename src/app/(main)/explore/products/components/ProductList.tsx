@@ -67,20 +67,12 @@ export function ProductList({ searchQuery }: ProductListProps) {
         query = query.ilike('name', `%${searchQuery}%`)
       }
       
-      const { data, error, count } = await query
+      const { data, error } = await query
       
       if (error) {
-        console.error('Error fetching products:', error)
         setError('Error fetching products')
         return []
       }
-      
-      console.log(`Fetched page ${pageNum}:`, {
-        start,
-        end,
-        count,
-        dataLength: data?.length
-      })
       
       const transformedProducts = data.map(product => {
         const ratings = product.reviews?.map(r => r.overall_rating) || []
@@ -88,22 +80,26 @@ export function ProductList({ searchQuery }: ProductListProps) {
           ? ratings.reduce((a, b) => a + b, 0) / ratings.length 
           : 0
         
+        const brand = Array.isArray(product.brand) ? product.brand[0] : product.brand
+        
         return {
           id: product.id,
           name: product.name,
           slug: product.slug,
-          brand: product.brand,
+          brand: {
+            id: brand.id,
+            name: brand.name,
+            slug: brand.slug
+          },
           flavor: product.flavor || [],
           averageRating,
           ratingCount: ratings.length
         }
       })
       
-      // Check if we have more products by comparing the fetched count with our page size
       setHasMore(transformedProducts.length === PRODUCTS_PER_PAGE)
       return transformedProducts
     } catch (err) {
-      console.error('Unexpected error:', err)
       setError('An unexpected error occurred')
       return []
     } finally {
@@ -130,7 +126,6 @@ export function ProductList({ searchQuery }: ProductListProps) {
         !loading &&
         hasMore
       ) {
-        console.log('Loading more products...', { page, hasMore })
         const nextPage = page + 1
         const newProducts = await fetchProducts(nextPage)
         if (newProducts.length > 0) {
