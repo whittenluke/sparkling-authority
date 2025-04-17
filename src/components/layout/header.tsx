@@ -137,7 +137,7 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+        className="flex items-center space-x-2 text-primary hover:text-primary/90 dark:text-gray-300 dark:hover:text-blue-400"
       >
         <User className="h-6 w-6" />
         <span className="text-sm">{user.email?.split('@')[0]}</span>
@@ -148,7 +148,7 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
           <div className="py-1">
             <Link
               href="/profile"
-              className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+              className="flex w-full items-center px-4 py-2 text-sm text-primary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
               onClick={() => setIsOpen(false)}
             >
               <User className="mr-2 h-4 w-4" />
@@ -157,7 +157,7 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
             {isAdminUser && (
               <Link
                 href="/admin"
-                className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="flex w-full items-center px-4 py-2 text-sm text-primary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                 onClick={() => setIsOpen(false)}
               >
                 <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -169,7 +169,7 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
                 signOut()
                 setIsOpen(false)
               }}
-              className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+              className="flex w-full items-center px-4 py-2 text-sm text-primary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
             >
               <LogOut className="mr-2 h-4 w-4" />
               Sign out
