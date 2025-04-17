@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { QuickRating } from '@/components/products/QuickRating'
 import Link from 'next/link'
@@ -7,8 +8,16 @@ import { notFound } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
+type Props = {
+  params: {
+    'brand-slug': string
+    'product-slug': string
+  }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = await params
+  const { 'brand-slug': brandSlug, 'product-slug': productSlug } = params
   const supabase = createClient()
   
   // First get the brand to ensure it exists
@@ -84,14 +93,7 @@ type ReviewData = {
   } | null
 }
 
-type Props = {
-  params: {
-    'brand-slug': string
-    'product-slug': string
-  }
-}
-
-export default async function ProductPage({ params }: Props) {
+export default async function ProductPage({ params }: Props): Promise<React.ReactElement> {
   const supabase = createClient()
   const { data: { session } } = await supabase.auth.getSession()
   
@@ -175,7 +177,7 @@ export default async function ProductPage({ params }: Props) {
     : null
 
   const userRating = userReview?.overall_rating
-  const userReviewText = userReview?.review_text
+  const userReviewText = userReview?.review_text || undefined
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -393,12 +395,8 @@ export default async function ProductPage({ params }: Props) {
                         />
                       ))}
                     </div>
-                    <p className="mt-2 text-foreground">{review.review_text}</p>
                   </div>
                 ))}
-                {(!ratingData || ratingData.filter(r => r.review_text?.trim() && (r.is_approved || r.user_id === session?.user?.id)).length === 0) && (
-                  <p className="text-muted-foreground">No reviews yet. Be the first to review this product!</p>
-                )}
               </div>
             </div>
           </div>
@@ -406,4 +404,4 @@ export default async function ProductPage({ params }: Props) {
       </main>
     </div>
   )
-} 
+}
