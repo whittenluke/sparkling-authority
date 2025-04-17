@@ -68,8 +68,8 @@ export default async function Home() {
   return (
     <>
       {/* Hero Section */}
-      <div className="max-w-3xl space-y-4">
-        <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary sm:text-6xl">
+      <div className="max-w-3xl mx-auto space-y-4">
+        <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary sm:text-6xl text-center">
           Your Definitive Guide to Sparkling Water
         </h1>
         <p className="font-plus-jakarta text-lg leading-8 text-primary/80">
