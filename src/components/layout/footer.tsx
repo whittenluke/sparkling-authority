@@ -1,12 +1,27 @@
+'use client'
+
 import Link from 'next/link'
+import Image from 'next/image'
+import { useTheme } from '@/components/theme-provider'
 
 export function Footer() {
+  const { theme } = useTheme()
+  
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8">
-            <span className="text-lg font-bold text-primary">SparklingAuthority</span>
+            <div className="flex items-center">
+              <Image
+                src={theme === 'dark' ? '/images/logos/logo-dark.png' : '/images/logos/logo-light.png'}
+                alt="Sparkling Authority"
+                width={500}
+                height={110}
+                className="h-12 w-auto"
+                priority
+              />
+            </div>
             <p className="text-sm text-muted-foreground">
               Your trusted guide to the world of sparkling water.
             </p>
@@ -17,18 +32,18 @@ export function Footer() {
                 <h3 className="text-sm font-semibold text-foreground">Explore</h3>
                 <ul role="list" className="mt-4 space-y-4">
                   <li>
-                    <Link href="/brands" className="text-sm text-muted-foreground hover:text-foreground">
+                    <Link href="/explore/brands" className="text-sm text-muted-foreground hover:text-foreground">
                       Brands
                     </Link>
                   </li>
                   <li>
-                    <Link href="/reviews" className="text-sm text-muted-foreground hover:text-foreground">
-                      Reviews
+                    <Link href="/explore/products" className="text-sm text-muted-foreground hover:text-foreground">
+                      Products
                     </Link>
                   </li>
                   <li>
-                    <Link href="/guides" className="text-sm text-muted-foreground hover:text-foreground">
-                      Guides
+                    <Link href="/explore/flavors" className="text-sm text-muted-foreground hover:text-foreground">
+                      Flavors
                     </Link>
                   </li>
                 </ul>
@@ -52,7 +67,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t border-border pt-8">
-          <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} SparklingAuthority. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Sparkling Authority. All rights reserved.</p>
         </div>
       </div>
     </footer>
