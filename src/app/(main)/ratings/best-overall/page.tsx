@@ -50,8 +50,8 @@ export default async function BestOverallPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Best Overall Sparkling Waters</h1>
-          <p className="mt-2 text-lg text-muted-foreground">
+          <h1 className="font-clash-display text-3xl font-medium tracking-tight text-primary">Best Overall Sparkling Waters</h1>
+          <p className="mt-2 font-plus-jakarta text-lg leading-8 text-primary/80">
             The highest rated sparkling waters based on user ratings and reviews.
           </p>
         </div>
@@ -79,13 +79,13 @@ export default async function BestOverallPage() {
       }
       return b.ratingCount - a.ratingCount
     })
-    .slice(0, 5) || []
+    .slice(0, 10) || []
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Best Overall Sparkling Waters</h1>
-        <p className="mt-2 text-lg text-muted-foreground">
+        <h1 className="font-clash-display text-3xl font-medium tracking-tight text-primary">Best Overall Sparkling Waters</h1>
+        <p className="mt-2 font-plus-jakarta text-lg leading-8 text-primary/80">
           The highest rated sparkling waters based on user ratings and reviews.
         </p>
       </div>
