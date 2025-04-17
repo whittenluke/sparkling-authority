@@ -32,17 +32,6 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Mission Statement - Desktop */}
-      <div className="hidden sm:block mt-24 bg-primary/5 rounded-2xl p-8">
-        <h2 className="font-clash-display text-2xl font-medium text-primary mb-4">Why Sparkling Authority?</h2>
-        <p className="font-plus-jakarta text-lg leading-8 text-primary/80">
-          At Sparkling Authority, we&apos;re dedicated to exploring the diverse world of sparkling water. Through testing and detailed reviews, we provide insights into flavor profiles, carbonation, and mineral composition across brands and products.
-        </p>
-        <p className="font-plus-jakarta text-lg leading-8 text-primary/80 mt-4">
-          Whether you&apos;re discovering new options, comparing popular favorites, or deepening your appreciation for subtle differences, our platform offers the expertise and community to enhance your sparkling water experience.
-        </p>
-      </div>
-
       {/* Main Navigation Cards */}
       <div className="mt-24 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         <Link href="/explore/brands" className="group relative block rounded-2xl bg-card p-6 shadow-sm ring-1 ring-border hover:ring-primary">
@@ -88,8 +77,8 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Mission Statement - Mobile */}
-      <div className="sm:hidden mt-24 bg-primary/5 rounded-2xl p-8">
+      {/* Mission Statement */}
+      <div className="mt-24 bg-primary/5 rounded-2xl p-8">
         <h2 className="font-clash-display text-2xl font-medium text-primary mb-4">Why Sparkling Authority?</h2>
         <p className="font-plus-jakarta text-lg leading-8 text-primary/80">
           At Sparkling Authority, we&apos;re dedicated to exploring the diverse world of sparkling water. Through testing and detailed reviews, we provide insights into flavor profiles, carbonation, and mineral composition across brands and products.
