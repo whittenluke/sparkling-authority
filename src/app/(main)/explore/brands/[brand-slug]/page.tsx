@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { ProductsSection } from './components/ProductsSection'
 import { Metadata } from 'next'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -83,6 +84,28 @@ export default async function BrandPage({ params }: Props) {
 
   return (
     <div className="space-y-8">
+      {/* Breadcrumb */}
+      <nav className="flex" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2">
+          <li>
+            <Link 
+              href="/explore/brands"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground"
+            >
+              Brands
+            </Link>
+          </li>
+          <li>
+            <svg className="h-5 w-5 text-muted-foreground" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
+          </li>
+          <li>
+            <span className="text-sm font-medium text-foreground">{brand.name}</span>
+          </li>
+        </ol>
+      </nav>
+
       {/* Brand Header */}
       <div>
         <div className="flex items-center gap-6">

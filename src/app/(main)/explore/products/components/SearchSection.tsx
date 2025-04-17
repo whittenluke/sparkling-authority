@@ -1,12 +1,23 @@
 'use client'
 
 import { Search } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useDebounce } from '@/hooks/useDebounce'
 
 type SearchCategory = 'product' | 'brand' | 'flavor' | 'carbonation'
 
-export function SearchSection() {
+type SearchSectionProps = {
+  onSearchChange: (query: string) => void
+}
+
+export function SearchSection({ onSearchChange }: SearchSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<SearchCategory>('product')
+  const [searchValue, setSearchValue] = useState('')
+  const debouncedSearchValue = useDebounce(searchValue, 500)
+
+  useEffect(() => {
+    onSearchChange(debouncedSearchValue)
+  }, [debouncedSearchValue, onSearchChange])
 
   return (
     <div className="space-y-4">
@@ -48,6 +59,9 @@ export function SearchSection() {
           </div>
           <input
             type="text"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            placeholder="Search products..."
             className="block w-full rounded-lg border border-input bg-background py-4 pl-10 pr-4 text-foreground focus:ring-2 focus:ring-primary focus:border-primary"
           />
         </div>
