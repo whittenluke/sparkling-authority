@@ -96,39 +96,41 @@ export default async function BestOverallPage() {
             <Link
               key={product.id}
               href={`/explore/brands/${product.brand.slug}/products/${product.slug}`}
-              className="group block rounded-xl bg-card h-[88px] p-6 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all"
+              className="group block rounded-xl bg-card p-4 sm:p-6 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all"
             >
-              <div className="flex items-center gap-6 h-full">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary text-xl font-medium">
+              <div className="flex items-start gap-3 sm:gap-6">
+                <div className="flex h-10 w-10 sm:h-14 sm:w-14 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg sm:text-xl font-medium">
                   {index + 1}
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-foreground group-hover:text-primary">
+                  <h3 className="font-medium text-foreground group-hover:text-primary break-words">
                     {product.name}
                   </h3>
-                  <p className="mt-1 text-muted-foreground">
+                  <p className="mt-0.5 sm:mt-1 text-sm text-muted-foreground">
                     by {product.brand.name}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-lg font-medium text-foreground">
-                    {product.averageRating.toFixed(1)}
-                  </span>
-                  <div className="flex gap-0.5">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`h-5 w-5 ${
-                          star <= product.averageRating
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'fill-transparent text-yellow-400/25'
-                        }`}
-                      />
-                    ))}
+                <div className="flex flex-shrink-0 flex-col items-end gap-1 sm:gap-1.5">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <span className="text-base sm:text-lg font-medium text-foreground">
+                      {product.averageRating.toFixed(1)}
+                    </span>
+                    <div className="flex gap-0.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-4 w-4 sm:h-5 sm:w-5 ${
+                            star <= product.averageRating
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'fill-transparent text-yellow-400/25'
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="hidden sm:inline text-sm text-muted-foreground">
                     ({product.ratingCount} rating{product.ratingCount !== 1 ? 's' : ''})
                   </span>
                 </div>
