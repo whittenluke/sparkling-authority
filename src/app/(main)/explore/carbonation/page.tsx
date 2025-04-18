@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
 import { CarbonationSpectrum } from './components/CarbonationSpectrum'
-import { CarbonationLevels } from './components/CarbonationLevels'
 import { Metadata } from 'next'
 
 type Product = {
@@ -84,27 +83,15 @@ export default async function CarbonationPage() {
     <div className="space-y-12">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Carbonation Levels</h1>
-        <p className="mt-2 text-lg text-muted-foreground">
+        <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary">Carbonation Levels</h1>
+        <p className="mt-2 font-plus-jakarta text-lg leading-8 text-primary/80">
           Discover sparkling waters based on their carbonation intensity, from subtle bubbles to intense effervescence.
         </p>
       </div>
 
-      {/* Understanding Carbonation */}
-      <div>
-        <h2 className="text-xl font-semibold text-foreground mb-6">Understanding Carbonation Levels</h2>
-        <div className="rounded-xl bg-card p-6">
-          <p className="text-sm text-muted-foreground mb-6">
-            Click on any level in the spectrum below to learn more about its carbonation intensity.
-          </p>
-          <CarbonationSpectrum />
-        </div>
-      </div>
-
-      {/* Browse by Level */}
-      <div>
-        <h2 className="text-xl font-semibold text-foreground mb-6">Browse by Carbonation Level</h2>
-        <CarbonationLevels productsByLevel={productsByLevel} />
+      {/* Carbonation Spectrum */}
+      <div className="rounded-xl p-6">
+        <CarbonationSpectrum productsByLevel={productsByLevel} />
       </div>
     </div>
   )

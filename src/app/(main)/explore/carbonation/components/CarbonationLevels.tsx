@@ -25,7 +25,8 @@ type CarbonationLevelsProps = {
 const levels = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
 
 export function CarbonationLevels({ productsByLevel }: CarbonationLevelsProps) {
-  const [expandedLevel, setExpandedLevel] = useState<number | null>(null)
+  const [expandedLevels, setExpandedLevels] = useState<Set<number>>(new Set())
+  const [expandedBrands, setExpandedBrands] = useState<Set<string>>(new Set())
 
   return (
     <div className="space-y-4">
@@ -33,13 +34,33 @@ export function CarbonationLevels({ productsByLevel }: CarbonationLevelsProps) {
         const products = productsByLevel[level] || []
         const hasProducts = products.length > 0
 
+        // Group products by brand
+        const brandsWithProducts = products.reduce((acc: { [key: string]: { brand: Product['brand'], products: Product[] } }, product) => {
+          if (!acc[product.brand.id]) {
+            acc[product.brand.id] = {
+              brand: product.brand,
+              products: []
+            }
+          }
+          acc[product.brand.id].products.push(product)
+          return acc
+        }, {})
+
         return (
           <div
             key={level}
             className="rounded-xl bg-card overflow-hidden"
           >
             <button
-              onClick={() => setExpandedLevel(expandedLevel === level ? null : level)}
+              onClick={() => setExpandedLevels(prev => {
+                const newSet = new Set(prev)
+                if (newSet.has(level)) {
+                  newSet.delete(level)
+                } else {
+                  newSet.add(level)
+                }
+                return newSet
+              })}
               className={`w-full px-6 py-4 flex items-center justify-between text-left transition-colors ${hasProducts ? 'hover:bg-accent' : 'opacity-50 cursor-not-allowed'}`}
               disabled={!hasProducts}
             >
@@ -58,7 +79,7 @@ export function CarbonationLevels({ productsByLevel }: CarbonationLevelsProps) {
                 </span>
               </div>
               {hasProducts && (
-                expandedLevel === level ? (
+                expandedLevels.has(level) ? (
                   <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
                   <ChevronDown className="h-5 w-5 text-muted-foreground" />
@@ -66,17 +87,53 @@ export function CarbonationLevels({ productsByLevel }: CarbonationLevelsProps) {
               )}
             </button>
 
-            {expandedLevel === level && hasProducts && (
-              <div className="px-6 py-4 border-t border-border space-y-3">
-                {products.map((product) => (
-                  <Link
-                    key={product.id}
-                    href={`/explore/brands/${product.brand.slug}/products/${product.slug}`}
-                    className="block rounded-lg bg-muted p-3 hover:bg-accent transition-colors"
-                  >
-                    <span className="font-medium text-foreground">{product.name}</span>
-                    <span className="ml-2 text-sm text-muted-foreground">by {product.brand?.name}</span>
-                  </Link>
+            {expandedLevels.has(level) && hasProducts && (
+              <div className="px-6 py-4 border-t border-border space-y-4">
+                {Object.values(brandsWithProducts).map(({ brand, products }) => (
+                  <div key={brand.id} className="space-y-2">
+                    <button
+                      onClick={() => setExpandedBrands(prev => {
+                        const newSet = new Set(prev)
+                        if (newSet.has(brand.id)) {
+                          newSet.delete(brand.id)
+                        } else {
+                          newSet.add(brand.id)
+                        }
+                        return newSet
+                      })}
+                      className="w-full flex items-center justify-between text-left"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-foreground">{brand.name}</span>
+                        <Link
+                          href={`/explore/brands/${brand.slug}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-sm text-primary hover:text-primary/80 transition-colors"
+                        >
+                          View brand
+                        </Link>
+                      </div>
+                      {expandedBrands.has(brand.id) ? (
+                        <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </button>
+
+                    {expandedBrands.has(brand.id) && (
+                      <div className="pl-4 space-y-2">
+                        {products.map((product) => (
+                          <Link
+                            key={product.id}
+                            href={`/explore/brands/${brand.slug}/products/${product.slug}`}
+                            className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {product.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             )}

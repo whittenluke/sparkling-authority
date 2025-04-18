@@ -99,7 +99,7 @@ export default async function Home() {
       {topProducts.length > 0 && (
         <div className="mt-16 max-w-3xl mx-auto w-full px-4 sm:px-0">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="font-clash-display text-xl sm:text-2xl font-medium text-primary">Top Rated Sparkling Waters</h2>
+            <h2 className="font-clash-display text-xl sm:text-2xl font-medium text-primary">Top Rated</h2>
             <Link 
               href="/ratings/best-overall"
               className="text-sm font-medium text-primary hover:text-primary/90"
