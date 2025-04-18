@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { FlavorsList } from './components/FlavorsList'
+import { FlavorsHeader } from './components/FlavorsHeader'
 import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
@@ -46,17 +47,12 @@ export default async function FlavorsPage() {
   const uniqueFlavors = [...new Set(allFlavors)].sort()
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Browse by Flavor</h1>
-        <p className="mt-2 text-lg text-muted-foreground">
-          Explore sparkling waters by their unique flavors and find your perfect match.
-        </p>
-      </div>
-
+    <div className="space-y-6">
+      <FlavorsHeader />
+      
       {uniqueFlavors.length === 0 ? (
         <div className="rounded-xl bg-card p-6 text-center">
-          <p className="text-muted-foreground">No flavors found in the database.</p>
+          <p className="font-plus-jakarta text-muted-foreground">No flavors found in the database.</p>
         </div>
       ) : (
         <FlavorsList flavors={uniqueFlavors} />
