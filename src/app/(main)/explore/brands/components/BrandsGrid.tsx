@@ -24,7 +24,7 @@ export function BrandsGrid({ brands }: { brands: BrandEntry[] }) {
           }
           className="group flex items-center gap-4 rounded-xl bg-card p-4 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all"
         >
-          <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-foreground text-xl font-medium">
+          <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-xl font-medium">
             {brand.name.charAt(0)}
           </div>
           <div className="flex-1">

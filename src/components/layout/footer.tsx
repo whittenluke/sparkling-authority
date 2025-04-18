@@ -8,7 +8,7 @@ export function Footer() {
   const { theme } = useTheme()
   
   return (
-    <footer className="border-t border-border bg-background">
+    <footer className="app-background">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8">
@@ -66,7 +66,7 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-8 border-t border-border pt-8">
+        <div className="mt-8 pt-8">
           <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Sparkling Authority. All rights reserved.</p>
         </div>
       </div>
