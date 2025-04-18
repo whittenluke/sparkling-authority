@@ -181,6 +181,133 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
   )
 }
 
+function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { user, signOut } = useAuth()
+  const [isAdminUser, setIsAdminUser] = useState(false)
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'auto'
+    }
+    
+    return () => {
+      document.body.style.overflow = 'auto'
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    async function checkAdminStatus() {
+      if (user?.email) {
+        const adminStatus = await isAdmin(user.email)
+        setIsAdminUser(adminStatus)
+      }
+    }
+    checkAdminStatus()
+  }, [user?.email])
+
+  return (
+    <div 
+      className={`fixed inset-0 z-50 transition-opacity duration-300 ${
+        isOpen ? 'opacity-100 bg-white dark:bg-gray-900' : 'opacity-0 pointer-events-none'
+      }`}
+    >
+      <div className="relative h-full w-full">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 p-2 rounded-full hover:bg-accent transition-colors"
+        >
+          <X className="h-6 w-6" />
+        </button>
+
+        {/* Menu content */}
+        <div className="h-full pt-20 pb-6 px-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent">
+          {/* User section */}
+          {user ? (
+            <div className="mb-8 p-4 rounded-lg bg-card">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium">{user.email?.split('@')[0]}</p>
+                  <p className="text-sm text-muted-foreground">{user.email}</p>
+                </div>
+              </div>
+              <div className="mt-4 space-y-2">
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent transition-colors"
+                  onClick={onClose}
+                >
+                  <User className="h-4 w-4" />
+                  Profile
+                </Link>
+                {isAdminUser && (
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent transition-colors"
+                    onClick={onClose}
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Admin Dashboard
+                  </Link>
+                )}
+                <button
+                  onClick={() => {
+                    signOut()
+                    onClose()
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent transition-colors w-full"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign out
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-8">
+              <Link
+                href="/auth/login"
+                className="w-full inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+                onClick={onClose}
+              >
+                Sign in
+              </Link>
+            </div>
+          )}
+
+          {/* Navigation sections */}
+          <div className="space-y-6">
+            {Object.entries(navigation).map(([key, section]) => (
+              <div key={key} className="space-y-3">
+                <h3 className="px-3 text-xl font-clash-display font-medium text-primary">
+                  {section.name}
+                </h3>
+                <div className="space-y-1">
+                  {section.items.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="block px-3 py-2 rounded-md text-base text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                      onClick={onClose}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function Header() {
   const { user, signOut } = useAuth()
   const { theme } = useTheme()
@@ -228,70 +355,18 @@ export function Header() {
             {/* Mobile menu button */}
             <div className="flex items-center sm:hidden">
               <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
               >
                 <span className="sr-only">Open main menu</span>
-                {isMobileMenuOpen ? (
-                  <X className="block h-6 w-6" />
-                ) : (
-                  <Menu className="block h-6 w-6" />
-                )}
+                <Menu className="block h-6 w-6" />
               </button>
             </div>
           </div>
         </div>
 
         {/* Mobile menu */}
-        {isMobileMenuOpen && (
-          <div className="sm:hidden">
-            <div className="space-y-4 pb-3 pt-2">
-              {Object.entries(navigation).map(([key, section]) => (
-                <div key={key} className="px-3">
-                  <div className="text-base font-medium text-foreground mb-2">
-                    {section.name}
-                  </div>
-                  <div className="space-y-1 pl-3">
-                    {section.items.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="block py-2 text-base text-muted-foreground hover:text-foreground"
-                      >
-                        {item.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="border-t border-border pb-3 pt-4">
-              {user ? (
-                <div className="space-y-1">
-                  <Link
-                    href="/profile"
-                    className="block px-3 py-2 text-base font-medium text-foreground hover:bg-muted"
-                  >
-                    Profile
-                  </Link>
-                  <button
-                    onClick={() => signOut()}
-                    className="block w-full px-3 py-2 text-base font-medium text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                  >
-                    Sign out
-                  </button>
-                </div>
-              ) : (
-                <Link
-                  href="/auth/login"
-                  className="block px-3 py-2 text-base font-medium bg-primary text-primary-foreground hover:bg-primary/90"
-                >
-                  Sign in
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
+        <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
       </nav>
     </header>
   )
