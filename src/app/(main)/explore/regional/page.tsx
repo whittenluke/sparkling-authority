@@ -57,8 +57,8 @@ export default async function RegionalPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Regional Favorites</h1>
-        <p className="mt-2 text-lg text-muted-foreground">
+        <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary">Regional Favorites</h1>
+        <p className="mt-2 font-plus-jakarta text-lg leading-8 text-primary/80">
           Explore sparkling water brands from around the world and discover regional specialties.
         </p>
       </div>

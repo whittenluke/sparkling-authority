@@ -25,17 +25,17 @@ export default async function NewReleasesPage() {
     <div className="space-y-8">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">New Releases</h1>
-        <p className="mt-2 text-lg text-muted-foreground">
-          The latest additions to the sparkling water world.
+        <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary">New Releases</h1>
+        <p className="mt-2 font-plus-jakarta text-lg leading-8 text-primary/80">
+          Stay up to date with the latest sparkling water products and brands.
         </p>
       </div>
 
       {/* New Products Section */}
       <div>
-        <h2 className="text-2xl font-bold text-foreground">New Products</h2>
+        <h2 className="font-clash-display text-2xl font-medium text-primary">New Products</h2>
         <div className="mt-4 rounded-xl bg-card p-6 text-center shadow-sm ring-1 ring-border">
-          <p className="text-muted-foreground">
+          <p className="font-plus-jakarta text-muted-foreground">
             New product releases will be shown here soon.
           </p>
         </div>
@@ -43,9 +43,9 @@ export default async function NewReleasesPage() {
 
       {/* New Brands Section */}
       <div>
-        <h2 className="text-2xl font-bold text-foreground">New Brands</h2>
+        <h2 className="font-clash-display text-2xl font-medium text-primary">New Brands</h2>
         <div className="mt-4 rounded-xl bg-card p-6 text-center shadow-sm ring-1 ring-border">
-          <p className="text-muted-foreground">
+          <p className="font-plus-jakarta text-muted-foreground">
             New brand launches will be shown here soon.
           </p>
         </div>
