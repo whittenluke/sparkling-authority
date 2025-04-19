@@ -9,7 +9,7 @@ type Product = {
   flavor: string[]
   product_line_id: string
   slug: string
-  averageRating: number
+  averageRating?: number
   ratingCount: number
   brand: {
     id: string

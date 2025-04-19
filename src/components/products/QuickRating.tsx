@@ -59,7 +59,7 @@ export function QuickRating({
             <Star
               key={star}
               className={`h-5 w-5 ${
-                typeof averageRating === 'number' && star <= averageRating
+                typeof averageRating === 'number' && star <= Math.round(averageRating)
                   ? 'fill-yellow-400 text-yellow-400'
                   : 'fill-transparent text-yellow-400/25'
               }`}

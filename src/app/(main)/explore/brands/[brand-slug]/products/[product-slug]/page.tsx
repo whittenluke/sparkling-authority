@@ -415,7 +415,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                           <Star
                             key={star}
                             className={`h-4 w-4 ${
-                              star <= review.overall_rating
+                              star <= Math.round(review.overall_rating)
                                 ? 'fill-yellow-400 text-yellow-400'
                                 : 'fill-transparent text-yellow-400/25'
                             }`}

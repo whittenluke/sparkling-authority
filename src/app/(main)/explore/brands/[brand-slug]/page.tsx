@@ -133,7 +133,7 @@ export default async function BrandPage({ params }: Props) {
 
   // Calculate average ratings for products
   const productsWithRatings = brand.products.map((product: BrandProduct) => {
-    const ratings = product.reviews.map(r => r.overall_rating)
+    const ratings = product.reviews?.map(r => r.overall_rating) || []
     const ratingCount = ratings.length
     
     // Calculate Bayesian average using global mean
@@ -141,12 +141,12 @@ export default async function BrandPage({ params }: Props) {
     const sumOfRatings = ratings.reduce((a: number, b: number) => a + b, 0)
     const bayesianAverage = ratingCount > 0
       ? (C * meanRating + sumOfRatings) / (C + ratingCount)
-      : 0
+      : undefined // Use undefined for no ratings to match product page behavior
     
     return {
       ...product,
       averageRating: bayesianAverage,
-      ratingCount: ratings.length,
+      ratingCount: ratingCount,
       brand: {
         id: product.brand.id,
         name: product.brand.name,
