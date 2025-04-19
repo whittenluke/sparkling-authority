@@ -116,16 +116,36 @@ export default async function BrandPage({ params }: Props) {
     notFound()
   }
 
+  // Get mean rating across all products for Bayesian average
+  const { data: allProducts } = await supabase
+    .from('products')
+    .select(`
+      reviews (
+        overall_rating
+      )
+    `)
+
+  // Calculate the mean rating across ALL products
+  const allRatings = allProducts?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+  const meanRating = allRatings.length > 0 
+    ? allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length 
+    : 3.5 // Fallback to 3.5 if no ratings exist
+
   // Calculate average ratings for products
   const productsWithRatings = brand.products.map((product: BrandProduct) => {
     const ratings = product.reviews.map(r => r.overall_rating)
-    const averageRating = ratings.length > 0 
-      ? ratings.reduce((a: number, b: number) => a + b, 0) / ratings.length 
+    const ratingCount = ratings.length
+    
+    // Calculate Bayesian average using global mean
+    const C = 10 // confidence factor
+    const sumOfRatings = ratings.reduce((a: number, b: number) => a + b, 0)
+    const bayesianAverage = ratingCount > 0
+      ? (C * meanRating + sumOfRatings) / (C + ratingCount)
       : 0
     
     return {
       ...product,
-      averageRating,
+      averageRating: bayesianAverage,
       ratingCount: ratings.length,
       brand: {
         id: product.brand.id,

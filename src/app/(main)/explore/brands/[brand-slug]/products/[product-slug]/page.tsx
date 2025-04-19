@@ -182,7 +182,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
     : 3.5 // Fallback to 3.5 if no ratings exist
 
   // Calculate Bayesian average
-  const C = 3 // confidence factor
+  const C = 10 // confidence factor - match other pages
   const sumOfRatings = ratings.reduce((a, b) => a + b, 0)
   const averageRating = ratingCount > 0
     ? (C * meanRating + sumOfRatings) / (C + ratingCount)
