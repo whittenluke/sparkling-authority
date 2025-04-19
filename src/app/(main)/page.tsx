@@ -55,8 +55,8 @@ export default async function Home() {
     const ratings = product.reviews?.map(r => r.overall_rating) || []
     const ratingCount = ratings.length
     
-    // Skip products with less than 3 reviews
-    if (ratingCount < 3) {
+    // Skip products with less than 10 reviews
+    if (ratingCount < 10) {
       return {
         ...product,
         averageRating: 0,
@@ -65,7 +65,7 @@ export default async function Home() {
     }
 
     // Calculate Bayesian average
-    const C = 3 // confidence factor
+    const C = 10 // confidence factor
     const sumOfRatings = ratings.reduce((a, b) => a + b, 0)
     const bayesianAverage = (C * meanRating + sumOfRatings) / (C + ratingCount)
 
@@ -75,7 +75,7 @@ export default async function Home() {
       ratingCount
     }
   })
-    .filter(p => p.ratingCount >= 3) // Only include products with 3+ reviews
+    .filter(p => p.ratingCount >= 10) // Only include products with 10+ reviews
     .sort((a, b) => {
       if (b.averageRating !== a.averageRating) {
         return b.averageRating - a.averageRating
