@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Star } from 'lucide-react'
 import { PostgrestError } from '@supabase/supabase-js'
+import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
 
 type Brand = {
   id: string
@@ -13,6 +14,7 @@ type Product = {
   id: string
   name: string
   slug: string
+  flavor: string[]
   brand: Brand
   reviews?: Array<{
     overall_rating: number
@@ -34,6 +36,7 @@ export default async function BestOverallPage() {
       id,
       name,
       slug,
+      flavor,
       brand:brand_id (
         id,
         name,
@@ -50,7 +53,7 @@ export default async function BestOverallPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="font-clash-display text-3xl font-medium tracking-tight text-primary">Best Overall Sparkling Waters</h1>
+          <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary">Best Overall Sparkling Waters</h1>
           <p className="mt-2 font-plus-jakarta text-lg leading-8 text-primary/80">
             The highest rated sparkling waters based on user ratings and reviews.
           </p>
@@ -71,8 +74,8 @@ export default async function BestOverallPage() {
     const ratings = product.reviews?.map(r => r.overall_rating) || []
     const ratingCount = ratings.length
     
-    // Skip products with less than 10 reviews
-    if (ratingCount < 10) {
+    // Skip products with less than 5 reviews
+    if (ratingCount < 5) {
       return {
         ...product,
         averageRating: 0,
@@ -91,7 +94,7 @@ export default async function BestOverallPage() {
       ratingCount
     }
   })
-    .filter(p => p.ratingCount >= 10) // Only include products with 10+ reviews
+    .filter(p => p.ratingCount >= 5) // Only include products with 5+ reviews
     .sort((a, b) => {
       if (b.averageRating !== a.averageRating) {
         return b.averageRating - a.averageRating
@@ -103,65 +106,36 @@ export default async function BestOverallPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-clash-display text-3xl font-medium tracking-tight text-primary">Best Overall Sparkling Waters</h1>
+        <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary">Best Overall Sparkling Waters</h1>
         <p className="mt-2 font-plus-jakarta text-lg leading-8 text-primary/80">
           The highest rated sparkling waters based on user ratings and reviews.
         </p>
       </div>
 
       {productsWithRatings.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {productsWithRatings.map((product, index) => (
-            <Link
-              key={product.id}
-              href={`/explore/brands/${product.brand.slug}/products/${product.slug}`}
-              className="group block rounded-xl bg-card p-4 sm:p-6 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all"
-            >
-              <div className="flex items-start gap-3 sm:gap-6">
-                <div className="flex h-10 w-10 sm:h-14 sm:w-14 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg sm:text-xl font-medium">
-                  {index + 1}
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-foreground group-hover:text-primary break-words">
-                    {product.name}
-                  </h3>
-                  <p className="mt-0.5 sm:mt-1 text-sm text-muted-foreground">
-                    by {product.brand.name}
-                  </p>
-                </div>
-
-                <div className="flex flex-shrink-0 flex-col items-end gap-1 sm:gap-1.5">
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <span className="text-base sm:text-lg font-medium text-foreground">
-                      {product.averageRating.toFixed(1)}
-                    </span>
-                    <div className="flex gap-0.5">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          className={`h-4 w-4 sm:h-5 sm:w-5 ${
-                            star <= product.averageRating
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'fill-transparent text-yellow-400/25'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <span className="hidden sm:inline text-sm text-muted-foreground">
-                    ({product.ratingCount} rating{product.ratingCount !== 1 ? 's' : ''})
-                  </span>
-                </div>
+            <div key={product.id} className="relative">
+              <div className="absolute left-6 top-6 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg font-medium z-10">
+                {index + 1}
               </div>
-            </Link>
+              <div className="pl-24">
+                <ProductCard product={product} />
+              </div>
+            </div>
           ))}
         </div>
       ) : (
         <div className="text-center">
-          <p className="text-lg text-muted-foreground">
-            No ratings available yet. Be the first to rate a product!
+          <p className="font-plus-jakarta text-lg text-muted-foreground mb-4">
+            No ratings available yet.
           </p>
+          <Link 
+            href="/explore/products" 
+            className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-base font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+          >
+            Rate your favorite products!
+          </Link>
         </div>
       )}
     </div>
