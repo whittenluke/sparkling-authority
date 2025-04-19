@@ -59,27 +59,46 @@ export default async function BestOverallPage() {
     )
   }
 
+  // Calculate the mean rating across all products
+  const allRatings = products?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+  const meanRating = allRatings.length > 0 
+    ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length 
+    : 3.5 // Fallback to 3.5 if no ratings exist
+
   // Calculate average ratings and sort
   const productsWithRatings = products?.map(product => {
     // Use ALL ratings regardless of approval status - approval only matters for review text
     const ratings = product.reviews?.map(r => r.overall_rating) || []
-    const averageRating = ratings.length > 0 
-      ? ratings.reduce((a, b) => a + b, 0) / ratings.length 
-      : 0
+    const ratingCount = ratings.length
+    
+    // Skip products with less than 3 reviews
+    if (ratingCount < 3) {
+      return {
+        ...product,
+        averageRating: 0,
+        ratingCount: 0
+      }
+    }
+
+    // Calculate Bayesian average
+    const C = 3 // confidence factor
+    const sumOfRatings = ratings.reduce((a, b) => a + b, 0)
+    const bayesianAverage = (C * meanRating + sumOfRatings) / (C + ratingCount)
+
     return {
       ...product,
-      averageRating,
-      ratingCount: ratings.length
+      averageRating: bayesianAverage,
+      ratingCount
     }
   })
-    .filter(p => p.ratingCount > 0)
+    .filter(p => p.ratingCount >= 3) // Only include products with 3+ reviews
     .sort((a, b) => {
       if (b.averageRating !== a.averageRating) {
         return b.averageRating - a.averageRating
       }
       return b.ratingCount - a.ratingCount
     })
-    .slice(0, 10) || []
+    .slice(0, 50) || []
 
   return (
     <div className="space-y-8">
