@@ -4,10 +4,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { LogOut, Menu, Moon, Sun, User, X, LayoutDashboard } from 'lucide-react'
 import { useAuth } from '@/lib/supabase/auth-context'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, createContext, useContext } from 'react'
 import { useTheme } from '@/components/theme-provider'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { isAdmin } from '@/lib/supabase/admin'
+import { createBrowserClient } from '@supabase/ssr'
 
 const navigation = {
   explore: {
@@ -50,6 +51,93 @@ const navigation = {
       { name: 'Sparkling Water News', href: '/community/news' },
     ],
   },
+}
+
+// Create a context for the display name
+const DisplayNameContext = createContext<{
+  displayName: string | null;
+  setDisplayName: (name: string | null) => void;
+}>({
+  displayName: null,
+  setDisplayName: () => {},
+})
+
+// Create a provider component that handles the real-time subscription
+function DisplayNameProvider({ children, user }: { children: React.ReactNode; user: SupabaseUser | null }) {
+  const [displayName, setDisplayName] = useState<string | null>(null)
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  useEffect(() => {
+    let mounted = true
+
+    async function fetchDisplayName() {
+      if (!user) return
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('display_name, username')
+        .eq('id', user.id)
+        .single()
+      if (error) {
+        console.error('Error fetching display name:', error)
+        return
+      }
+      if (mounted) {
+        setDisplayName(data?.display_name || data?.username || user.email?.split('@')[0] || 'user')
+      }
+    }
+
+    if (user) {
+      fetchDisplayName()
+    }
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel(`profile_changes_${user?.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${user?.id}`,
+        },
+        (payload) => {
+          console.log('Profile update received:', payload)
+          if (mounted) {
+            const newProfile = payload.new as { display_name?: string; username?: string }
+            console.log('New profile data:', newProfile)
+            const newName = newProfile.display_name || 
+              newProfile.username || 
+              (user?.email ? user.email.split('@')[0] : 'user')
+            console.log('Updating display name to:', newName)
+            setDisplayName(newName)
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('Subscription status:', status)
+      })
+
+    return () => {
+      console.log('Cleaning up real-time subscription')
+      mounted = false
+      supabase.removeChannel(channel)
+    }
+  }, [user?.id, user?.email, supabase])
+
+  return (
+    <DisplayNameContext.Provider value={{ displayName, setDisplayName }}>
+      {children}
+    </DisplayNameContext.Provider>
+  )
+}
+
+// Custom hook to use the display name context
+function useDisplayName() {
+  return useContext(DisplayNameContext)
 }
 
 function ThemeToggle() {
@@ -120,6 +208,7 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
 function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () => void }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isAdminUser, setIsAdminUser] = useState(false)
+  const { displayName } = useDisplayName()
 
   useEffect(() => {
     async function checkAdminStatus() {
@@ -140,7 +229,7 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
         className="flex items-center space-x-2 text-primary hover:text-primary/90 dark:text-gray-300 dark:hover:text-blue-400"
       >
         <User className="h-6 w-6" />
-        <span className="text-sm">{user.email?.split('@')[0]}</span>
+        <span className="text-sm">{displayName}</span>
       </button>
 
       {isOpen && (
@@ -184,6 +273,7 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
 function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { user, signOut } = useAuth()
   const [isAdminUser, setIsAdminUser] = useState(false)
+  const { displayName } = useDisplayName()
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -233,7 +323,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                   <User className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium">{user.email?.split('@')[0]}</p>
+                  <p className="font-medium">{displayName}</p>
                   <p className="text-sm text-muted-foreground">{user.email}</p>
                 </div>
               </div>
@@ -314,60 +404,62 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
-    <header className="bg-transparent">
-      <nav className="flex min-h-[80px]">
-        <div className="flex flex-1 items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center">
-              <Image
-                src={theme === 'dark' ? '/images/logos/logo-dark.png' : '/images/logos/logo-light.png'}
-                alt="Sparkling Authority"
-                width={500}
-                height={110}
-                className="h-12 w-auto"
-                priority
-              />
-              <span className="sr-only">SparklingAuthority</span>
-            </Link>
+    <DisplayNameProvider user={user}>
+      <header className="bg-transparent">
+        <nav className="flex min-h-[80px]">
+          <div className="flex flex-1 items-center justify-between px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center">
+              <Link href="/" className="flex items-center">
+                <Image
+                  src={theme === 'dark' ? '/images/logos/logo-dark.png' : '/images/logos/logo-light.png'}
+                  alt="Sparkling Authority"
+                  width={500}
+                  height={110}
+                  className="h-12 w-auto"
+                  priority
+                />
+                <span className="sr-only">SparklingAuthority</span>
+              </Link>
+              
+              <div className="hidden sm:ml-12 sm:flex sm:space-x-10">
+                {Object.entries(navigation).map(([key, section]) => (
+                  <NavDropdown key={key} section={section.name} items={section.items} />
+                ))}
+              </div>
+            </div>
             
-            <div className="hidden sm:ml-12 sm:flex sm:space-x-10">
-              {Object.entries(navigation).map(([key, section]) => (
-                <NavDropdown key={key} section={section.name} items={section.items} />
-              ))}
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <ThemeToggle />
-            <div className="hidden sm:flex sm:items-center">
-              {user ? (
-                <UserMenu user={user} signOut={signOut} />
-              ) : (
-                <Link
-                  href="/auth/login"
-                  className="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+            <div className="flex items-center space-x-4">
+              <ThemeToggle />
+              <div className="hidden sm:flex sm:items-center">
+                {user ? (
+                  <UserMenu user={user} signOut={signOut} />
+                ) : (
+                  <Link
+                    href="/auth/login"
+                    className="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+                  >
+                    Sign in
+                  </Link>
+                )}
+              </div>
+
+              {/* Mobile menu button */}
+              <div className="flex items-center sm:hidden">
+                <button
+                  onClick={() => setIsMobileMenuOpen(true)}
+                  className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
                 >
-                  Sign in
-                </Link>
-              )}
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="flex items-center sm:hidden">
-              <button
-                onClick={() => setIsMobileMenuOpen(true)}
-                className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
-              >
-                <span className="sr-only">Open main menu</span>
-                <Menu className="block h-6 w-6" />
-              </button>
+                  <span className="sr-only">Open main menu</span>
+                  <Menu className="block h-6 w-6" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Mobile menu */}
-        <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
-      </nav>
-    </header>
+          {/* Mobile menu */}
+          <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+        </nav>
+      </header>
+    </DisplayNameProvider>
   )
 } 

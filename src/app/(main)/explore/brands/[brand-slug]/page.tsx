@@ -12,6 +12,39 @@ type Props = {
   }>
 }
 
+type Brand = {
+  id: string
+  name: string
+  description: string | null
+  founded_year: number | null
+  country_of_origin: string | null
+  product_lines: ProductLine[]
+  products: BrandProduct[]
+}
+
+type ProductLine = {
+  id: string
+  name: string
+  description: string | null
+  is_default: boolean
+}
+
+type BrandProduct = {
+  id: string
+  name: string
+  flavor: string[]
+  product_line_id: string
+  slug: string
+  brand: {
+    id: string
+    name: string
+    slug: string
+  }
+  reviews: {
+    overall_rating: number
+  }[]
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { 'brand-slug': brandSlug } = await params
   const supabase = createClient()
@@ -65,92 +98,129 @@ export default async function BrandPage({ params }: Props) {
         name,
         flavor,
         product_line_id,
-        slug
+        slug,
+        brand:brand_id (
+          id,
+          name,
+          slug
+        ),
+        reviews (
+          overall_rating
+        )
       )
     `)
     .eq('slug', brandSlug)
-    .single()
+    .single() as { data: Brand | null }
 
   if (!brand) {
     notFound()
   }
 
+  // Calculate average ratings for products
+  const productsWithRatings = brand.products.map((product: BrandProduct) => {
+    const ratings = product.reviews.map(r => r.overall_rating)
+    const averageRating = ratings.length > 0 
+      ? ratings.reduce((a: number, b: number) => a + b, 0) / ratings.length 
+      : 0
+    
+    return {
+      ...product,
+      averageRating,
+      ratingCount: ratings.length,
+      brand: {
+        id: product.brand.id,
+        name: product.brand.name,
+        slug: product.brand.slug
+      }
+    }
+  })
+
   // Sort product lines to ensure default line comes first
-  const productLines = (brand.product_lines || []).sort((a: { is_default: boolean, name: string }, b: { is_default: boolean, name: string }) => {
+  const productLines = (brand.product_lines || []).sort((a: ProductLine, b: ProductLine) => {
     if (a.is_default) return -1
     if (b.is_default) return 1
     return a.name.localeCompare(b.name)
   })
 
   return (
-    <div className="space-y-8">
-      {/* Breadcrumb */}
-      <nav className="flex" aria-label="Breadcrumb">
-        <ol className="flex items-center space-x-2">
-          <li>
-            <Link 
-              href="/explore/brands"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-              Brands
-            </Link>
-          </li>
-          <li>
-            <svg className="h-5 w-5 text-muted-foreground" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-            </svg>
-          </li>
-          <li>
-            <span className="text-sm font-medium text-foreground">{brand.name}</span>
-          </li>
-        </ol>
-      </nav>
+    <div className="min-h-screen flex flex-col bg-background">
+      <main className="flex-grow">
+        <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
+          <div className="space-y-8">
+            {/* Breadcrumb */}
+            <nav className="flex" aria-label="Breadcrumb">
+              <ol className="flex items-center space-x-2">
+                <li>
+                  <Link 
+                    href="/explore/brands"
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground"
+                  >
+                    Brands
+                  </Link>
+                </li>
+                <li>
+                  <svg className="h-5 w-5 text-muted-foreground" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  </svg>
+                </li>
+                <li>
+                  <span className="text-sm font-medium text-foreground">{brand.name}</span>
+                </li>
+              </ol>
+            </nav>
 
-      {/* Brand Header */}
-      <div>
-        <div className="flex items-center gap-6">
-          {/* Brand Logo/Letter */}
-          <div className="h-20 w-20 rounded-xl bg-muted flex items-center justify-center text-foreground text-3xl font-medium">
-            {brand.name.charAt(0)}
-          </div>
+            {/* Brand Header */}
+            <div>
+              <div className="flex items-center gap-6">
+                {/* Brand Logo/Letter */}
+                <div className="h-20 w-20 rounded-xl bg-muted flex items-center justify-center text-foreground text-3xl font-medium">
+                  {brand.name.charAt(0)}
+                </div>
 
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">{brand.name}</h1>
-            {brand.description && (
-              <p className="mt-2 text-lg text-muted-foreground">{brand.description}</p>
-            )}
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight text-foreground">{brand.name}</h1>
+                  {brand.description && (
+                    <p className="mt-2 text-lg text-muted-foreground">{brand.description}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Brand Quick Stats */}
+              <dl className="mt-6 grid grid-cols-3 gap-4">
+                <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
+                  <dt className="text-sm font-medium text-muted-foreground">Founded</dt>
+                  <dd className="mt-1 text-lg font-medium text-foreground">
+                    {brand.founded_year || 'Unknown'}
+                  </dd>
+                </div>
+                <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
+                  <dt className="text-sm font-medium text-muted-foreground">Country</dt>
+                  <dd className="mt-1 text-lg font-medium text-foreground">
+                    {brand.country_of_origin || 'Unknown'}
+                  </dd>
+                </div>
+                <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
+                  <dt className="text-sm font-medium text-muted-foreground">Products</dt>
+                  <dd className="mt-1 text-lg font-medium text-foreground">
+                    {productsWithRatings.length}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            {/* Products Section with Line Filter */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-foreground">Products</h2>
+              </div>
+              <ProductsSection
+                products={productsWithRatings}
+                productLines={productLines}
+              />
+            </div>
           </div>
         </div>
-
-        {/* Brand Quick Stats */}
-        <dl className="mt-6 grid grid-cols-3 gap-4">
-          <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
-            <dt className="text-sm font-medium text-muted-foreground">Founded</dt>
-            <dd className="mt-1 text-lg font-medium text-foreground">
-              {brand.founded_year || 'Unknown'}
-            </dd>
-          </div>
-          <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
-            <dt className="text-sm font-medium text-muted-foreground">Country</dt>
-            <dd className="mt-1 text-lg font-medium text-foreground">
-              {brand.country_of_origin || 'Unknown'}
-            </dd>
-          </div>
-          <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
-            <dt className="text-sm font-medium text-muted-foreground">Products</dt>
-            <dd className="mt-1 text-lg font-medium text-foreground">
-              {brand.products?.length || 0}
-            </dd>
-          </div>
-        </dl>
-      </div>
-
-      {/* Products Section with Line Filter */}
-      <ProductsSection
-        products={brand.products || []}
-        productLines={productLines}
-        brandSlug={brandSlug}
-      />
+      </main>
     </div>
   )
 }

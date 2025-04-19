@@ -82,7 +82,7 @@ export default async function Home() {
       }
       return b.ratingCount - a.ratingCount
     })
-    .slice(0, 3) : []
+    .slice(0, 5) : [] // Show top 5 products
 
   return (
     <>
@@ -118,12 +118,11 @@ export default async function Home() {
       {topProducts.length > 0 && (
         <div className="mt-16 max-w-3xl mx-auto w-full px-4 sm:px-0">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="font-clash-display text-xl sm:text-2xl font-medium text-primary">Top Rated</h2>
             <Link 
               href="/ratings/best-overall"
-              className="text-sm font-medium text-primary hover:text-primary/90"
+              className="font-clash-display text-xl sm:text-2xl font-medium text-primary hover:text-primary/90"
             >
-              View All
+              Top Rated
             </Link>
           </div>
           
@@ -171,6 +170,15 @@ export default async function Home() {
                 </div>
               </Link>
             ))}
+          </div>
+
+          <div className="mt-6 text-center">
+            <Link 
+              href="/ratings/best-overall"
+              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
+            >
+              View All Top Rated
+            </Link>
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
 
 type Product = {
   id: string
@@ -9,6 +9,13 @@ type Product = {
   flavor: string[]
   product_line_id: string
   slug: string
+  averageRating: number
+  ratingCount: number
+  brand: {
+    id: string
+    name: string
+    slug: string
+  }
 }
 
 type ProductLine = {
@@ -21,12 +28,11 @@ type ProductLine = {
 type Props = {
   products: Product[]
   productLines: ProductLine[]
-  brandSlug: string
 }
 
-export function ProductsSection({ products, productLines, brandSlug }: Props) {
+export function ProductsSection({ products, productLines }: Props) {
   const [selectedLineId, setSelectedLineId] = useState<string | null>(
-    productLines[0]?.id || null
+    productLines.length > 1 ? null : productLines[0]?.id || null
   )
 
   const filteredProducts = selectedLineId
@@ -40,6 +46,20 @@ export function ProductsSection({ products, productLines, brandSlug }: Props) {
         <div className="mb-6">
           <h2 className="text-lg font-medium text-foreground mb-3">Product Lines</h2>
           <div className="flex flex-wrap gap-2">
+            {productLines.length > 1 && (
+              <button
+                onClick={() => setSelectedLineId(null)}
+                className={`
+                  px-3 py-1 rounded-full text-sm font-medium transition-colors
+                  ${selectedLineId === null
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-accent text-accent-foreground hover:bg-accent/80'
+                  }
+                `}
+              >
+                All Products
+              </button>
+            )}
             {productLines.map((line) => (
               <button
                 key={line.id}
@@ -55,20 +75,6 @@ export function ProductsSection({ products, productLines, brandSlug }: Props) {
                 {line.name}
               </button>
             ))}
-            {productLines.length > 1 && (
-              <button
-                onClick={() => setSelectedLineId(null)}
-                className={`
-                  px-3 py-1 rounded-full text-sm font-medium transition-colors
-                  ${selectedLineId === null
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-accent text-accent-foreground hover:bg-accent/80'
-                  }
-                `}
-              >
-                All Products
-              </button>
-            )}
           </div>
         </div>
       )}
@@ -76,33 +82,22 @@ export function ProductsSection({ products, productLines, brandSlug }: Props) {
       {/* Products Grid */}
       <div className="space-y-3">
         {filteredProducts.map((product) => (
-          <Link
+          <ProductCard
             key={product.id}
-            href={`/explore/brands/${brandSlug}/products/${product.slug}`}
-            className="group flex items-center gap-4 rounded-xl bg-card p-4 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all"
-          >
-            <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-foreground text-xl font-medium group-hover:bg-muted/80">
-              {product.name.charAt(0)}
-            </div>
-            
-            <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-foreground group-hover:text-primary">
-                {product.name}
-              </h3>
-              {product.flavor && product.flavor.length > 0 && (
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {product.flavor.map(flavor => (
-                    <span 
-                      key={flavor} 
-                      className="inline-block rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground"
-                    >
-                      {flavor}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </Link>
+            product={{
+              id: product.id,
+              name: product.name,
+              slug: product.slug,
+              brand: {
+                id: product.brand.id,
+                name: product.brand.name,
+                slug: product.brand.slug
+              },
+              flavor: product.flavor,
+              averageRating: product.averageRating,
+              ratingCount: product.ratingCount
+            }}
+          />
         ))}
       </div>
     </div>

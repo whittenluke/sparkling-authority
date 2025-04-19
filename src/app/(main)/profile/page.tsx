@@ -8,10 +8,8 @@ import { createClientComponentClient } from '@/lib/supabase/client'
 interface Profile {
   id: string
   username: string
-  display_name: string | null
+  display_name: string
   bio: string | null
-  website: string | null
-  avatar_url: string | null
   is_admin: boolean
   reputation_score: number
 }
@@ -65,11 +63,8 @@ export default function ProfilePage() {
       const { error } = await supabase
         .from('profiles')
         .update({
-          username: profile.username,
           display_name: profile.display_name,
-          bio: profile.bio,
-          website: profile.website,
-          avatar_url: profile.avatar_url
+          bio: profile.bio
         })
         .eq('id', user.id)
 
@@ -118,29 +113,36 @@ export default function ProfilePage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-foreground">
-                Username
+              <label htmlFor="email" className="block text-sm font-medium text-foreground">
+                Email
               </label>
               <input
-                type="text"
-                id="username"
-                value={profile.username}
-                onChange={(e) => setProfile({ ...profile, username: e.target.value })}
-                className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
+                type="email"
+                id="email"
+                value={user?.email || ''}
+                disabled
+                className="mt-1 block w-full rounded-md border border-input bg-muted px-3 py-2 text-muted-foreground shadow-sm sm:text-sm"
               />
+              <p className="mt-1 text-sm text-muted-foreground">
+                Your email address cannot be changed
+              </p>
             </div>
 
             <div>
               <label htmlFor="display_name" className="block text-sm font-medium text-foreground">
-                Display Name
+                Display Name <span className="text-destructive">*</span>
               </label>
               <input
                 type="text"
                 id="display_name"
-                value={profile.display_name || ''}
+                required
+                value={profile.display_name}
                 onChange={(e) => setProfile({ ...profile, display_name: e.target.value })}
                 className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
               />
+              <p className="mt-1 text-sm text-muted-foreground">
+                This is the name that will be shown to other users
+              </p>
             </div>
 
             <div>
@@ -152,32 +154,6 @@ export default function ProfilePage() {
                 rows={3}
                 value={profile.bio || ''}
                 onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="website" className="block text-sm font-medium text-foreground">
-                Website
-              </label>
-              <input
-                type="url"
-                id="website"
-                value={profile.website || ''}
-                onChange={(e) => setProfile({ ...profile, website: e.target.value })}
-                className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="avatar_url" className="block text-sm font-medium text-foreground">
-                Avatar URL
-              </label>
-              <input
-                type="url"
-                id="avatar_url"
-                value={profile.avatar_url || ''}
-                onChange={(e) => setProfile({ ...profile, avatar_url: e.target.value })}
                 className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
               />
             </div>
