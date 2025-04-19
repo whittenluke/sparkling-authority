@@ -9,7 +9,6 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get('code')
   const next = requestUrl.searchParams.get('next') || '/'
 
-  // Get the host from the request
   const host = request.headers.get('host')
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
   const baseUrl = `${protocol}://${host}`
@@ -21,14 +20,14 @@ export async function GET(request: Request) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
-          async get(name: string) {
-            return (await cookieStore).get(name)?.value
+          get(name: string) {
+            return cookieStore.get(name)?.value
           },
-          async set(name: string, value: string, options: CookieOptions) {
-            (await cookieStore).set({ name, value, ...options })
+          set(name: string, value: string, options: CookieOptions) {
+            cookieStore.set({ name, value, ...options })
           },
-          async remove(name: string, options: CookieOptions) {
-            (await cookieStore).set({ name, value: '', ...options })
+          remove(name: string, options: CookieOptions) {
+            cookieStore.set({ name, value: '', ...options })
           }
         }
       }
@@ -36,18 +35,31 @@ export async function GET(request: Request) {
 
     const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(code)
     
-    if (!error && session?.user) {
-      // Create profile if it doesn't exist
-      const { data: profile } = await supabase
+    if (error) {
+      console.error('Session exchange error:', error.message)
+      return NextResponse.redirect(new URL('/', baseUrl))
+    }
+
+    if (!session?.user) {
+      console.error('No session or user after code exchange')
+      return NextResponse.redirect(new URL('/', baseUrl))
+    }
+
+    try {
+      // Check if profile exists
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id')
         .eq('id', session.user.id)
         .single()
 
+      if (profileError && profileError.code !== 'PGRST116') {
+        throw profileError
+      }
+
       if (!profile) {
-        // Create profile with username from email
         const username = session.user.email?.split('@')[0] || 'user'
-        await supabase
+        const { error: insertError } = await supabase
           .from('profiles')
           .insert({
             id: session.user.id,
@@ -56,10 +68,16 @@ export async function GET(request: Request) {
             is_admin: false,
             reputation_score: 0
           })
+
+        if (insertError) {
+          throw insertError
+        }
       }
 
-      // Use the baseUrl for the redirect
       return NextResponse.redirect(new URL(next, baseUrl))
+    } catch (err) {
+      console.error('Profile creation error:', err)
+      return NextResponse.redirect(new URL('/', baseUrl))
     }
   }
 
