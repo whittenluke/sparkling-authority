@@ -1,29 +1,16 @@
 'use client'
 
 import { useAuth } from '@/lib/supabase/auth-context'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { StarRating } from './StarRating'
 
 export function SubmitReviewForm() {
-  const { user } = useAuth()
-  const router = useRouter()
+  const {} = useAuth()
   const [review, setReview] = useState('')
   const [rating, setRating] = useState(0)
 
-  // Redirect if not logged in
-  useEffect(() => {
-    if (!user) {
-      router.push('/auth/login?redirect=/community/reviews/submit')
-    }
-  }, [user, router])
-
-  if (!user) {
-    return null
-  }
-
   return (
-    <div className="bg-card text-card-foreground rounded-lg border shadow-sm dark:shadow-none">
+    <div className="bg-card text-card-foreground rounded-lg border shadow-sm dark:shadow-none opacity-75">
       <form className="p-6 space-y-6">
         {/* Product Search - Placeholder for now */}
         <div>
@@ -69,9 +56,10 @@ export function SubmitReviewForm() {
               className="w-full px-3 py-2 bg-background text-foreground border rounded-md 
                        placeholder:text-muted-foreground focus:outline-none focus:ring-2 
                        focus:ring-primary/20 dark:focus:ring-primary/30 resize-none"
+              disabled
             />
             <p className="mt-2 text-sm text-muted-foreground">
-              Minimum 50 characters required
+              Review submission coming soon
             </p>
           </div>
         </div>
@@ -79,14 +67,13 @@ export function SubmitReviewForm() {
         {/* Submit Button */}
         <div className="flex justify-end pt-2">
           <button
-            type="submit"
-            disabled={review.length < 50 || rating === 0}
+            type="button"
+            disabled
             className="px-4 py-2 text-sm font-medium rounded-md 
-                     bg-primary text-primary-foreground hover:bg-primary/90
-                     disabled:opacity-50 disabled:cursor-not-allowed
-                     transition-colors"
+                     bg-primary text-primary-foreground
+                     opacity-50 cursor-not-allowed"
           >
-            Submit Review
+            Coming Soon
           </button>
         </div>
       </form>

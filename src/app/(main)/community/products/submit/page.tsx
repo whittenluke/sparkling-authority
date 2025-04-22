@@ -59,8 +59,13 @@ export default function SubmitProductPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Submit a Product</h1>
           <p className="mt-2 text-lg text-muted-foreground">
-            Help us grow our database by submitting a sparkling water product.
+            Help us grow our database by adding a sparkling water product.
           </p>
+          <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/10">
+            <p className="text-sm font-medium text-primary">
+              Coming Soon! Product submission will be available shortly.
+            </p>
+          </div>
         </div>
         
         <SubmitProductForm />

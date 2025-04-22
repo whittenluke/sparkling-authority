@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { ProductCard } from './ProductCard'
+import { useDebounce } from '@/hooks/useDebounce'
 
 interface ProductListProps {
   searchQuery: string
@@ -32,14 +33,18 @@ export function ProductList({ searchQuery }: ProductListProps) {
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
+  const loadingRef = useRef(false)
+  const supabase = useRef(createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )).current
   
   const fetchProducts = useCallback(async (pageNum: number) => {
+    if (loadingRef.current) return []
+    
     try {
+      loadingRef.current = true
       setLoading(true)
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      )
       
       const start = (pageNum - 1) * PRODUCTS_PER_PAGE
       const end = start + PRODUCTS_PER_PAGE - 1
@@ -103,9 +108,30 @@ export function ProductList({ searchQuery }: ProductListProps) {
       setError('An unexpected error occurred: ' + (err instanceof Error ? err.message : String(err)))
       return []
     } finally {
+      loadingRef.current = false
       setLoading(false)
     }
-  }, [searchQuery])
+  }, [searchQuery, supabase])
+  
+  const loadMore = useCallback(async () => {
+    if (loadingRef.current || !hasMore) return
+    
+    const nextPage = page + 1
+    const newProducts = await fetchProducts(nextPage)
+    
+    if (newProducts.length > 0) {
+      setProducts(prev => {
+        const existingIds = new Set(prev.map(p => p.id))
+        const uniqueNewProducts = newProducts.filter(p => !existingIds.has(p.id))
+        return [...prev, ...uniqueNewProducts]
+      })
+      setPage(nextPage)
+    } else {
+      setHasMore(false)
+    }
+  }, [page, hasMore, fetchProducts])
+  
+  const debouncedLoadMore = useDebounce(loadMore, 300)
   
   useEffect(() => {
     const loadInitialProducts = async () => {
@@ -119,25 +145,20 @@ export function ProductList({ searchQuery }: ProductListProps) {
   }, [searchQuery, fetchProducts])
   
   useEffect(() => {
-    const handleScroll = async () => {
+    const handleScroll = () => {
       if (
         window.innerHeight + document.documentElement.scrollTop >=
         document.documentElement.scrollHeight - 100 &&
-        !loading &&
+        !loadingRef.current &&
         hasMore
       ) {
-        const nextPage = page + 1
-        const newProducts = await fetchProducts(nextPage)
-        if (newProducts.length > 0) {
-          setProducts(prev => [...prev, ...newProducts])
-          setPage(nextPage)
-        }
+        debouncedLoadMore()
       }
     }
     
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [page, loading, hasMore, fetchProducts])
+  }, [debouncedLoadMore, hasMore])
   
   if (error) {
     return (

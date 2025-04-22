@@ -63,6 +63,11 @@ export default function SubmitReviewPage() {
           <p className="mt-2 text-lg text-muted-foreground">
             Share your thoughts about your favorite sparkling water.
           </p>
+          <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/10">
+            <p className="text-sm font-medium text-primary">
+              Coming Soon! Review submission will be available shortly.
+            </p>
+          </div>
         </div>
         
         <SubmitReviewForm />

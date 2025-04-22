@@ -38,7 +38,7 @@ export function SubmitProductForm() {
   }
 
   return (
-    <div className="bg-card text-card-foreground rounded-lg border shadow-sm dark:shadow-none">
+    <div className="bg-card text-card-foreground rounded-lg border shadow-sm dark:shadow-none opacity-75">
       <form className="p-6 space-y-6">
         {/* Brand Selection/Input */}
         <div>
@@ -55,6 +55,7 @@ export function SubmitProductForm() {
               className="w-full px-3 py-2 bg-background text-foreground border rounded-md 
                        placeholder:text-muted-foreground focus:outline-none focus:ring-2 
                        focus:ring-primary/20 dark:focus:ring-primary/30"
+              disabled
             />
             {brandName === 'other' && (
               <div className="mt-3">
@@ -66,6 +67,7 @@ export function SubmitProductForm() {
                   className="w-full px-3 py-2 bg-background text-foreground border rounded-md 
                            placeholder:text-muted-foreground focus:outline-none focus:ring-2 
                            focus:ring-primary/20 dark:focus:ring-primary/30"
+                  disabled
                 />
               </div>
             )}
@@ -87,6 +89,7 @@ export function SubmitProductForm() {
               className="w-full px-3 py-2 bg-background text-foreground border rounded-md 
                        placeholder:text-muted-foreground focus:outline-none focus:ring-2 
                        focus:ring-primary/20 dark:focus:ring-primary/30"
+              disabled
             />
           </div>
         </div>
@@ -106,6 +109,7 @@ export function SubmitProductForm() {
               className="w-full px-3 py-2 bg-background text-foreground border rounded-md 
                        placeholder:text-muted-foreground focus:outline-none focus:ring-2 
                        focus:ring-primary/20 dark:focus:ring-primary/30 resize-none"
+              disabled
             />
           </div>
         </div>
@@ -124,12 +128,14 @@ export function SubmitProductForm() {
                 className="flex-1 px-3 py-2 bg-background text-foreground border rounded-md 
                          placeholder:text-muted-foreground focus:outline-none focus:ring-2 
                          focus:ring-primary/20 dark:focus:ring-primary/30"
+                disabled
               />
               <button
                 type="button"
                 onClick={handleAddFlavor}
                 className="px-4 py-2 text-sm font-medium rounded-md 
                          bg-primary text-primary-foreground hover:bg-primary/90"
+                disabled
               >
                 Add
               </button>
@@ -146,6 +152,7 @@ export function SubmitProductForm() {
                     type="button"
                     onClick={() => handleRemoveFlavor(flavor)}
                     className="hover:text-destructive"
+                    disabled
                   >
                     ×
                   </button>
@@ -158,14 +165,13 @@ export function SubmitProductForm() {
         {/* Submit Button */}
         <div className="flex justify-end pt-2">
           <button
-            type="submit"
-            disabled={!productName || !brandName}
+            type="button"
+            disabled
             className="px-4 py-2 text-sm font-medium rounded-md 
-                     bg-primary text-primary-foreground hover:bg-primary/90
-                     disabled:opacity-50 disabled:cursor-not-allowed
-                     transition-colors"
+                     bg-primary text-primary-foreground
+                     opacity-50 cursor-not-allowed"
           >
-            Submit Product
+            Coming Soon
           </button>
         </div>
       </form>
