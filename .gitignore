@@ -73,3 +73,6 @@ supabase/.temp/
 # Email templates
 /email-templates/
 email-templates/
+
+DesignOpsRoadMap
+DesignUserVision

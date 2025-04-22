@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Star } from 'lucide-react'
 import { PostgrestError } from '@supabase/supabase-js'
 import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
 

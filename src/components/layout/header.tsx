@@ -126,7 +126,7 @@ function DisplayNameProvider({ children, user }: { children: React.ReactNode; us
       mounted = false
       supabase.removeChannel(channel)
     }
-  }, [user?.id, user?.email, supabase])
+  }, [user, supabase])
 
   return (
     <DisplayNameContext.Provider value={{ displayName, setDisplayName }}>
