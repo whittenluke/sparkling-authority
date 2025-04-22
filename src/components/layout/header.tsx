@@ -175,7 +175,7 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
         </Link>
       ) : (
         <button
-          className="inline-flex items-center text-lg font-clash-display font-medium text-primary hover:text-primary/90 dark:text-gray-100 dark:hover:text-blue-400"
+          className="inline-flex items-center text-lg font-clash-display font-medium text-primary hover:text-primary/90"
           onClick={() => setIsOpen(!isOpen)}
         >
           {section}
@@ -186,13 +186,13 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
         <>
           {/* Invisible area to ensure smooth mouse movement */}
           <div className="absolute -bottom-2 left-0 right-0 h-2 bg-transparent" />
-          <div className="absolute left-0 top-[calc(100%-2px)] w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
+          <div className="absolute left-0 top-[calc(100%-2px)] w-56 rounded-md shadow-lg bg-background ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
             <div className="py-1">
               {items.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block px-4 py-2 text-base font-clash-display text-primary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="block px-4 py-2 text-base font-clash-display text-primary hover:bg-accent"
                 >
                   {item.name}
                 </Link>
@@ -226,18 +226,18 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 text-primary hover:text-primary/90 dark:text-gray-300 dark:hover:text-blue-400"
+        className="flex items-center space-x-2 text-primary hover:text-primary/90"
       >
         <User className="h-6 w-6" />
         <span className="text-sm">{displayName}</span>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
+        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-background ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
           <div className="py-1">
             <Link
               href="/profile"
-              className="flex w-full items-center px-4 py-2 text-sm text-primary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+              className="flex w-full items-center px-4 py-2 text-sm text-primary hover:bg-accent"
               onClick={() => setIsOpen(false)}
             >
               <User className="mr-2 h-4 w-4" />
@@ -246,7 +246,7 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
             {isAdminUser && (
               <Link
                 href="/admin"
-                className="flex w-full items-center px-4 py-2 text-sm text-primary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="flex w-full items-center px-4 py-2 text-sm text-primary hover:bg-accent"
                 onClick={() => setIsOpen(false)}
               >
                 <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -258,7 +258,7 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
                 signOut()
                 setIsOpen(false)
               }}
-              className="flex w-full items-center px-4 py-2 text-sm text-primary hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+              className="flex w-full items-center px-4 py-2 text-sm text-primary hover:bg-accent"
             >
               <LogOut className="mr-2 h-4 w-4" />
               Sign out
@@ -275,7 +275,6 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
   const [isAdminUser, setIsAdminUser] = useState(false)
   const { displayName } = useDisplayName()
 
-  // Lock body scroll when menu is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -298,103 +297,104 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     checkAdminStatus()
   }, [user?.email])
 
-  return (
-    <div 
-      className={`fixed inset-0 z-50 transition-opacity duration-300 ${
-        isOpen ? 'opacity-100 bg-white dark:bg-gray-900' : 'opacity-0 pointer-events-none'
-      }`}
-    >
-      <div className="relative h-full w-full">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 p-2 rounded-full hover:bg-accent transition-colors"
-        >
-          <X className="h-6 w-6" />
-        </button>
+  if (!isOpen) return null
 
-        {/* Menu content */}
-        <div className="h-full pt-20 pb-6 px-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent">
-          {/* User section */}
-          {user ? (
-            <div className="mb-8 p-4 rounded-lg bg-card">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="h-5 w-5 text-primary" />
+  return (
+    <>
+      <div className="fixed inset-0 z-[9999] bg-white dark:bg-gray-900" />
+      <div className="fixed inset-0 z-[10000] overflow-y-auto">
+        <div className="relative min-h-full">
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute right-4 top-4 p-2 rounded-full hover:bg-accent transition-colors text-foreground"
+          >
+            <X className="h-6 w-6" />
+          </button>
+
+          {/* Menu content */}
+          <div className="pt-20 pb-6 px-4">
+            {/* User section */}
+            {user ? (
+              <div className="mb-8 p-4 rounded-lg bg-card border border-border">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">{displayName}</p>
+                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium">{displayName}</p>
-                  <p className="text-sm text-muted-foreground">{user.email}</p>
-                </div>
-              </div>
-              <div className="mt-4 space-y-2">
-                <Link
-                  href="/profile"
-                  className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent transition-colors"
-                  onClick={onClose}
-                >
-                  <User className="h-4 w-4" />
-                  Profile
-                </Link>
-                {isAdminUser && (
+                <div className="mt-4 space-y-2">
                   <Link
-                    href="/admin"
-                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent transition-colors"
+                    href="/profile"
+                    className="flex items-center gap-2 px-3 py-2 rounded-md bg-background hover:bg-accent/80 transition-colors text-foreground"
                     onClick={onClose}
                   >
-                    <LayoutDashboard className="h-4 w-4" />
-                    Admin Dashboard
+                    <User className="h-4 w-4" />
+                    Profile
                   </Link>
-                )}
-                <button
-                  onClick={() => {
-                    signOut()
-                    onClose()
-                  }}
-                  className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent transition-colors w-full"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Sign out
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="mb-8">
-              <Link
-                href="/auth/login"
-                className="w-full inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
-                onClick={onClose}
-              >
-                Sign in
-              </Link>
-            </div>
-          )}
-
-          {/* Navigation sections */}
-          <div className="space-y-6">
-            {Object.entries(navigation).map(([key, section]) => (
-              <div key={key} className="space-y-3">
-                <h3 className="px-3 text-xl font-clash-display font-medium text-primary">
-                  {section.name}
-                </h3>
-                <div className="space-y-1">
-                  {section.items.map((item) => (
+                  {isAdminUser && (
                     <Link
-                      key={item.name}
-                      href={item.href}
-                      className="block px-3 py-2 rounded-md text-base text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                      href="/admin"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-background hover:bg-accent/80 transition-colors text-foreground"
                       onClick={onClose}
                     >
-                      {item.name}
+                      <LayoutDashboard className="h-4 w-4" />
+                      Admin Dashboard
                     </Link>
-                  ))}
+                  )}
+                  <button
+                    onClick={() => {
+                      signOut()
+                      onClose()
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md bg-background hover:bg-accent/80 transition-colors w-full text-foreground"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign out
+                  </button>
                 </div>
               </div>
-            ))}
+            ) : (
+              <div className="mb-8">
+                <Link
+                  href="/auth/login"
+                  className="w-full inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
+                  onClick={onClose}
+                >
+                  Sign in
+                </Link>
+              </div>
+            )}
+
+            {/* Navigation sections */}
+            <div className="space-y-6">
+              {Object.entries(navigation).map(([key, section]) => (
+                <div key={key} className="space-y-3">
+                  <h3 className="px-3 text-xl font-clash-display font-medium text-primary dark:text-primary">
+                    {section.name}
+                  </h3>
+                  <div className="space-y-1">
+                    {section.items.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="block px-3 py-2 rounded-md text-base text-foreground bg-background hover:bg-accent/80 transition-colors"
+                        onClick={onClose}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
