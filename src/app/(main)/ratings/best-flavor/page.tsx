@@ -10,8 +10,14 @@ export default async function BestFlavorPage() {
         </p>
       </div>
       
-      {/* Content will go here */}
-      
+      <div className="flex flex-col items-center justify-center space-y-4 p-8 text-center bg-card rounded-lg border shadow-sm">
+        <p className="text-lg text-muted-foreground">
+          Our flavor ratings are coming soon! We're gathering community feedback to create comprehensive rankings.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          In the meantime, you can explore our product directory and start rating your favorite flavored sparkling waters.
+        </p>
+      </div>
     </div>
   )
 } 

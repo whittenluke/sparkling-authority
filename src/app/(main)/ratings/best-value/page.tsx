@@ -1,5 +1,7 @@
 export const dynamic = 'force-dynamic'
 
+import { ComingSoonMessage } from '@/components/ComingSoonMessage'
+
 export default async function BestValuePage() {
   return (
     <div className="space-y-8">
@@ -10,8 +12,10 @@ export default async function BestValuePage() {
         </p>
       </div>
       
-      {/* Content will go here */}
-      
+      <ComingSoonMessage 
+        title="Our value rankings are coming soon! We're gathering pricing data and community feedback to create comprehensive rankings."
+        description="start rating your favorite budget-friendly options."
+      />
     </div>
   )
 } 

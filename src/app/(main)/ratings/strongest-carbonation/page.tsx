@@ -1,5 +1,7 @@
 export const dynamic = 'force-dynamic'
 
+import { ComingSoonMessage } from '@/components/ComingSoonMessage'
+
 export default async function StrongestCarbonationPage() {
   return (
     <div className="space-y-8">
@@ -10,8 +12,10 @@ export default async function StrongestCarbonationPage() {
         </p>
       </div>
       
-      {/* Content will go here */}
-      
+      <ComingSoonMessage 
+        title="Our carbonation rankings are coming soon! We're gathering community feedback to create comprehensive rankings."
+        description="start rating your favorite highly carbonated waters."
+      />
     </div>
   )
 } 
