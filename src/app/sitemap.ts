@@ -215,17 +215,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .order('name')
 
   const productPages: MetadataRoute.Sitemap = (products as ProductWithBrand[] || [])
-    .map((product) => {
+    .flatMap((product) => {
       const brandSlug = getBrandSlug(product.brands)
-      if (!brandSlug) return null
-      return {
+      if (!brandSlug) return []
+      return [{
         url: `${baseUrl}/explore/brands/${brandSlug}/products/${product.slug}`,
         lastModified: product.updated_at ? new Date(product.updated_at) : new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.9,
-      }
+      }]
     })
-    .filter((entry): entry is MetadataRoute.Sitemap[0] => entry !== null)
 
   // Fetch all product lines with their brand slugs
   const { data: productLines } = await supabase
@@ -240,17 +239,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     `)
 
   const productLinePages: MetadataRoute.Sitemap = (productLines as ProductLineWithBrand[] || [])
-    .map((line) => {
+    .flatMap((line) => {
       const brandSlug = getBrandSlug(line.brands)
-      if (!brandSlug) return null
-      return {
+      if (!brandSlug) return []
+      return [{
         url: `${baseUrl}/explore/brands/${brandSlug}/line/${line.id}`,
         lastModified: line.updated_at ? new Date(line.updated_at) : new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.7,
-      }
+      }]
     })
-    .filter((entry): entry is MetadataRoute.Sitemap[0] => entry !== null)
 
   return [...staticPages, ...brandPages, ...productPages, ...productLinePages]
 }
