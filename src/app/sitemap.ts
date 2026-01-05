@@ -1,6 +1,32 @@
 import { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 
+type BrandSlug = {
+  slug: string
+}
+
+type ProductWithBrand = {
+  slug: string
+  updated_at: string | null
+  brand_id: string
+  brands: BrandSlug | BrandSlug[] | null
+}
+
+type ProductLineWithBrand = {
+  id: string
+  updated_at: string | null
+  brand_id: string
+  brands: BrandSlug | BrandSlug[] | null
+}
+
+function getBrandSlug(brands: BrandSlug | BrandSlug[] | null): string | null {
+  if (!brands) return null
+  if (Array.isArray(brands)) {
+    return brands.length > 0 ? brands[0].slug : null
+  }
+  return brands.slug
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://sparklingauthority.com'
   const supabase = createClient()
@@ -188,17 +214,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     `)
     .order('name')
 
-  const productPages: MetadataRoute.Sitemap = (products || [])
-    .filter((product) => product.brands && (product.brands as any).slug)
+  const productPages: MetadataRoute.Sitemap = (products as ProductWithBrand[] || [])
     .map((product) => {
-      const brand = product.brands as { slug: string }
+      const brandSlug = getBrandSlug(product.brands)
+      if (!brandSlug) return null
       return {
-        url: `${baseUrl}/explore/brands/${brand.slug}/products/${product.slug}`,
+        url: `${baseUrl}/explore/brands/${brandSlug}/products/${product.slug}`,
         lastModified: product.updated_at ? new Date(product.updated_at) : new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.9,
       }
     })
+    .filter((entry): entry is MetadataRoute.Sitemap[0] => entry !== null)
 
   // Fetch all product lines with their brand slugs
   const { data: productLines } = await supabase
@@ -212,17 +239,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       )
     `)
 
-  const productLinePages: MetadataRoute.Sitemap = (productLines || [])
-    .filter((line) => line.brands && (line.brands as any).slug)
+  const productLinePages: MetadataRoute.Sitemap = (productLines as ProductLineWithBrand[] || [])
     .map((line) => {
-      const brand = line.brands as { slug: string }
+      const brandSlug = getBrandSlug(line.brands)
+      if (!brandSlug) return null
       return {
-        url: `${baseUrl}/explore/brands/${brand.slug}/line/${line.id}`,
+        url: `${baseUrl}/explore/brands/${brandSlug}/line/${line.id}`,
         lastModified: line.updated_at ? new Date(line.updated_at) : new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.7,
       }
     })
+    .filter((entry): entry is MetadataRoute.Sitemap[0] => entry !== null)
 
   return [...staticPages, ...brandPages, ...productPages, ...productLinePages]
 }
