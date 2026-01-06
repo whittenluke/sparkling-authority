@@ -186,7 +186,7 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
         <>
           {/* Invisible area to ensure smooth mouse movement */}
           <div className="absolute -bottom-2 left-0 right-0 h-2 bg-transparent" />
-          <div className="absolute left-0 top-[calc(100%-2px)] w-56 rounded-md shadow-lg bg-background ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
+          <div className="absolute left-0 top-[calc(100%-2px)] w-56 rounded-md shadow-lg bg-white dark:bg-gray-900 ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
             <div className="py-1">
               {items.map((item) => (
                 <Link
@@ -233,7 +233,7 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-background ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
+        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-900 ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
           <div className="py-1">
             <Link
               href="/profile"
