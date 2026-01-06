@@ -53,7 +53,7 @@ export function Footer() {
                 <ul role="list" className="mt-4 space-y-4">
                   <li>
                     <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
-                      Privacy
+                      Privacy Policy
                     </Link>
                   </li>
                   <li>
