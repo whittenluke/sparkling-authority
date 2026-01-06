@@ -182,13 +182,6 @@ export default async function Home() {
           <h3 className="text-xl font-clash-display font-medium text-primary">Explore Products</h3>
         </Link>
 
-        <Link href="/explore/carbonation" className="group relative block rounded-2xl bg-card p-6 shadow-sm ring-1 ring-border hover:ring-primary">
-          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
-            <Sparkles className="h-7 w-7" />
-          </div>
-          <h3 className="text-xl font-clash-display font-medium text-primary">Explore Carbonation</h3>
-        </Link>
-
         <Link href="/explore/new-releases" className="group relative block rounded-2xl bg-card p-6 shadow-sm ring-1 ring-border hover:ring-primary">
           <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
             <PartyPopper className="h-7 w-7" />

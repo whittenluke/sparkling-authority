@@ -76,3 +76,6 @@ email-templates/
 
 DesignOpsRoadMap
 DesignUserVision
+
+# Local Netlify folder
+.netlify
