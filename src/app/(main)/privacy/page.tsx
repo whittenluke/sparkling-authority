@@ -114,7 +114,7 @@ export default function PrivacyPage() {
             If you have questions or concerns about this Privacy Policy, please contact us at:
           </p>
           <p>
-            <strong>Email:</strong> <a href="mailto: smuuuvshop@gmail.com" className="text-primary hover:underline">luke@sparklingauthority.com</a>
+            <strong>Email:</strong> <a href="mailto:smuuuvshop@gmail.com" className="text-primary hover:underline">luke@sparklingauthority.com</a>
           </p>
         </section>
       </div>
