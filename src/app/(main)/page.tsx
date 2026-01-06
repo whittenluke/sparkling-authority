@@ -89,6 +89,16 @@ export default async function Home() {
 
   return (
     <>
+      {/* Privacy Policy Link - Prominent for Google */}
+      <div className="mb-8 text-center">
+        <Link 
+          href="/privacy" 
+          className="text-base font-medium text-primary hover:text-primary/80 underline"
+        >
+          Privacy Policy
+        </Link>
+      </div>
+
       {/* Hero Section */}
       <div className="max-w-3xl mx-auto space-y-4">
         <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary sm:text-6xl text-center">
