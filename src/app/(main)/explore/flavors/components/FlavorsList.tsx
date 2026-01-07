@@ -55,7 +55,7 @@ export function FlavorsList({ flavors }: { flavors: string[] }) {
           slug
         )
       `)
-      .contains('flavor', [flavor])
+      .contains('flavor_tags', [flavor])
       .order('name')
 
     if (error) {

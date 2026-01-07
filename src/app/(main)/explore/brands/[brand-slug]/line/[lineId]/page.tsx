@@ -17,7 +17,7 @@ type Brand = {
 type Product = {
   id: string
   name: string
-  flavor: string[]
+  flavor_tags: string[]
   carbonation_level: number
   nutrition_info: {
     calories?: number
@@ -77,7 +77,7 @@ export default async function ProductLinePage({ params }: Props) {
       products (
         id,
         name,
-        flavor,
+        flavor_tags,
         carbonation_level,
         nutrition_info,
         containers
@@ -160,9 +160,9 @@ export default async function ProductLinePage({ params }: Props) {
                         <h3 className="font-medium text-gray-900 group-hover:text-blue-600">
                           {product.name}
                         </h3>
-                        {product.flavor && product.flavor.length > 0 && (
+                        {product.flavor_tags && product.flavor_tags.length > 0 && (
                           <div className="flex flex-wrap gap-2">
-                            {product.flavor.map((flavor: string) => (
+                            {product.flavor_tags.map((flavor: string) => (
                               <span 
                                 key={flavor} 
                                 className="inline-block rounded-full bg-gray-50 px-2.5 py-0.5 text-xs text-gray-600"

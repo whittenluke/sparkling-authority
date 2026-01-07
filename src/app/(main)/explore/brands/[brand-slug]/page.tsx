@@ -32,7 +32,7 @@ type ProductLine = {
 type BrandProduct = {
   id: string
   name: string
-  flavor: string[]
+  flavor_tags: string[]
   product_line_id: string
   slug: string
   brand: {
@@ -96,7 +96,7 @@ export default async function BrandPage({ params }: Props) {
       products (
         id,
         name,
-        flavor,
+        flavor_tags,
         product_line_id,
         slug,
         brand:brand_id (

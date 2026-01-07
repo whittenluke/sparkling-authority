@@ -88,7 +88,8 @@ export interface Database {
           brand_id: string
           name: string
           description: string | null
-          flavor: string | null
+          flavor_tags: string[] | null
+          flavor_categories: string[] | null
           carbonation_level: 'light' | 'medium' | 'strong'
           container_type: 'can' | 'bottle' | 'other'
           container_size: string | null
@@ -102,7 +103,8 @@ export interface Database {
           brand_id: string
           name: string
           description?: string | null
-          flavor?: string | null
+          flavor_tags?: string[] | null
+          flavor_categories?: string[] | null
           carbonation_level: 'light' | 'medium' | 'strong'
           container_type: 'can' | 'bottle' | 'other'
           container_size?: string | null
@@ -116,7 +118,8 @@ export interface Database {
           brand_id?: string
           name?: string
           description?: string | null
-          flavor?: string | null
+          flavor_tags?: string[] | null
+          flavor_categories?: string[] | null
           carbonation_level?: 'light' | 'medium' | 'strong'
           container_type?: 'can' | 'bottle' | 'other'
           container_size?: string | null

@@ -314,7 +314,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
             <div>
               <h2 className="text-lg font-medium text-foreground">Flavors</h2>
               <div className="mt-2 flex flex-wrap gap-2">
-                {product.flavor.map((flavor: string) => (
+                {product.flavor_tags && product.flavor_tags.map((flavor: string) => (
                   <span
                     key={flavor}
                     className="inline-flex items-center rounded-full bg-accent px-3 py-1 text-sm font-medium text-accent-foreground ring-1 ring-inset ring-border"

@@ -13,7 +13,7 @@ type Product = {
   id: string
   name: string
   slug: string
-  flavor: string[]
+  flavor_tags: string[]
   brand: Brand
   reviews?: Array<{
     overall_rating: number
@@ -35,7 +35,7 @@ export default async function Home() {
       id,
       name,
       slug,
-      flavor,
+      flavor_tags,
       brand:brand_id (
         id,
         name,

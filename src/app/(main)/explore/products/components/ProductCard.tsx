@@ -19,7 +19,7 @@ type Product = {
   name: string
   slug: string
   brand: Brand
-  flavor: string[]
+  flavor_tags: string[]
   averageRating?: number
   ratingCount: number
 }
@@ -137,9 +137,9 @@ export function ProductCard({ product }: ProductCardProps) {
             <p className="text-sm text-muted-foreground">
               by {product.brand.name}
             </p>
-            {product.flavor && product.flavor.length > 0 && (
+            {product.flavor_tags && product.flavor_tags.length > 0 && (
               <div className="mt-1.5 flex flex-wrap gap-1">
-                {product.flavor.map((flavor) => (
+                {product.flavor_tags.map((flavor) => (
                   <span
                     key={flavor}
                     className="inline-flex items-center rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground"

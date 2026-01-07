@@ -6,7 +6,7 @@ import { ProductCard } from '@/app/(main)/explore/products/components/ProductCar
 type Product = {
   id: string
   name: string
-  flavor: string[]
+  flavor_tags: string[]
   product_line_id: string
   slug: string
   averageRating?: number
@@ -93,7 +93,7 @@ export function ProductsSection({ products, productLines }: Props) {
                 name: product.brand.name,
                 slug: product.brand.slug
               },
-              flavor: product.flavor,
+              flavor_tags: product.flavor_tags,
               averageRating: product.averageRating,
               ratingCount: product.ratingCount
             }}

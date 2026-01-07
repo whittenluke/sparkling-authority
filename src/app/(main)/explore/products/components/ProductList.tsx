@@ -20,7 +20,7 @@ type Product = {
   name: string
   slug: string
   brand: Brand
-  flavor: string[]
+  flavor_tags: string[]
   averageRating: number
   ratingCount: number
 }
@@ -55,7 +55,7 @@ export function ProductList({ searchQuery }: ProductListProps) {
           id,
           name,
           slug,
-          flavor,
+          flavor_tags,
           brand:brand_id (
             id,
             name,
@@ -96,7 +96,7 @@ export function ProductList({ searchQuery }: ProductListProps) {
             name: brand.name,
             slug: brand.slug
           },
-          flavor: product.flavor || [],
+          flavor_tags: product.flavor_tags || [],
           averageRating,
           ratingCount: ratings.length
         }

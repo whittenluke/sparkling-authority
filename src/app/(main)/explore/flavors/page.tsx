@@ -29,9 +29,9 @@ export default async function FlavorsPage() {
   // Get all unique flavors from products
   const { data: flavorsData, error } = await supabase
     .from('products')
-    .select('flavor')
-    .not('flavor', 'eq', '{}')
-    .not('flavor', 'is', null)
+    .select('flavor_tags')
+    .not('flavor_tags', 'eq', '{}')
+    .not('flavor_tags', 'is', null)
 
   if (error) {
     console.error('Error fetching flavors:', error)
@@ -40,7 +40,7 @@ export default async function FlavorsPage() {
 
   // Extract and flatten all flavors from products
   const allFlavors = flavorsData?.reduce((acc: string[], product) => {
-    return acc.concat(product.flavor || [])
+    return acc.concat(product.flavor_tags || [])
   }, [])
 
   // Get unique flavors and sort alphabetically
