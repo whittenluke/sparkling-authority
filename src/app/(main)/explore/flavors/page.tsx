@@ -23,8 +23,14 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function FlavorsPage() {
+type FlavorsPageProps = {
+  searchParams: Promise<{ category?: string }>
+}
+
+export default async function FlavorsPage({ searchParams }: FlavorsPageProps) {
   const supabase = createClient()
+  const params = await searchParams
+  const initialCategory = params.category
   
   // Get all unique flavor categories from products
   const { data: categoriesData, error } = await supabase
@@ -55,7 +61,7 @@ export default async function FlavorsPage() {
           <p className="font-plus-jakarta text-muted-foreground">No flavor categories found in the database.</p>
         </div>
       ) : (
-        <FlavorsList categories={uniqueCategories} />
+        <FlavorsList categories={uniqueCategories} initialExpandedCategory={initialCategory} />
       )}
     </div>
   )

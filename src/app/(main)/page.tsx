@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Crown, Cherry, Grid3x3, Sparkles, PartyPopper, MapPin, Star, Sparkles as SparklesIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
+import { BrowseByFlavor } from '@/components/home/BrowseByFlavor'
 
 type Brand = {
   id: string
@@ -116,6 +117,9 @@ export default async function Home() {
           Browse Top-Rated Waters
         </Link>
       </div>
+
+      {/* Browse by Flavor Section */}
+      <BrowseByFlavor />
 
       {/* Best Overall Section */}
       {topProducts.length > 0 && (

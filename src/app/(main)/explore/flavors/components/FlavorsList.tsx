@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClientComponentClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { ChevronDown, ChevronUp } from 'lucide-react'
@@ -24,11 +24,27 @@ function formatCategoryName(category: string): string {
     .join(' ')
 }
 
-export function FlavorsList({ categories }: { categories: string[] }) {
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
+type FlavorsListProps = {
+  categories: string[]
+  initialExpandedCategory?: string
+}
+
+export function FlavorsList({ categories, initialExpandedCategory }: FlavorsListProps) {
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(initialExpandedCategory || null)
   const [products, setProducts] = useState<FlavorProduct[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const supabase = createClientComponentClient()
+  const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+
+  const scrollToCategory = (category: string) => {
+    const element = categoryRefs.current[category]
+    if (element) {
+      // Scroll with a small offset from the top for better UX
+      const yOffset = -20
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset
+      window.scrollTo({ top: y, behavior: 'smooth' })
+    }
+  }
 
   const toggleCategory = async (category: string) => {
     if (expandedCategory === category) {
@@ -68,13 +84,62 @@ export function FlavorsList({ categories }: { categories: string[] }) {
     }
 
     setIsLoading(false)
+    
+    // Scroll to the category after a brief delay to ensure content is rendered
+    setTimeout(() => scrollToCategory(category), 100)
   }
+
+  // Auto-load products for initial category on mount
+  useEffect(() => {
+    if (initialExpandedCategory) {
+      const loadInitialCategory = async () => {
+        setIsLoading(true)
+
+        const { data, error } = await supabase
+          .from('products')
+          .select(`
+            id,
+            name,
+            slug,
+            brand:brand_id (
+              id,
+              name,
+              slug
+            )
+          `)
+          .contains('flavor_categories', [initialExpandedCategory])
+          .order('name')
+
+        if (error) {
+          console.error('Error fetching products:', error)
+          setProducts([])
+        } else {
+          setProducts(data.map(p => ({
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            brand: Array.isArray(p.brand) ? p.brand[0] : p.brand
+          })))
+        }
+
+        setIsLoading(false)
+        
+        // Scroll to the initial category after content is loaded
+        setTimeout(() => scrollToCategory(initialExpandedCategory), 300)
+      }
+
+      loadInitialCategory()
+    }
+  }, [initialExpandedCategory, supabase])
 
   return (
     <div className="space-y-3">
       {categories.map((category) => (
         <div
           key={category}
+          ref={(el) => {
+            categoryRefs.current[category] = el
+          }}
           className="rounded-xl bg-card shadow-sm ring-1 ring-border overflow-hidden"
         >
           <button
