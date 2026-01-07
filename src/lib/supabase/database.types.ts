@@ -90,6 +90,7 @@ export interface Database {
           description: string | null
           flavor_tags: string[] | null
           flavor_categories: string[] | null
+          thumbnail: string | null
           carbonation_level: 'light' | 'medium' | 'strong'
           container_type: 'can' | 'bottle' | 'other'
           container_size: string | null
@@ -105,6 +106,7 @@ export interface Database {
           description?: string | null
           flavor_tags?: string[] | null
           flavor_categories?: string[] | null
+          thumbnail?: string | null
           carbonation_level: 'light' | 'medium' | 'strong'
           container_type: 'can' | 'bottle' | 'other'
           container_size?: string | null
@@ -120,6 +122,7 @@ export interface Database {
           description?: string | null
           flavor_tags?: string[] | null
           flavor_categories?: string[] | null
+          thumbnail?: string | null
           carbonation_level?: 'light' | 'medium' | 'strong'
           container_type?: 'can' | 'bottle' | 'other'
           container_size?: string | null
