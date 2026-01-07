@@ -26,36 +26,36 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function FlavorsPage() {
   const supabase = createClient()
   
-  // Get all unique flavors from products
-  const { data: flavorsData, error } = await supabase
+  // Get all unique flavor categories from products
+  const { data: categoriesData, error } = await supabase
     .from('products')
-    .select('flavor_tags')
-    .not('flavor_tags', 'eq', '{}')
-    .not('flavor_tags', 'is', null)
+    .select('flavor_categories')
+    .not('flavor_categories', 'eq', '{}')
+    .not('flavor_categories', 'is', null)
 
   if (error) {
-    console.error('Error fetching flavors:', error)
+    console.error('Error fetching flavor categories:', error)
     return null
   }
 
-  // Extract and flatten all flavors from products
-  const allFlavors = flavorsData?.reduce((acc: string[], product) => {
-    return acc.concat(product.flavor_tags || [])
+  // Extract and flatten all categories from products
+  const allCategories = categoriesData?.reduce((acc: string[], product) => {
+    return acc.concat(product.flavor_categories || [])
   }, [])
 
-  // Get unique flavors and sort alphabetically
-  const uniqueFlavors = [...new Set(allFlavors)].sort()
+  // Get unique categories and sort alphabetically
+  const uniqueCategories = [...new Set(allCategories)].sort()
 
   return (
     <div className="space-y-6">
       <FlavorsHeader />
       
-      {uniqueFlavors.length === 0 ? (
+      {uniqueCategories.length === 0 ? (
         <div className="rounded-xl bg-card p-6 text-center">
-          <p className="font-plus-jakarta text-muted-foreground">No flavors found in the database.</p>
+          <p className="font-plus-jakarta text-muted-foreground">No flavor categories found in the database.</p>
         </div>
       ) : (
-        <FlavorsList flavors={uniqueFlavors} />
+        <FlavorsList categories={uniqueCategories} />
       )}
     </div>
   )
