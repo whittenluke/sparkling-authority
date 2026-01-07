@@ -18,7 +18,7 @@ type Product = {
   flavor_tags: string[]
   brand: Brand
   averageRating?: number
-  ratingCount?: number
+  ratingCount: number
 }
 
 type ProductsContentProps = {
