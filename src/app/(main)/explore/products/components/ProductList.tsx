@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { createClientComponentClient } from '@/lib/supabase/client'
 import { ProductCard } from './ProductCard'
 import { useDebounce } from '@/hooks/useDebounce'
 
@@ -34,10 +34,7 @@ export function ProductList({ searchQuery }: ProductListProps) {
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const loadingRef = useRef(false)
-  const supabase = useRef(createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )).current
+  const supabase = createClientComponentClient()
   
   const fetchProducts = useCallback(async (pageNum: number) => {
     if (loadingRef.current) return []
