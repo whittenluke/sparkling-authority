@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { ProductsSection } from './components/ProductsSection'
+import { BrandHeader } from './components/BrandHeader'
 import { Metadata } from 'next'
 import Link from 'next/link'
 
@@ -190,43 +191,7 @@ export default async function BrandPage({ params }: Props) {
             </nav>
 
             {/* Brand Header */}
-            <div>
-              <div className="flex items-center gap-6">
-                {/* Brand Logo/Letter */}
-                <div className="h-20 w-20 rounded-xl bg-muted flex items-center justify-center text-foreground text-3xl font-medium">
-                  {brand.name.charAt(0)}
-                </div>
-
-                <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-foreground">{brand.name}</h1>
-                  {brand.description && (
-                    <p className="mt-2 text-lg text-muted-foreground">{brand.description}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Brand Quick Stats */}
-              <dl className="mt-6 grid grid-cols-3 gap-4">
-                <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
-                  <dt className="text-sm font-medium text-muted-foreground">Founded</dt>
-                  <dd className="mt-1 text-lg font-medium text-foreground">
-                    {brand.founded_year || 'Unknown'}
-                  </dd>
-                </div>
-                <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
-                  <dt className="text-sm font-medium text-muted-foreground">Country</dt>
-                  <dd className="mt-1 text-lg font-medium text-foreground">
-                    {brand.country_of_origin || 'Unknown'}
-                  </dd>
-                </div>
-                <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
-                  <dt className="text-sm font-medium text-muted-foreground">Products</dt>
-                  <dd className="mt-1 text-lg font-medium text-foreground">
-                    {productsWithRatings.length}
-                  </dd>
-                </div>
-              </dl>
-            </div>
+            <BrandHeader brand={brand} productCount={productsWithRatings.length} />
 
             {/* Products Section with Line Filter */}
             <div>

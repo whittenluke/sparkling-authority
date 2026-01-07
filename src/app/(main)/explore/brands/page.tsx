@@ -9,6 +9,8 @@ type Brand = {
   id: string
   name: string
   description: string | null
+  brand_logo_light: string | null
+  brand_logo_dark: string | null
   products: { count: number }[]
   slug: string
 }
@@ -42,6 +44,8 @@ export default async function BrandsPage() {
       name,
       description,
       slug,
+      brand_logo_light,
+      brand_logo_dark,
       products (count)
     `)
     .order('name')
@@ -51,6 +55,8 @@ export default async function BrandsPage() {
     id: brand.id,
     name: brand.name,
     description: brand.description || undefined,
+    brand_logo_light: brand.brand_logo_light || undefined,
+    brand_logo_dark: brand.brand_logo_dark || undefined,
     productCount: brand.products?.[0]?.count || 0,
     isProductLine: false,
     slug: brand.slug
