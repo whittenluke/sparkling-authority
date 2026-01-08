@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Star, MessageSquare } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/lib/supabase/auth-context'
@@ -20,6 +21,7 @@ type Product = {
   slug: string
   brand: Brand
   flavor_tags: string[]
+  thumbnail?: string | null
   averageRating?: number
   ratingCount: number
 }
@@ -104,7 +106,29 @@ export function ProductCard({ product }: ProductCardProps) {
         href={`/explore/brands/${product.brand.slug}/products/${product.slug}`}
         className="block"
       >
-        <div className="flex flex-col gap-2">
+        <div className="flex gap-4">
+          {/* Product Thumbnail */}
+          <div className="h-16 w-16 rounded-lg overflow-hidden flex items-center justify-center bg-muted shrink-0">
+            {product.thumbnail ? (
+              <Image
+                src={product.thumbnail}
+                alt={product.name}
+                width={64}
+                height={64}
+                className="object-cover h-full w-full"
+              />
+            ) : (
+              <div className="text-muted-foreground">
+                <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            )}
+          </div>
+
+          {/* Product Content */}
+          <div className="flex flex-col gap-2 flex-1 min-w-0">
           {/* Top: Title and Rating */}
           <div className="flex items-center justify-between">
             <h3 className="font-medium text-foreground group-hover:text-primary text-base truncate pr-4">
@@ -149,6 +173,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 ))}
               </div>
             )}
+          </div>
           </div>
         </div>
       </Link>

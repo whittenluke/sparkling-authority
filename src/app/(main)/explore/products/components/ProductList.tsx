@@ -21,6 +21,7 @@ type Product = {
   slug: string
   brand: Brand
   flavor_tags: string[]
+  thumbnail?: string | null
   averageRating: number
   ratingCount: number
 }
@@ -53,6 +54,7 @@ export function ProductList({ searchQuery }: ProductListProps) {
           name,
           slug,
           flavor_tags,
+          thumbnail,
           brand:brand_id (
             id,
             name,
@@ -94,6 +96,7 @@ export function ProductList({ searchQuery }: ProductListProps) {
             slug: brand.slug
           },
           flavor_tags: product.flavor_tags || [],
+          thumbnail: product.thumbnail,
           averageRating,
           ratingCount: ratings.length
         }

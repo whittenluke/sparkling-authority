@@ -16,6 +16,7 @@ type Product = {
   name: string
   slug: string
   flavor_tags: string[]
+  thumbnail?: string | null
   brand: Brand
   averageRating?: number
   ratingCount: number

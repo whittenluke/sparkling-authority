@@ -15,6 +15,7 @@ type Product = {
   name: string
   slug: string
   flavor_tags: string[]
+  thumbnail?: string | null
   brand: Brand
   reviews?: Array<{
     overall_rating: number
@@ -53,6 +54,7 @@ export default async function ProductsPage() {
       name,
       slug,
       flavor_tags,
+      thumbnail,
       brand:brand_id (
         id,
         name,

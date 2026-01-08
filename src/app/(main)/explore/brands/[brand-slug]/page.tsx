@@ -19,6 +19,8 @@ type Brand = {
   description: string | null
   founded_year: number | null
   country_of_origin: string | null
+  brand_logo_light: string | null
+  brand_logo_dark: string | null
   product_lines: ProductLine[]
   products: BrandProduct[]
 }
@@ -34,6 +36,7 @@ type BrandProduct = {
   id: string
   name: string
   flavor_tags: string[]
+  thumbnail?: string | null
   product_line_id: string
   slug: string
   brand: {
@@ -98,6 +101,7 @@ export default async function BrandPage({ params }: Props) {
         id,
         name,
         flavor_tags,
+        thumbnail,
         product_line_id,
         slug,
         brand:brand_id (
@@ -146,6 +150,7 @@ export default async function BrandPage({ params }: Props) {
     
     return {
       ...product,
+      thumbnail: product.thumbnail,
       averageRating: bayesianAverage,
       ratingCount: ratingCount,
       brand: {

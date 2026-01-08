@@ -7,6 +7,7 @@ type Product = {
   id: string
   name: string
   flavor_tags: string[]
+  thumbnail?: string | null
   product_line_id: string
   slug: string
   averageRating?: number
@@ -94,6 +95,7 @@ export function ProductsSection({ products, productLines }: Props) {
                 slug: product.brand.slug
               },
               flavor_tags: product.flavor_tags,
+              thumbnail: product.thumbnail,
               averageRating: product.averageRating,
               ratingCount: product.ratingCount
             }}
