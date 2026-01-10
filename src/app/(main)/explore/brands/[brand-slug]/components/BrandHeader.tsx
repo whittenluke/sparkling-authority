@@ -24,10 +24,10 @@ export function BrandHeader({ brand, productCount }: BrandHeaderProps) {
 
   return (
     <div>
-      <div className="flex items-center gap-6">
+      <div className="flex items-start gap-6">
         {/* Brand Logo/Letter */}
         {hasLogo ? (
-          <div className="h-20 w-20 rounded-xl overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800">
+          <div className="h-20 w-20 flex-shrink-0 rounded-xl overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800">
             <Image
               src={logoUrl}
               alt={brand.name}
@@ -37,12 +37,12 @@ export function BrandHeader({ brand, productCount }: BrandHeaderProps) {
             />
           </div>
         ) : (
-          <div className="h-20 w-20 rounded-xl bg-muted flex items-center justify-center text-foreground text-3xl font-medium">
+          <div className="h-20 w-20 flex-shrink-0 rounded-xl bg-muted flex items-center justify-center text-foreground text-3xl font-medium">
             {brand.name.charAt(0)}
           </div>
         )}
 
-        <div>
+        <div className="flex-1 min-w-0">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">{brand.name}</h1>
           {brand.description && (
             <p className="mt-2 text-lg text-muted-foreground">{brand.description}</p>
