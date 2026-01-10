@@ -35,17 +35,17 @@ export function BrandsGrid({ brands }: { brands: BrandEntry[] }) {
             className="group flex items-center gap-4 rounded-xl bg-card p-4 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all"
           >
             {hasLogo ? (
-              <div className="h-12 w-12 rounded-lg overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800">
+              <div className="h-16 w-16 rounded-lg overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800">
                 <Image
                   src={logoUrl}
                   alt={brand.name}
-                  width={48}
-                  height={48}
+                  width={64}
+                  height={64}
                   className="object-contain"
                 />
               </div>
             ) : (
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-xl font-medium">
+              <div className="h-16 w-16 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-xl font-medium">
                 {brand.name.charAt(0)}
               </div>
             )}
