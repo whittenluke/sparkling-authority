@@ -44,9 +44,9 @@ const navigation = {
   community: {
     name: 'Community',
     items: [
-      { name: 'Submit a Review', href: '/community/reviews/submit' },
-      { name: 'Submit a Product', href: '/community/products/submit' },
-      { name: 'Featured Reviews', href: '/community/reviews/featured' },
+      // { name: 'Submit a Review', href: '/community/reviews/submit' },
+      // { name: 'Submit a Product', href: '/community/products/submit' },
+      // { name: 'Featured Reviews', href: '/community/reviews/featured' },
       { name: 'Sparkling Water News', href: '/community/news' },
     ],
   },
