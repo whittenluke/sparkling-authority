@@ -16,8 +16,8 @@ const navigation = {
     items: [
       { name: 'All Brands', href: '/explore/brands' },
       { name: 'By Flavor', href: '/explore/flavors' },
-      { name: 'New Releases', href: '/explore/new-releases' },
-      { name: 'Regional Favorites', href: '/explore/regional' },
+      // { name: 'New Releases', href: '/explore/new-releases' },
+      // { name: 'Regional Favorites', href: '/explore/regional' },
       { name: 'Product Directory', href: '/explore/products' },
     ],
   },
@@ -25,10 +25,10 @@ const navigation = {
     name: 'Top Rated',
     items: [
       { name: 'Best Overall', href: '/ratings/best-overall' },
-      { name: 'Best Flavor', href: '/ratings/best-flavor' },
+      // { name: 'Best Flavor', href: '/ratings/best-flavor' },
       { name: 'Strongest Carbonation', href: '/ratings/strongest-carbonation' },
-      { name: 'Best Value', href: '/ratings/best-value' },
-      { name: 'Healthiest Options', href: '/ratings/healthiest-options' },
+      // { name: 'Best Value', href: '/ratings/best-value' },
+      // { name: 'Healthiest Options', href: '/ratings/healthiest-options' },
     ],
   },
   learn: {

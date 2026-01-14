@@ -57,18 +57,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
-    {
-      url: `${baseUrl}/explore/new-releases`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/explore/regional`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
     // Learn pages
     {
       url: `${baseUrl}/learn/buying`,
@@ -102,25 +90,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     // Ratings pages
     {
-      url: `${baseUrl}/ratings/best-flavor`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
       url: `${baseUrl}/ratings/best-overall`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/ratings/best-value`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/ratings/healthiest-options`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
