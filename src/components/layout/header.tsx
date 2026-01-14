@@ -168,7 +168,7 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
       {section === 'Explore' ? (
         <Link
           href="/explore/products"
-          className="inline-flex items-center text-lg font-clash-display font-medium text-primary hover:text-primary/90 dark:text-gray-100 dark:hover:text-blue-400"
+          className="inline-flex items-center text-lg font-clash-display font-medium text-primary hover:text-primary/90"
         >
           {section}
         </Link>
@@ -399,7 +399,6 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 
 export function Header() {
   const { user, signOut } = useAuth()
-  const { theme } = useTheme()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
@@ -409,12 +408,22 @@ export function Header() {
           <div className="flex flex-1 items-center justify-between px-4 sm:px-6 lg:px-8">
             <div className="flex items-center">
               <Link href="/" className="flex items-center">
+                {/* Light mode logo - hidden in dark mode */}
                 <Image
-                  src={theme === 'dark' ? '/images/logos/logo-dark.png' : '/images/logos/logo-light.png'}
+                  src="/images/logos/logo-light.png"
                   alt="Sparkling Authority"
                   width={500}
                   height={110}
-                  className="h-12 w-auto"
+                  className="h-12 w-auto dark:hidden"
+                  priority
+                />
+                {/* Dark mode logo - hidden in light mode */}
+                <Image
+                  src="/images/logos/logo-dark.png"
+                  alt="Sparkling Authority"
+                  width={500}
+                  height={110}
+                  className="h-12 w-auto hidden dark:block"
                   priority
                 />
                 <span className="sr-only">SparklingAuthority</span>
