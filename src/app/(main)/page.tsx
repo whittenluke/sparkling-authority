@@ -3,6 +3,7 @@ import { Crown, Cherry, Grid3x3 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
 import { BrowseByFlavor } from '@/components/home/BrowseByFlavor'
+import { BrowseByBrand } from '@/components/home/BrowseByBrand'
 
 type Brand = {
   id: string
@@ -177,6 +178,9 @@ export default async function Home() {
 
       {/* Browse by Flavor Section */}
       <BrowseByFlavor />
+
+      {/* Browse by Brand Section */}
+      <BrowseByBrand />
 
       {/* About Section */}
       <div className="mt-24 max-w-2xl mx-auto text-center">
