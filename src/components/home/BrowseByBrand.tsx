@@ -71,28 +71,26 @@ export function BrowseByBrand() {
               href={`/explore/brands/${brand.slug}`}
               className="group relative flex flex-col items-center justify-center rounded-2xl bg-card p-8 shadow-sm ring-1 ring-border hover:ring-primary transition-all text-center"
             >
-              <div className="flex h-20 w-20 items-center justify-center mb-4 overflow-hidden">
+              <div className="flex h-32 w-32 items-center justify-center mb-3 overflow-hidden">
                 {hasLogo ? (
                   <div className="h-full w-full bg-white rounded-xl flex items-center justify-center">
                     <Image
                       src={logoUrl}
                       alt={brand.name}
-                      width={80}
-                      height={80}
+                      width={128}
+                      height={128}
                       className="object-contain w-full h-full p-2"
                     />
                   </div>
                 ) : (
-                  <div className="h-full w-full bg-primary/10 rounded-xl flex items-center justify-center text-primary text-2xl font-medium">
+                  <div className="h-full w-full bg-primary/10 rounded-xl flex items-center justify-center text-primary text-3xl font-medium">
                     {brand.name.charAt(0)}
                   </div>
                 )}
               </div>
-              <div className="min-h-[3rem] flex items-center justify-center">
-                <h3 className="text-base font-clash-display font-medium text-primary">
-                  {brand.name}
-                </h3>
-              </div>
+              <h3 className="text-base font-clash-display font-medium text-primary">
+                {brand.name}
+              </h3>
             </Link>
           )
         })}

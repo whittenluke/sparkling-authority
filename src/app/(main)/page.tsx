@@ -176,11 +176,11 @@ export default async function Home() {
         </div>
       )}
 
-      {/* Browse by Flavor Section */}
-      <BrowseByFlavor />
-
       {/* Browse by Brand Section */}
       <BrowseByBrand />
+
+      {/* Browse by Flavor Section */}
+      <BrowseByFlavor />
 
       {/* About Section */}
       <div className="mt-24 max-w-2xl mx-auto text-center">
