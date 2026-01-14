@@ -102,33 +102,40 @@ export default async function Home() {
         </p>
       </div>
 
-      {/* Main Exploration Cards */}
-      <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
-        <Link href="/explore/brands" className="group relative block rounded-2xl bg-card p-8 shadow-sm ring-1 ring-border hover:ring-primary transition-all">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
-            <Crown className="h-8 w-8" />
-          </div>
-          <h3 className="text-xl font-clash-display font-medium text-primary">Explore by Brand</h3>
-        </Link>
+      {/* Exploration Section */}
+      <div className="mt-16">
+        <h2 className="text-center font-clash-display text-lg font-medium text-primary/60 mb-6">
+          Explore by
+        </h2>
+        
+        {/* Main Exploration Cards */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          <Link href="/explore/brands" className="group relative block rounded-2xl bg-card p-6 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3">
+              <Crown className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-clash-display font-medium text-primary">Brand</h3>
+          </Link>
 
-        <Link href="/explore/flavors" className="group relative block rounded-2xl bg-card p-8 shadow-sm ring-1 ring-border hover:ring-primary transition-all">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
-            <Cherry className="h-8 w-8" />
-          </div>
-          <h3 className="text-xl font-clash-display font-medium text-primary">Explore by Flavor</h3>
-        </Link>
+          <Link href="/explore/flavors" className="group relative block rounded-2xl bg-card p-6 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3">
+              <Cherry className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-clash-display font-medium text-primary">Flavor</h3>
+          </Link>
 
-        <Link href="/explore/products" className="group relative block rounded-2xl bg-card p-8 shadow-sm ring-1 ring-border hover:ring-primary transition-all">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
-            <Grid3x3 className="h-8 w-8" />
-          </div>
-          <h3 className="text-xl font-clash-display font-medium text-primary">Browse All Products</h3>
-        </Link>
+          <Link href="/explore/products" className="group relative block rounded-2xl bg-card p-6 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3">
+              <Grid3x3 className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-clash-display font-medium text-primary">All Products</h3>
+          </Link>
+        </div>
       </div>
 
       {/* Top Rated Section */}
       {topProducts.length > 0 && (
-        <div className="mt-16 max-w-3xl mx-auto w-full px-4 sm:px-0">
+        <div className="mt-24 max-w-3xl mx-auto w-full px-4 sm:px-0">
           <div className="flex items-center justify-between mb-6">
             <Link 
               href="/ratings/best-overall"
