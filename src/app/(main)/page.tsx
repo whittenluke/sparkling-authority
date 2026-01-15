@@ -93,6 +93,11 @@ export default async function Home() {
 
   return (
     <>
+      {/* Instacart Verification - Remove after verification */}
+      <p className="text-center text-xs text-muted-foreground">
+        Impact-Site-Verification: f08d42b3-ee32-4ba1-89ad-20274a6bf239
+      </p>
+
       {/* Hero Section */}
       <div className="max-w-3xl mx-auto space-y-3 text-center">
         <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary sm:text-6xl">
