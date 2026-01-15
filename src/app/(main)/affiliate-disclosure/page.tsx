@@ -121,7 +121,7 @@ export default function AffiliateDisclosurePage() {
 
         <div className="pt-6 border-t border-border">
           <p className="text-xs text-muted-foreground italic">
-            This disclosure is provided in accordance with the Federal Trade Commission's 16 CFR Part 255: "Guides Concerning the Use of Endorsements and Testimonials in Advertising."
+            This disclosure is provided in accordance with the Federal Trade Commission{"'"}s 16 CFR Part 255: {'"'}Guides Concerning the Use of Endorsements and Testimonials in Advertising.{'"'}
           </p>
         </div>
       </div>
