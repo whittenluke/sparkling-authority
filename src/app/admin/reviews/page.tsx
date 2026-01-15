@@ -38,7 +38,7 @@ export default function AdminReviews() {
       setLoading(true)
       setError(null)
 
-      let query = supabase
+      const query = supabase
         .from('reviews')
         .select(`
           *,
