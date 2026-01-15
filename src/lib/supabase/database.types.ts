@@ -143,6 +143,7 @@ export interface Database {
           aftertaste_rating: number | null
           review_text: string
           is_approved: boolean
+          moderation_status: string
           created_at: string
           updated_at: string
         }
@@ -156,6 +157,7 @@ export interface Database {
           aftertaste_rating?: number | null
           review_text: string
           is_approved?: boolean
+          moderation_status?: string
           created_at?: string
           updated_at?: string
         }
@@ -169,6 +171,7 @@ export interface Database {
           aftertaste_rating?: number | null
           review_text?: string
           is_approved?: boolean
+          moderation_status?: string
           created_at?: string
           updated_at?: string
         }
@@ -292,4 +295,4 @@ export interface Database {
       [_ in never]: never
     }
   }
-} 
+}
