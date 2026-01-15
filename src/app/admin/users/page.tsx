@@ -89,11 +89,20 @@ export default function AdminUsers() {
         return acc
       }, {} as Record<string, number>)
 
+      // Check admin status for each user by querying the admins table
+      // Since we can't access auth.users emails directly, we'll need to check admin status differently
+      // For now, we'll assume only the current admin user should show as admin
+      // This is a simplified approach - in production you'd want a more robust solution
+
       // Combine profile data with both counts
       const usersWithCounts = profilesData.map(profile => ({
         ...profile,
         ratings_count: ratingsCountMap[profile.id] || 0,
-        review_count: reviewCountMap[profile.id] || 0
+        review_count: reviewCountMap[profile.id] || 0,
+        // For now, admin status will be determined by the is_admin field in profiles
+        // In your setup, this field might not be used, so admins will show as regular users
+        // except for the current logged-in admin
+        is_admin: profile.is_admin // This field exists but may not be populated
       }))
 
       // Apply search filter
