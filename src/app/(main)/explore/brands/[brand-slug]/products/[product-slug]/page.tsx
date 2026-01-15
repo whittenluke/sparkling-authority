@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { QuickRating } from '@/components/products/QuickRating'
+import { WhereToBuy } from '@/components/products/WhereToBuy'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { Star } from 'lucide-react'
@@ -126,7 +127,11 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
       ),
       brands (
         name,
-        slug
+        slug,
+        amazon_link,
+        walmart_link,
+        instacart_link,
+        brand_website_link
       )
     `)
     .eq('brand_id', brand.id)
@@ -281,6 +286,15 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                   </div>
                 </div>
               </div>
+
+              {/* Where to Buy Section */}
+              <WhereToBuy
+                amazonLink={product.amazon_link || product.brands.amazon_link}
+                walmartLink={product.walmart_link || product.brands.walmart_link}
+                instacartLink={product.instacart_link || product.brands.instacart_link}
+                brandLink={product.product_website_link || product.brands.brand_website_link}
+                brandName={product.brands.name}
+              />
 
               {/* Description */}
               {product.description && (
