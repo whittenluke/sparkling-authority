@@ -2,11 +2,8 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useTheme } from '@/components/theme-provider'
 
 export function Footer() {
-  const { theme } = useTheme()
-  
   return (
     <footer className="app-background">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -14,11 +11,19 @@ export function Footer() {
           <div className="space-y-8">
             <div className="flex items-center">
               <Image
-                src={theme === 'dark' ? '/images/logos/logo-dark.png' : '/images/logos/logo-light.png'}
+                src="/images/logos/logo-light.png"
                 alt="Sparkling Authority"
                 width={500}
                 height={110}
-                className="h-12 w-auto"
+                className="h-12 w-auto dark:hidden"
+                priority
+              />
+              <Image
+                src="/images/logos/logo-dark.png"
+                alt="Sparkling Authority"
+                width={500}
+                height={110}
+                className="h-12 w-auto hidden dark:block"
                 priority
               />
             </div>
@@ -59,6 +64,11 @@ export function Footer() {
                   <li>
                     <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
                       Terms
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/affiliate-disclosure" className="text-sm text-muted-foreground hover:text-foreground">
+                      Affiliate Disclosure
                     </Link>
                   </li>
                 </ul>

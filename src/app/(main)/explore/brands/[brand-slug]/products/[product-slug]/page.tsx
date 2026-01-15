@@ -2,6 +2,7 @@ import * as React from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { QuickRating } from '@/components/products/QuickRating'
 import { WhereToBuy } from '@/components/products/WhereToBuy'
+import { AffiliateDisclosure } from '@/components/products/AffiliateDisclosure'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { Star } from 'lucide-react'
@@ -407,6 +408,11 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
               <p className="mt-2 text-sm text-muted-foreground">
                 {nutrition.ingredients}
               </p>
+            </div>
+
+            {/* Affiliate Disclosure */}
+            <div className="mt-8">
+              <AffiliateDisclosure />
             </div>
 
             {/* Reviews Section */}
