@@ -2,18 +2,23 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { createClientComponentClient } from '@/lib/supabase/client'
-import Link from 'next/link'
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
 
 type FlavorProduct = {
   id: string
   name: string
   slug: string
+  flavor_tags: string[]
+  thumbnail?: string | null
   brand: {
     id: string
     name: string
     slug: string
   }
+  reviews?: { overall_rating: number }[]
+  averageRating?: number
+  ratingCount: number
 }
 
 // Helper function to format category name for display
@@ -62,10 +67,15 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
         id,
         name,
         slug,
+        flavor_tags,
+        thumbnail,
         brand:brand_id (
           id,
           name,
           slug
+        ),
+        reviews (
+          overall_rating
         )
       `)
       .contains('flavor_categories', [category])
@@ -75,12 +85,27 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
       console.error('Error fetching products:', error)
       setProducts([])
     } else {
-      setProducts(data.map(p => ({
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        brand: Array.isArray(p.brand) ? p.brand[0] : p.brand
-      })))
+      const meanRating = 3.5 // Fallback mean rating
+      
+      setProducts(data.map(p => {
+        const ratings = p.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
+        const ratingCount = ratings.length
+        const averageRating = ratingCount > 0
+          ? (ratings.reduce((a: number, b: number) => a + b, 0) / ratingCount) * 0.7 + meanRating * 0.3
+          : undefined
+        
+        return {
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          flavor_tags: p.flavor_tags || [],
+          thumbnail: p.thumbnail,
+          brand: Array.isArray(p.brand) ? p.brand[0] : p.brand,
+          reviews: p.reviews,
+          averageRating,
+          ratingCount
+        }
+      }))
     }
 
     setIsLoading(false)
@@ -101,10 +126,15 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
             id,
             name,
             slug,
+            flavor_tags,
+            thumbnail,
             brand:brand_id (
               id,
               name,
               slug
+            ),
+            reviews (
+              overall_rating
             )
           `)
           .contains('flavor_categories', [initialExpandedCategory])
@@ -114,12 +144,27 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
           console.error('Error fetching products:', error)
           setProducts([])
         } else {
-          setProducts(data.map(p => ({
-            id: p.id,
-            name: p.name,
-            slug: p.slug,
-            brand: Array.isArray(p.brand) ? p.brand[0] : p.brand
-          })))
+          const meanRating = 3.5 // Fallback mean rating
+          
+          setProducts(data.map(p => {
+            const ratings = p.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
+            const ratingCount = ratings.length
+            const averageRating = ratingCount > 0
+              ? (ratings.reduce((a: number, b: number) => a + b, 0) / ratingCount) * 0.7 + meanRating * 0.3
+              : undefined
+            
+            return {
+              id: p.id,
+              name: p.name,
+              slug: p.slug,
+              flavor_tags: p.flavor_tags || [],
+              thumbnail: p.thumbnail,
+              brand: Array.isArray(p.brand) ? p.brand[0] : p.brand,
+              reviews: p.reviews,
+              averageRating,
+              ratingCount
+            }
+          }))
         }
 
         setIsLoading(false)
@@ -161,18 +206,21 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
               ) : products.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No products found in this category.</p>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {products.map((product) => (
-                    <Link
+                    <ProductCard
                       key={product.id}
-                      href={`/explore/brands/${product.brand.slug}/products/${product.slug}`}
-                      className="block rounded-lg bg-muted p-2 hover:bg-accent transition-colors sm:p-3"
-                    >
-                      <h3 className="font-medium text-foreground group-hover:text-primary">
-                        {product.name}
-                      </h3>
-                      <span className="text-sm text-muted-foreground">by {product.brand.name}</span>
-                    </Link>
+                      product={{
+                        id: product.id,
+                        name: product.name,
+                        slug: product.slug,
+                        brand: product.brand,
+                        flavor_tags: product.flavor_tags,
+                        thumbnail: product.thumbnail,
+                        averageRating: product.averageRating,
+                        ratingCount: product.ratingCount
+                      }}
+                    />
                   ))}
                 </div>
               )}
