@@ -178,7 +178,7 @@ export default function AdminDashboard() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Dashboard Overview</h1>
-        <p className="mt-2 text-muted-foreground">Monitor your site's activity and user engagement</p>
+        <p className="mt-2 text-muted-foreground">Monitor your site&apos;s activity and user engagement</p>
       </div>
 
       {/* Stats Grid */}
