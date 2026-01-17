@@ -36,11 +36,12 @@ export function BrowseByBrand() {
           brand_logo_dark,
           products (count)
         `)
-        .order('name', { ascending: false })
         .limit(9)
 
       if (data) {
-        setBrands(data)
+        // Shuffle the brands array to randomize order
+        const shuffled = [...data].sort(() => Math.random() - 0.5)
+        setBrands(shuffled)
       }
     }
 
@@ -69,7 +70,7 @@ export function BrowseByBrand() {
             <Link
               key={brand.id}
               href={`/explore/brands/${brand.slug}`}
-              className="group relative flex flex-col items-center justify-center rounded-2xl bg-card p-8 shadow-sm ring-1 ring-border hover:ring-primary transition-all text-center"
+              className="group relative flex flex-col items-center justify-center rounded-2xl bg-card p-6 shadow-sm ring-1 ring-border hover:ring-primary transition-all text-center"
             >
               <div className="flex h-32 w-32 items-center justify-center mb-3 overflow-hidden">
                 {hasLogo ? (
