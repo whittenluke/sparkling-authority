@@ -84,7 +84,6 @@ export default function TerminologyPage() {
                 <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> The term &quot;sparkling water&quot; encompasses various types of carbonated water, including naturally carbonated mineral water, artificially carbonated water, and flavored varieties.</p>
                 <p><span className="font-semibold text-muted-foreground">Note:</span> In many regions, &quot;sparkling water&quot; also serves as a catchall term for any bubbly water product.</p>
               </div>
-            </div>
 
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">Carbonated Water</h3>
@@ -94,7 +93,6 @@ export default function TerminologyPage() {
                 <p><span className="font-semibold text-muted-foreground">Related Terms:</span> Sparkling water, fizzy water.</p>
               </div>
             </div>
-
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">Effervescence</h3>
               <div className="space-y-3">
@@ -102,13 +100,6 @@ export default function TerminologyPage() {
                 <p><span className="font-semibold text-muted-foreground">Description:</span> Effervescence is the hallmark of sparkling water. It occurs when CO₂, either naturally occurring or artificially introduced, forms bubbles that rise and burst at the surface.</p>
               </div>
             </div>
-
-            <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
-              <h3 className="text-xl font-medium mb-4 text-primary">Fizz</h3>
-              <div className="space-y-3">
-                <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Informal term for the rapid escape of gas bubbles from carbonated water.</p>
-                <p><span className="font-semibold text-muted-foreground">Description:</span> &quot;Fizz&quot; is both a noun and a verb used to describe the bubbly sensation you experience when you sip sparkling water.</p>
-              </div>
             </div>
           </div>
         </section>
@@ -480,7 +471,7 @@ export default function TerminologyPage() {
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">For Health</h3>
               <div className="space-y-3">
-                <p className="mb-2"><span className="font-semibold text-muted-foreground">If you&apos;re monitoring your mineral intake,</span> check the labels on sparkling mineral waters versus club soda. Each offers a unique profile that can support your hydration goals without unnecessary additives.</p>
+                <p className="mb-2"><span className="font-semibold text-muted-foreground">If you're monitoring your mineral intake,</span> check the labels on sparkling mineral waters versus club soda. Each offers a unique profile that can support your hydration goals without unnecessary additives. Learn more about the health aspects of sparkling water on our <a href="/learn/health" className="text-primary hover:underline">Health Guide page</a>.</p>
               </div>
             </div>
           </div>

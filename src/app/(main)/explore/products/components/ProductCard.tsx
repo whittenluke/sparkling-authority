@@ -22,7 +22,8 @@ type Product = {
   brand: Brand
   flavor_tags: string[]
   thumbnail?: string | null
-  averageRating?: number
+  averageRating?: number // Bayesian average (for sorting)
+  trueAverage?: number // True average (for display)
   ratingCount: number
 }
 
@@ -133,14 +134,14 @@ export function ProductCard({ product }: ProductCardProps) {
             </h3>
             <div className="flex items-center gap-2 shrink-0">
               <span className="font-medium text-foreground">
-                {typeof product.averageRating === 'number' ? product.averageRating.toFixed(1) : 'N/A'}
+                {typeof product.trueAverage === 'number' ? product.trueAverage.toFixed(1) : 'N/A'}
               </span>
               <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
                     className={`h-4 w-4 ${
-                      typeof product.averageRating === 'number' && star <= Math.round(product.averageRating)
+                      typeof product.trueAverage === 'number' && star <= Math.round(product.trueAverage)
                         ? 'fill-yellow-400 text-yellow-400'
                         : 'fill-transparent text-yellow-400/25'
                     }`}
@@ -196,4 +197,4 @@ export function ProductCard({ product }: ProductCardProps) {
       />
     </div>
   )
-} 
+}

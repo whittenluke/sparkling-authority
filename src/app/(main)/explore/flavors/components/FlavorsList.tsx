@@ -17,7 +17,8 @@ type FlavorProduct = {
     slug: string
   }
   reviews?: { overall_rating: number }[]
-  averageRating?: number
+  averageRating?: number // Bayesian average (for sorting)
+  trueAverage?: number // True average (for display)
   ratingCount: number
 }
 
@@ -90,10 +91,15 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
       setProducts(data.map(p => {
         const ratings = p.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
         const ratingCount = ratings.length
+
+        // Calculate Bayesian average (for sorting)
         const averageRating = ratingCount > 0
           ? (ratings.reduce((a: number, b: number) => a + b, 0) / ratingCount) * 0.7 + meanRating * 0.3
           : undefined
-        
+
+        // Calculate true average (for display)
+        const trueAverage = ratingCount > 0 ? ratings.reduce((a: number, b: number) => a + b, 0) / ratingCount : undefined
+
         return {
           id: p.id,
           name: p.name,
@@ -103,6 +109,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
           brand: Array.isArray(p.brand) ? p.brand[0] : p.brand,
           reviews: p.reviews,
           averageRating,
+          trueAverage,
           ratingCount
         }
       }))
@@ -149,10 +156,15 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
           setProducts(data.map(p => {
             const ratings = p.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
             const ratingCount = ratings.length
+
+            // Calculate Bayesian average (for sorting)
             const averageRating = ratingCount > 0
               ? (ratings.reduce((a: number, b: number) => a + b, 0) / ratingCount) * 0.7 + meanRating * 0.3
               : undefined
-            
+
+            // Calculate true average (for display)
+            const trueAverage = ratingCount > 0 ? ratings.reduce((a: number, b: number) => a + b, 0) / ratingCount : undefined
+
             return {
               id: p.id,
               name: p.name,
@@ -162,6 +174,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
               brand: Array.isArray(p.brand) ? p.brand[0] : p.brand,
               reviews: p.reviews,
               averageRating,
+              trueAverage,
               ratingCount
             }
           }))
@@ -217,7 +230,8 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
                         brand: product.brand,
                         flavor_tags: product.flavor_tags,
                         thumbnail: product.thumbnail,
-                        averageRating: product.averageRating,
+                        averageRating: product.averageRating, // Bayesian for sorting
+                        trueAverage: product.trueAverage, // True average for display
                         ratingCount: product.ratingCount
                       }}
                     />
@@ -230,4 +244,4 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
       ))}
     </div>
   )
-} 
+}

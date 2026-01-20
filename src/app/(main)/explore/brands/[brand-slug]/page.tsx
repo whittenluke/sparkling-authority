@@ -47,6 +47,9 @@ type BrandProduct = {
   reviews: {
     overall_rating: number
   }[]
+  averageRating?: number // Bayesian average (for sorting)
+  trueAverage?: number // True average (for display)
+  ratingCount?: number
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -141,17 +144,21 @@ export default async function BrandPage({ params }: Props) {
     const ratings = product.reviews?.map(r => r.overall_rating) || []
     const ratingCount = ratings.length
     
-    // Calculate Bayesian average using global mean
+    // Calculate Bayesian average (for sorting)
     const C = 10 // confidence factor
     const sumOfRatings = ratings.reduce((a: number, b: number) => a + b, 0)
     const bayesianAverage = ratingCount > 0
       ? (C * meanRating + sumOfRatings) / (C + ratingCount)
       : undefined // Use undefined for no ratings to match product page behavior
-    
+
+    // Calculate true average (for display)
+    const trueAverage = ratingCount > 0 ? sumOfRatings / ratingCount : undefined
+
     return {
       ...product,
       thumbnail: product.thumbnail,
       averageRating: bayesianAverage,
+      trueAverage: trueAverage,
       ratingCount: ratingCount,
       brand: {
         id: product.brand.id,

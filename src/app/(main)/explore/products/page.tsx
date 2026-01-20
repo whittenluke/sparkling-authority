@@ -21,7 +21,8 @@ type Product = {
     overall_rating: number
     is_approved: boolean
   }>
-  averageRating?: number
+  averageRating?: number // Bayesian average (for sorting)
+  trueAverage?: number // True average (for display)
   ratingCount?: number
 }
 
@@ -86,14 +87,18 @@ export default async function ProductsPage() {
       }
     }
 
-    // Calculate Bayesian average
+    // Calculate Bayesian average (for sorting)
     const C = 10 // confidence factor
     const sumOfRatings = ratings.reduce((a, b) => a + b, 0)
     const bayesianAverage = (C * meanRating + sumOfRatings) / (C + ratingCount)
 
+    // Calculate true average (for display)
+    const trueAverage = sumOfRatings / ratingCount
+
     return {
       ...product,
       averageRating: bayesianAverage,
+      trueAverage: trueAverage,
       ratingCount
     }
   })
