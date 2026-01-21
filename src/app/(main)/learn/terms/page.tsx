@@ -75,7 +75,7 @@ export default function TerminologyPage() {
       >
         <section id="basic-definitions" className="mb-12">
           <h2 id="basic-definitions" className="text-2xl font-semibold mb-6">Basic Definitions and Overview</h2>
-          
+
           <div className="space-y-8">
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">Sparkling Water</h3>
@@ -85,28 +85,28 @@ export default function TerminologyPage() {
                 <p><span className="font-semibold text-muted-foreground">Note:</span> In many regions, &quot;sparkling water&quot; also serves as a catchall term for any bubbly water product.</p>
               </div>
 
-            <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
-              <h3 className="text-xl font-medium mb-4 text-primary">Carbonated Water</h3>
-              <div className="space-y-3">
-                <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Water that contains dissolved carbon dioxide gas.</p>
-                <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> Carbonated water is the scientific basis for sparkling water. The process of carbonation produces tiny bubbles, giving the water its distinct &quot;fizz.&quot;</p>
-                <p><span className="font-semibold text-muted-foreground">Related Terms:</span> Sparkling water, fizzy water.</p>
+              <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
+                <h3 className="text-xl font-medium mb-4 text-primary">Carbonated Water</h3>
+                <div className="space-y-3">
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> Water that contains dissolved carbon dioxide gas.</p>
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Description:</span> Carbonated water is the scientific basis for sparkling water. The process of carbonation produces tiny bubbles, giving the water its distinct &quot;fizz.&quot;</p>
+                  <p><span className="font-semibold text-muted-foreground">Related Terms:</span> Sparkling water, fizzy water.</p>
+                </div>
               </div>
-            </div>
-            <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
-              <h3 className="text-xl font-medium mb-4 text-primary">Effervescence</h3>
-              <div className="space-y-3">
-                <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> The process or quality of bubbling, fizzing, or emitting gas.</p>
-                <p><span className="font-semibold text-muted-foreground">Description:</span> Effervescence is the hallmark of sparkling water. It occurs when CO₂, either naturally occurring or artificially introduced, forms bubbles that rise and burst at the surface.</p>
+              <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
+                <h3 className="text-xl font-medium mb-4 text-primary">Effervescence</h3>
+                <div className="space-y-3">
+                  <p className="mb-2"><span className="font-semibold text-muted-foreground">Definition:</span> The process or quality of bubbling, fizzing, or emitting gas.</p>
+                  <p><span className="font-semibold text-muted-foreground">Description:</span> Effervescence is the hallmark of sparkling water. It occurs when CO₂, either naturally occurring or artificially introduced, forms bubbles that rise and burst at the surface.</p>
+                </div>
               </div>
-            </div>
             </div>
           </div>
         </section>
 
         <section id="production" className="mb-12">
           <h2 id="production" className="text-2xl font-semibold mb-6">Production and Chemical Terminology</h2>
-          
+
           <div className="space-y-8">
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">Carbonation</h3>
@@ -149,7 +149,7 @@ export default function TerminologyPage() {
                 </li>
                 <li className="pt-4">
                   <span className="font-semibold text-primary block mb-2">Key Point:</span>
-                  <p>Tonic water's unique taste makes it ideal for specific cocktails (like gin and tonic) but not a direct substitute for plain sparkling water.</p>
+                  <p>Tonic water&apos;s unique taste makes it ideal for specific cocktails (like gin and tonic) but not a direct substitute for plain sparkling water.</p>
                 </li>
               </ul>
             </div>
@@ -166,7 +166,7 @@ export default function TerminologyPage() {
 
         <section id="varieties" className="mb-12">
           <h2 id="varieties" className="text-2xl font-semibold mb-6">Varieties of Sparkling Water</h2>
-          
+
           <div className="space-y-8">
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">Seltzer</h3>
@@ -234,7 +234,7 @@ export default function TerminologyPage() {
 
         <section id="production-devices" className="mb-12">
           <h2 id="production-devices" className="text-2xl font-semibold mb-6">Production Devices and Historical Terms</h2>
-          
+
           <div className="space-y-8">
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">Gasogene</h3>
@@ -257,7 +257,7 @@ export default function TerminologyPage() {
 
         <section id="cocktail-terms" className="mb-12">
           <h2 id="cocktail-terms" className="text-2xl font-semibold mb-6">Cocktail and Bar Terminology</h2>
-          
+
           <div className="space-y-8">
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">Sidecar (in the context of sparkling water)</h3>
@@ -303,7 +303,7 @@ export default function TerminologyPage() {
 
         <section id="regional-variations" className="mb-12">
           <h2 id="regional-variations" className="text-2xl font-semibold mb-6">Additional Terms and Regional Variations</h2>
-          
+
           <div className="space-y-8">
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">Fizzy Water</h3>
@@ -365,7 +365,7 @@ export default function TerminologyPage() {
 
         <section id="comparisons" className="mb-12">
           <h2 id="comparisons" className="text-2xl font-semibold mb-6">Comparing and Contrasting Terms</h2>
-          
+
           <div className="space-y-8">
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">Seltzer vs. Club Soda</h3>
@@ -425,7 +425,7 @@ export default function TerminologyPage() {
 
         <section id="history" className="mb-12">
           <h2 id="history" className="text-2xl font-semibold mb-6">Cultural and Historical Tidbits</h2>
-          
+
           <div className="space-y-8">
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">Historical Origins</h3>
@@ -448,7 +448,7 @@ export default function TerminologyPage() {
 
         <section id="practical" className="mb-12">
           <h2 id="practical" className="text-2xl font-semibold mb-6">Practical Applications and Usage</h2>
-          
+
           <p className="mb-6">
             Understanding these terms is not just an academic exercise—it can elevate your daily hydration choices and your cocktail crafting skills. Here are some practical tips:
           </p>
@@ -479,7 +479,7 @@ export default function TerminologyPage() {
 
         <section id="conclusion" className="mb-12">
           <h2 id="conclusion" className="text-2xl font-semibold mb-6">Conclusion</h2>
-          
+
           <div className="space-y-8">
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <p className="mb-6">
