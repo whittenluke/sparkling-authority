@@ -53,6 +53,34 @@ interface Product {
 
 type TabType = 'brands' | 'products'
 
+type NutritionInfo = {
+  serving_size?: string
+  calories?: number
+  total_fat?: number
+  sodium?: number
+  total_carbohydrates?: number
+  total_sugars?: number
+  protein?: number
+  ingredients?: string
+}
+
+type ProductInsertPayload = {
+  brand_id: string
+  name: string
+  slug: string
+  description: string | null
+  flavor_categories: string[] | null
+  flavor_tags: string[] | null
+  carbonation_level: number
+  nutrition_info: NutritionInfo | null
+  amazon_link: string | null
+  walmart_link: string | null
+  instacart_link: string | null
+  product_website_link: string | null
+  is_discontinued: boolean
+  product_line_id?: string | null
+}
+
 function ProductAddDropdown({ onSelectSingle, onSelectBulk }: { onSelectSingle: () => void; onSelectBulk: () => void }) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -520,7 +548,7 @@ export default function AdminBrandsProducts() {
       const uniqueSlug = await ensureUniqueSlug(productSlug, 'products')
 
       // Build nutrition_info JSONB object (only include provided fields)
-      const nutritionInfo: Record<string, any> = {}
+      const nutritionInfo: NutritionInfo = {}
       if (servingSize.trim()) nutritionInfo.serving_size = servingSize.trim()
       if (calories !== '') nutritionInfo.calories = Number(calories)
       if (totalFat !== '') nutritionInfo.total_fat = Number(totalFat)
@@ -533,7 +561,7 @@ export default function AdminBrandsProducts() {
       // Ensure product_line_id is null if empty string
       const finalProductLineId = productLineId && productLineId.trim() !== '' ? productLineId : null
 
-      const insertPayload: any = {
+      const insertPayload: ProductInsertPayload = {
         brand_id: selectedBrandId,
         name: productName.trim(),
         slug: uniqueSlug,
@@ -692,7 +720,7 @@ export default function AdminBrandsProducts() {
       for (const row of csvPreview) {
         try {
           // Build nutrition_info if any nutrition fields exist
-          const nutritionInfo: Record<string, any> = {}
+          const nutritionInfo: NutritionInfo = {}
           if (row.serving_size) nutritionInfo.serving_size = row.serving_size
           if (row.calories) nutritionInfo.calories = Number(row.calories)
           if (row.total_fat) nutritionInfo.total_fat = Number(row.total_fat)
