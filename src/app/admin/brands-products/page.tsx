@@ -270,20 +270,37 @@ export default function AdminBrandsProducts() {
     }
   }
 
+  // Load initial data on mount - load both brands and products so counts are accurate
   useEffect(() => {
-    async function loadData() {
+    async function loadInitialData() {
       setLoading(true)
-      if (activeTab === 'brands') {
-        await loadBrands()
-      } else {
-        await loadProducts()
-      }
+      // Load both in parallel so both tab counts are accurate from the start
+      await Promise.all([loadBrands(), loadProducts()])
       setLoading(false)
     }
+    loadInitialData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run on mount
 
-    loadData()
-  }, [activeTab, loadBrands, loadProducts])
+  // Reload data when tab changes to ensure fresh data
+  useEffect(() => {
+    // Skip if still in initial loading state
+    if (loading && brands.length === 0 && products.length === 0) {
+      return
+    }
 
+    async function loadTabData() {
+      if (activeTab === 'brands') {
+        await loadBrands()
+      } else if (activeTab === 'products') {
+        await loadProducts()
+      }
+    }
+    loadTabData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]) // Only depend on activeTab, not the callback functions
+
+  // Tabs with counts - always show a number to prevent hydration mismatches
   const tabs = [
     { id: 'brands' as TabType, label: 'Brands', icon: Building2, count: brands.length },
     { id: 'products' as TabType, label: 'Products', icon: Package, count: products.length }
