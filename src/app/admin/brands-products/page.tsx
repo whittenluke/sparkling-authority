@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClientComponentClient } from '@/lib/supabase/client'
+import { generateSlug, ensureUniqueSlug } from '@/lib/utils' // Import generateSlug and ensureUniqueSlug
 import {
   Plus,
   Search,
@@ -59,6 +60,42 @@ export default function AdminBrandsProducts() {
   const [searchTerm, setSearchTerm] = useState('')
   const [showBrandModal, setShowBrandModal] = useState(false)
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null)
+
+  // Form state for adding/editing brands
+  const [brandName, setBrandName] = useState('')
+  const [brandSlug, setBrandSlug] = useState('') // Renamed to avoid conflict with `slug` in Product interface
+  const [description, setDescription] = useState('')
+  const [website, setWebsite] = useState('')
+  const [countryOfOrigin, setCountryOfOrigin] = useState('')
+  const [foundedYear, setFoundedYear] = useState<number | ''>('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [validationErrors, setValidationErrors] = useState<Record<string, string | undefined>>({})
+
+  // Auto-generate slug when brand name changes, but allow manual override
+  useEffect(() => {
+    if (brandName && !editingBrand) { // Only auto-generate for new brands
+      setBrandSlug(generateSlug(brandName))
+    } else if (editingBrand && brandName === editingBrand.name) {
+      // If editing an existing brand and the name is unchanged, keep its original slug
+      setBrandSlug(editingBrand.slug)
+    }
+  }, [brandName, editingBrand])
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {}
+    if (!brandName.trim()) errors.brandName = 'Brand Name is required.'
+    if (!brandSlug.trim()) errors.brandSlug = 'Slug is required.'
+    if (!description.trim()) errors.description = 'Description is required.'
+    if (!countryOfOrigin.trim()) errors.countryOfOrigin = 'Country of Origin is required.'
+    if (!foundedYear || isNaN(Number(foundedYear)) || Number(foundedYear) < 1800 || Number(foundedYear) > new Date().getFullYear() + 5) {
+      errors.foundedYear = 'Valid Founded Year is required (e.g., 1800-2026).'
+    }
+    setValidationErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
   const supabase = createClientComponentClient()
 
   // Load brands with product counts
@@ -168,6 +205,71 @@ export default function AdminBrandsProducts() {
     }
   }, [supabase, searchTerm])
 
+  const handleCreateBrand = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setFormError(null)
+    setSuccessMessage(null)
+    setValidationErrors({})
+
+    if (!validateForm()) {
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const uniqueSlug = await ensureUniqueSlug(brandSlug, 'brands')
+
+      const { error: insertError } = await supabase
+        .from('brands')
+        .insert({
+          name: brandName.trim(),
+          slug: uniqueSlug,
+          description: description.trim(),
+          website: website.trim() || null,
+          country_of_origin: countryOfOrigin.trim(),
+          founded_year: Number(foundedYear),
+          is_active: true, // Default to active for new brands
+        })
+        .select()
+        .single()
+
+      if (insertError) {
+        // Check for unique constraint violations - handle different error formats
+        const errorMessage = insertError.message || insertError.details || ''
+        const errorCode = insertError.code || insertError.hint?.match(/\((\d+)\)/)?.[1]
+        
+        if (errorCode === '23505' || errorMessage.includes('unique constraint') || errorMessage.includes('duplicate key')) {
+          if (errorMessage.includes('brands_name_key') || errorMessage.includes('name')) {
+            setFormError('A brand with this name already exists.')
+          } else if (errorMessage.includes('brands_slug_key') || errorMessage.includes('slug')) {
+            setFormError('A brand with this slug already exists. Please try a different name or manually adjust the slug.')
+          } else {
+            setFormError('A brand with this information already exists. Please check your input.')
+          }
+        } else {
+          setFormError('Failed to create brand. Please try again.')
+        }
+        return
+      }
+
+      setSuccessMessage('Brand created successfully!')
+      setBrandName('')
+      setBrandSlug('')
+      setDescription('')
+      setWebsite('')
+      setCountryOfOrigin('')
+      setFoundedYear('')
+      await loadBrands() // Refresh the brands list
+      setTimeout(() => setShowBrandModal(false), 1500) // Close modal after success message
+    } catch (err) {
+      console.error('Unexpected error creating brand:', err)
+      setFormError('An unexpected error occurred while creating the brand.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   useEffect(() => {
     async function loadData() {
       setLoading(true)
@@ -219,6 +321,15 @@ export default function AdminBrandsProducts() {
             onClick={() => {
               if (activeTab === 'brands') {
                 setEditingBrand(null)
+                setBrandName('')
+                setBrandSlug('')
+                setDescription('')
+                setWebsite('')
+                setCountryOfOrigin('')
+                setFoundedYear('')
+                setFormError(null)
+                setSuccessMessage(null)
+                setIsSubmitting(false)
                 setShowBrandModal(true)
               }
             }}
@@ -499,103 +610,145 @@ export default function AdminBrandsProducts() {
               </button>
             </div>
 
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleCreateBrand}>
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
+                <label htmlFor="brandName" className="block text-sm font-medium text-foreground mb-1">
                   Brand Name *
                 </label>
                 <input
                   type="text"
+                  id="brandName"
                   className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
                   placeholder="Enter brand name"
+                  value={brandName}
+                  onChange={(e) => setBrandName(e.target.value)}
+                  required
                 />
+                {validationErrors.brandName && (
+                  <p className="text-sm text-red-500 mt-1">{validationErrors.brandName}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Slug
+                <label htmlFor="brandSlug" className="block text-sm font-medium text-foreground mb-1">
+                  Slug *
                 </label>
                 <input
                   type="text"
+                  id="brandSlug"
                   className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
                   placeholder="auto-generated-slug"
+                  value={brandSlug}
+                  onChange={(e) => setBrandSlug(e.target.value)}
+                  required
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   Auto-generated from name, editable
                 </p>
+                {validationErrors.brandSlug && (
+                  <p className="text-sm text-red-500 mt-1">{validationErrors.brandSlug}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Description
+                <label htmlFor="description" className="block text-sm font-medium text-foreground mb-1">
+                  Description *
                 </label>
                 <textarea
+                  id="description"
                   className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
                   rows={3}
                   placeholder="Brief description of the brand"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
                 />
+                {validationErrors.description && (
+                  <p className="text-sm text-red-500 mt-1">{validationErrors.description}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
+                <label htmlFor="website" className="block text-sm font-medium text-foreground mb-1">
                   Website
                 </label>
                 <input
                   type="url"
+                  id="website"
                   className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
                   placeholder="https://example.com"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    Country of Origin
+                  <label htmlFor="countryOfOrigin" className="block text-sm font-medium text-foreground mb-1">
+                    Country of Origin *
                   </label>
                   <input
                     type="text"
+                    id="countryOfOrigin"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
                     placeholder="United States"
+                    value={countryOfOrigin}
+                    onChange={(e) => setCountryOfOrigin(e.target.value)}
+                    required
                   />
+                  {validationErrors.countryOfOrigin && (
+                    <p className="text-sm text-red-500 mt-1">{validationErrors.countryOfOrigin}</p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    Founded Year
+                  <label htmlFor="foundedYear" className="block text-sm font-medium text-foreground mb-1">
+                    Founded Year *
                   </label>
                   <input
                     type="number"
+                    id="foundedYear"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
                     placeholder="2020"
+                    value={foundedYear}
+                    onChange={(e) => setFoundedYear(e.target.value)}
+                    required
                   />
+                  {validationErrors.foundedYear && (
+                    <p className="text-sm text-red-500 mt-1">{validationErrors.foundedYear}</p>
+                  )}
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="is_active"
-                  className="rounded border-input"
-                  defaultChecked={true}
-                />
-                <label htmlFor="is_active" className="text-sm font-medium text-foreground">
-                  Active (visible on site)
-                </label>
-              </div>
+              {/* Active checkbox removed as per instructions */}
+
+              {formError && (
+                <div className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+                  {formError}
+                </div>
+              )}
+
+              {successMessage && (
+                <div className="rounded-md bg-green-50 p-3 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                  {successMessage}
+                </div>
+              )}
 
               <div className="flex justify-end space-x-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowBrandModal(false)}
                   className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+                  disabled={isSubmitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90"
+                  disabled={isSubmitting}
                 >
-                  {editingBrand ? 'Update Brand' : 'Create Brand'}
+                  {isSubmitting ? 'Creating...' : (editingBrand ? 'Update Brand' : 'Create Brand')}
                 </button>
               </div>
             </form>
