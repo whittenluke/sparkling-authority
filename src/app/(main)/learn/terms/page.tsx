@@ -471,7 +471,7 @@ export default function TerminologyPage() {
             <div className="bg-muted/50 rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-medium mb-4 text-primary">For Health</h3>
               <div className="space-y-3">
-                <p className="mb-2"><span className="font-semibold text-muted-foreground">If you're monitoring your mineral intake,</span> check the labels on sparkling mineral waters versus club soda. Each offers a unique profile that can support your hydration goals without unnecessary additives. Learn more about the health aspects of sparkling water on our <a href="/learn/health" className="text-primary hover:underline">Health Guide page</a>.</p>
+                <p className="mb-2"><span className="font-semibold text-muted-foreground">If you&apos;re monitoring your mineral intake,</span> check the labels on sparkling mineral waters versus club soda. Each offers a unique profile that can support your hydration goals without unnecessary additives. Learn more about the health aspects of sparkling water on our <a href="/learn/health" className="text-primary hover:underline">Health Guide page</a>.</p>
               </div>
             </div>
           </div>

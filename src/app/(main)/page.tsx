@@ -239,7 +239,7 @@ export default async function Home() {
     return (
       <div className="text-center py-8">
         <h2 className="text-2xl font-bold text-foreground mb-4">Service Temporarily Unavailable</h2>
-        <p className="text-muted-foreground mb-4">We're experiencing technical difficulties. Please try again in a moment.</p>
+        <p className="text-muted-foreground mb-4">We&apos;re experiencing technical difficulties. Please try again in a moment.</p>
         <Link href="/" className="text-primary hover:underline">Refresh Page</Link>
       </div>
     )
