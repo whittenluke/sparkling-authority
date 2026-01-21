@@ -56,7 +56,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* End Google Tag Manager */}
         <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet" />
       </head>
-      <body className={`${inter.className} ${plusJakartaSans.variable} app-background`}>
+      <body className={`${inter.className} ${plusJakartaSans.variable} app-background`} suppressHydrationWarning>
         {/* Google Tag Manager (noscript) */}
         {gtmId && (
           <noscript>

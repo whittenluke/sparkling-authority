@@ -15,7 +15,9 @@ import {
   Check,
   X,
   X as CloseIcon,
-  ExternalLink
+  ExternalLink,
+  ChevronDown,
+  Upload
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -51,6 +53,53 @@ interface Product {
 
 type TabType = 'brands' | 'products'
 
+function ProductAddDropdown({ onSelectSingle, onSelectBulk }: { onSelectSingle: () => void; onSelectBulk: () => void }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+      >
+        <Plus className="h-4 w-4" />
+        Add Product
+        <ChevronDown className="h-4 w-4" />
+      </button>
+
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-900 ring-1 ring-black ring-opacity-5 dark:ring-gray-700 z-50">
+            <div className="py-1">
+              <button
+                onClick={() => {
+                  onSelectSingle()
+                  setIsOpen(false)
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-accent"
+              >
+                <Plus className="h-4 w-4" />
+                Add Single Product
+              </button>
+              <button
+                onClick={() => {
+                  onSelectBulk()
+                  setIsOpen(false)
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-accent"
+              >
+                <Upload className="h-4 w-4" />
+                Add Bulk Products
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function AdminBrandsProducts() {
   const [activeTab, setActiveTab] = useState<TabType>('brands')
   const [brands, setBrands] = useState<Brand[]>([])
@@ -73,6 +122,47 @@ export default function AdminBrandsProducts() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<Record<string, string | undefined>>({})
 
+  // Product modal state
+  const [showProductModal, setShowProductModal] = useState(false)
+  const [productModalType, setProductModalType] = useState<'single' | 'bulk'>('single')
+  const [selectedBrandId, setSelectedBrandId] = useState('')
+  const [productName, setProductName] = useState('')
+  const [productSlug, setProductSlug] = useState('')
+  const [productLineId, setProductLineId] = useState<string | null>(null)
+  const [productDescription, setProductDescription] = useState('')
+  const [flavorCategories, setFlavorCategories] = useState<string[]>([])
+  const [flavorTags, setFlavorTags] = useState<string[]>([])
+  const [carbonationLevel, setCarbonationLevel] = useState<number | ''>('')
+  const [servingSize, setServingSize] = useState('')
+  const [calories, setCalories] = useState<number | ''>('')
+  const [totalFat, setTotalFat] = useState<number | ''>('')
+  const [sodium, setSodium] = useState<number | ''>('')
+  const [totalCarbohydrates, setTotalCarbohydrates] = useState<number | ''>('')
+  const [totalSugars, setTotalSugars] = useState<number | ''>('')
+  const [protein, setProtein] = useState<number | ''>('')
+  const [ingredients, setIngredients] = useState('')
+  const [amazonLink, setAmazonLink] = useState('')
+  const [walmartLink, setWalmartLink] = useState('')
+  const [instacartLink, setInstacartLink] = useState('')
+  const [productWebsiteLink, setProductWebsiteLink] = useState('')
+  const [availableProductLines, setAvailableProductLines] = useState<Array<{ id: string; name: string }>>([])
+  const [isSubmittingProduct, setIsSubmittingProduct] = useState(false)
+  const [productFormError, setProductFormError] = useState<string | null>(null)
+  const [productSuccessMessage, setProductSuccessMessage] = useState<string | null>(null)
+  const [productValidationErrors, setProductValidationErrors] = useState<Record<string, string | undefined>>({})
+
+  // CSV bulk import state
+  const [csvFile, setCsvFile] = useState<File | null>(null)
+  const [csvPreview, setCsvPreview] = useState<Array<Record<string, string>>>([])
+  const [csvErrors, setCsvErrors] = useState<string[]>([])
+  const [isImporting, setIsImporting] = useState(false)
+  const [importResult, setImportResult] = useState<{ success: number; failed: number } | null>(null)
+
+  // Data for dropdowns
+  const [allBrands, setAllBrands] = useState<Brand[]>([])
+  const [availableFlavorCategories, setAvailableFlavorCategories] = useState<string[]>([])
+  const [availableFlavorTags, setAvailableFlavorTags] = useState<string[]>([])
+
   // Auto-generate slug when brand name changes, but allow manual override
   useEffect(() => {
     if (brandName && !editingBrand) { // Only auto-generate for new brands
@@ -82,6 +172,13 @@ export default function AdminBrandsProducts() {
       setBrandSlug(editingBrand.slug)
     }
   }, [brandName, editingBrand])
+
+  // Auto-generate slug when product name changes
+  useEffect(() => {
+    if (productName && !editingBrand) {
+      setProductSlug(generateSlug(productName))
+    }
+  }, [productName, editingBrand])
 
   const validateForm = () => {
     const errors: Record<string, string> = {}
@@ -94,6 +191,33 @@ export default function AdminBrandsProducts() {
     }
     setValidationErrors(errors)
     return Object.keys(errors).length === 0
+  }
+
+  const validateProductForm = () => {
+    const errors: Record<string, string> = {}
+    if (!selectedBrandId) errors.selectedBrandId = 'Brand is required.'
+    if (!productName.trim()) errors.productName = 'Product Name is required.'
+    if (!productSlug.trim()) errors.productSlug = 'Slug is required.'
+    if (!productDescription.trim()) errors.productDescription = 'Description is required.'
+    if (!carbonationLevel || isNaN(Number(carbonationLevel)) || Number(carbonationLevel) < 1 || Number(carbonationLevel) > 10) {
+      errors.carbonationLevel = 'Carbonation Level is required and must be between 1 and 10.'
+    }
+    // Validate URLs if provided
+    if (amazonLink && !isValidUrl(amazonLink)) errors.amazonLink = 'Please enter a valid URL.'
+    if (walmartLink && !isValidUrl(walmartLink)) errors.walmartLink = 'Please enter a valid URL.'
+    if (instacartLink && !isValidUrl(instacartLink)) errors.instacartLink = 'Please enter a valid URL.'
+    if (productWebsiteLink && !isValidUrl(productWebsiteLink)) errors.productWebsiteLink = 'Please enter a valid URL.'
+    setProductValidationErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  const isValidUrl = (url: string): boolean => {
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return false
+    }
   }
 
   const supabase = createClientComponentClient()
@@ -205,6 +329,116 @@ export default function AdminBrandsProducts() {
     }
   }, [supabase, searchTerm])
 
+  // Fetch all brands for product form dropdown
+  const fetchAllBrands = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('brands')
+        .select('id, name, slug')
+        .order('name')
+
+      if (error) {
+        console.error('Error fetching brands:', error)
+        return
+      }
+
+      setAllBrands(data || [])
+    } catch (err) {
+      console.error('Unexpected error fetching brands:', err)
+    }
+  }, [supabase])
+
+  // Fetch product lines for selected brand
+  const fetchProductLines = useCallback(async (brandId: string) => {
+    if (!brandId) {
+      setAvailableProductLines([])
+      return
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('product_lines')
+        .select('id, name')
+        .eq('brand_id', brandId)
+        .order('name')
+
+      if (error) {
+        console.error('Error fetching product lines:', error)
+        setAvailableProductLines([])
+        return
+      }
+
+      setAvailableProductLines(data || [])
+    } catch (err) {
+      console.error('Unexpected error fetching product lines:', err)
+      setAvailableProductLines([])
+    }
+  }, [supabase])
+
+  // Fetch product lines when brand is selected
+  useEffect(() => {
+    if (selectedBrandId) {
+      fetchProductLines(selectedBrandId)
+    } else {
+      setAvailableProductLines([])
+      setProductLineId(null)
+    }
+  }, [selectedBrandId, fetchProductLines])
+
+  // Fetch unique flavor categories from products
+  const fetchFlavorCategories = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('flavor_categories')
+        .not('flavor_categories', 'eq', '{}')
+        .not('flavor_categories', 'is', null)
+
+      if (error) {
+        console.error('Error fetching flavor categories:', error)
+        return
+      }
+
+      // Extract and flatten all categories
+      const allCategories = (data || []).reduce((acc: string[], product) => {
+        return acc.concat(product.flavor_categories || [])
+      }, [])
+
+      // Get unique categories and sort
+      const uniqueCategories = [...new Set(allCategories)].sort()
+      setAvailableFlavorCategories(uniqueCategories)
+    } catch (err) {
+      console.error('Unexpected error fetching flavor categories:', err)
+    }
+  }, [supabase])
+
+  // Fetch unique flavor tags from products
+  const fetchFlavorTags = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('flavor_tags')
+        .not('flavor_tags', 'eq', '{}')
+        .not('flavor_tags', 'is', null)
+
+      if (error) {
+        console.error('Error fetching flavor tags:', error)
+        return
+      }
+
+      // Extract and flatten all tags
+      const allTags = (data || []).reduce((acc: string[], product) => {
+        return acc.concat(product.flavor_tags || [])
+      }, [])
+
+      // Get unique tags and sort
+      const uniqueTags = [...new Set(allTags)].sort()
+      setAvailableFlavorTags(uniqueTags)
+    } catch (err) {
+      console.error('Unexpected error fetching flavor tags:', err)
+    }
+  }, [supabase])
+
   const handleCreateBrand = async (e: React.FormEvent) => {
     e.preventDefault()
     setFormError(null)
@@ -270,12 +504,273 @@ export default function AdminBrandsProducts() {
     }
   }
 
+  const handleCreateProduct = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setProductFormError(null)
+    setProductSuccessMessage(null)
+    setProductValidationErrors({})
+
+    if (!validateProductForm()) {
+      return
+    }
+
+    setIsSubmittingProduct(true)
+
+    try {
+      const uniqueSlug = await ensureUniqueSlug(productSlug, 'products')
+
+      // Build nutrition_info JSONB object (only include provided fields)
+      const nutritionInfo: Record<string, any> = {}
+      if (servingSize.trim()) nutritionInfo.serving_size = servingSize.trim()
+      if (calories !== '') nutritionInfo.calories = Number(calories)
+      if (totalFat !== '') nutritionInfo.total_fat = Number(totalFat)
+      if (sodium !== '') nutritionInfo.sodium = Number(sodium)
+      if (totalCarbohydrates !== '') nutritionInfo.total_carbohydrates = Number(totalCarbohydrates)
+      if (totalSugars !== '') nutritionInfo.total_sugars = Number(totalSugars)
+      if (protein !== '') nutritionInfo.protein = Number(protein)
+      if (ingredients.trim()) nutritionInfo.ingredients = ingredients.trim()
+
+      // Ensure product_line_id is null if empty string
+      const finalProductLineId = productLineId && productLineId.trim() !== '' ? productLineId : null
+
+      const insertPayload: any = {
+        brand_id: selectedBrandId,
+        name: productName.trim(),
+        slug: uniqueSlug,
+        description: productDescription.trim() || null,
+        flavor_categories: flavorCategories.length > 0 ? flavorCategories : null,
+        flavor_tags: flavorTags.length > 0 ? flavorTags : null,
+        carbonation_level: Number(carbonationLevel),
+        nutrition_info: Object.keys(nutritionInfo).length > 0 ? nutritionInfo : null,
+        amazon_link: amazonLink.trim() || null,
+        walmart_link: walmartLink.trim() || null,
+        instacart_link: instacartLink.trim() || null,
+        product_website_link: productWebsiteLink.trim() || null,
+        is_discontinued: false
+      }
+
+      // Only include product_line_id if it's not null
+      if (finalProductLineId) {
+        insertPayload.product_line_id = finalProductLineId
+      }
+
+      const { error: insertError } = await supabase
+        .from('products')
+        .insert(insertPayload)
+        .select()
+        .single()
+
+      if (insertError) {
+        console.error('Product insert error:', insertError)
+        const errorMessage = insertError.message || insertError.details || ''
+        const errorCode = insertError.code || insertError.hint?.match(/\((\d+)\)/)?.[1]
+        
+        if (errorCode === '23505' || errorMessage.includes('unique constraint') || errorMessage.includes('duplicate key')) {
+          if (errorMessage.includes('products_name_key') || errorMessage.includes('name')) {
+            setProductFormError('A product with this name already exists for this brand.')
+          } else if (errorMessage.includes('products_slug_key') || errorMessage.includes('slug')) {
+            setProductFormError('A product with this slug already exists. Please try a different name or manually adjust the slug.')
+          } else {
+            setProductFormError('A product with this information already exists. Please check your input.')
+          }
+        } else {
+          // Show the actual error message for debugging
+          setProductFormError(`Failed to create product: ${errorMessage || 'Unknown error'}. Please check the console for details.`)
+        }
+        return
+      }
+
+      setProductSuccessMessage('Product created successfully!')
+      // Reset form
+      setSelectedBrandId('')
+      setProductName('')
+      setProductSlug('')
+      setProductLineId(null)
+      setProductDescription('')
+      setFlavorCategories([])
+      setFlavorTags([])
+      setCarbonationLevel('')
+      setServingSize('')
+      setCalories('')
+      setTotalFat('')
+      setSodium('')
+      setTotalCarbohydrates('')
+      setTotalSugars('')
+      setProtein('')
+      setIngredients('')
+      setAmazonLink('')
+      setWalmartLink('')
+      setInstacartLink('')
+      setProductWebsiteLink('')
+      await loadProducts() // Refresh the products list
+      setTimeout(() => setShowProductModal(false), 1500) // Close modal after success message
+    } catch (err) {
+      console.error('Unexpected error creating product:', err)
+      setProductFormError('An unexpected error occurred while creating the product.')
+    } finally {
+      setIsSubmittingProduct(false)
+    }
+  }
+
+  const handleCsvFile = async (file: File) => {
+    setCsvPreview([])
+    setCsvErrors([])
+    setImportResult(null)
+
+    try {
+      const text = await file.text()
+      const lines = text.split('\n').filter(line => line.trim())
+      
+      if (lines.length < 2) {
+        setCsvErrors(['CSV file must have at least a header row and one data row.'])
+        return
+      }
+
+      // Parse header
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase())
+      const requiredHeaders = ['brand_id', 'name', 'slug', 'description', 'carbonation_level']
+      const missingHeaders = requiredHeaders.filter(h => !headers.includes(h))
+      
+      if (missingHeaders.length > 0) {
+        setCsvErrors([`Missing required columns: ${missingHeaders.join(', ')}`])
+        return
+      }
+
+      // Parse rows
+      const rows: Array<Record<string, string>> = []
+      const errors: string[] = []
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim())
+        const row: Record<string, string> = {}
+        
+        headers.forEach((header, idx) => {
+          row[header] = values[idx] || ''
+        })
+
+        // Validate required fields
+        if (!row.brand_id || !row.name || !row.slug || !row.description || !row.carbonation_level) {
+          errors.push(`Row ${i + 1}: Missing required fields`)
+          return
+        }
+
+        // Validate carbonation level
+        const carbonation = Number(row.carbonation_level)
+        if (isNaN(carbonation) || carbonation < 1 || carbonation > 10) {
+          errors.push(`Row ${i + 1}: Carbonation level must be between 1 and 10`)
+          return
+        }
+
+        rows.push(row)
+      }
+
+      if (errors.length > 0) {
+        setCsvErrors(errors)
+        return
+      }
+
+      setCsvPreview(rows)
+    } catch (err) {
+      console.error('Error parsing CSV:', err)
+      setCsvErrors(['Failed to parse CSV file. Please check the format.'])
+    }
+  }
+
+  const handleBulkImport = async () => {
+    if (!csvFile || csvPreview.length === 0) return
+
+    setIsImporting(true)
+    setCsvErrors([])
+    setImportResult(null)
+
+    try {
+      let successCount = 0
+      let failedCount = 0
+      const errors: string[] = []
+
+      // Process products in batches
+      for (const row of csvPreview) {
+        try {
+          // Build nutrition_info if any nutrition fields exist
+          const nutritionInfo: Record<string, any> = {}
+          if (row.serving_size) nutritionInfo.serving_size = row.serving_size
+          if (row.calories) nutritionInfo.calories = Number(row.calories)
+          if (row.total_fat) nutritionInfo.total_fat = Number(row.total_fat)
+          if (row.sodium) nutritionInfo.sodium = Number(row.sodium)
+          if (row.total_carbohydrates) nutritionInfo.total_carbohydrates = Number(row.total_carbohydrates)
+          if (row.total_sugars) nutritionInfo.total_sugars = Number(row.total_sugars)
+          if (row.protein) nutritionInfo.protein = Number(row.protein)
+          if (row.ingredients) nutritionInfo.ingredients = row.ingredients
+
+          // Parse flavor arrays
+          const flavorCategories = row.flavor_categories
+            ? row.flavor_categories.split(',').map(c => c.trim()).filter(c => c)
+            : null
+          const flavorTags = row.flavor_tags
+            ? row.flavor_tags.split(',').map(t => t.trim()).filter(t => t)
+            : null
+
+          // Ensure slug is unique
+          const uniqueSlug = await ensureUniqueSlug(row.slug, 'products')
+
+          const { error } = await supabase
+            .from('products')
+            .insert({
+              brand_id: row.brand_id,
+              name: row.name.trim(),
+              slug: uniqueSlug,
+              product_line_id: row.product_line_id || null,
+              description: row.description.trim(),
+              flavor_categories: flavorCategories && flavorCategories.length > 0 ? flavorCategories : null,
+              flavor_tags: flavorTags && flavorTags.length > 0 ? flavorTags : null,
+              carbonation_level: Number(row.carbonation_level),
+              nutrition_info: Object.keys(nutritionInfo).length > 0 ? nutritionInfo : null,
+              amazon_link: row.amazon_link || null,
+              walmart_link: row.walmart_link || null,
+              instacart_link: row.instacart_link || null,
+              product_website_link: row.product_website_link || null
+            })
+
+          if (error) {
+            failedCount++
+            errors.push(`${row.name}: ${error.message}`)
+          } else {
+            successCount++
+          }
+        } catch (err) {
+          failedCount++
+          errors.push(`${row.name}: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        }
+      }
+
+      setImportResult({ success: successCount, failed: failedCount })
+      if (errors.length > 0) {
+        setCsvErrors(errors.slice(0, 10)) // Show first 10 errors
+      }
+
+      if (successCount > 0) {
+        await loadProducts() // Refresh products list
+      }
+    } catch (err) {
+      console.error('Error importing products:', err)
+      setCsvErrors(['Failed to import products. Please try again.'])
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
   // Load initial data on mount - load both brands and products so counts are accurate
   useEffect(() => {
     async function loadInitialData() {
       setLoading(true)
       // Load both in parallel so both tab counts are accurate from the start
-      await Promise.all([loadBrands(), loadProducts()])
+      await Promise.all([
+        loadBrands(),
+        loadProducts(),
+        fetchAllBrands(),
+        fetchFlavorCategories(),
+        fetchFlavorTags()
+      ])
       setLoading(false)
     }
     loadInitialData()
@@ -334,9 +829,9 @@ export default function AdminBrandsProducts() {
               className="pl-9 pr-4 py-2 w-64 rounded-md border border-input bg-background text-sm"
             />
           </div>
-          <button
-            onClick={() => {
-              if (activeTab === 'brands') {
+          {activeTab === 'brands' ? (
+            <button
+              onClick={() => {
                 setEditingBrand(null)
                 setBrandName('')
                 setBrandSlug('')
@@ -348,13 +843,48 @@ export default function AdminBrandsProducts() {
                 setSuccessMessage(null)
                 setIsSubmitting(false)
                 setShowBrandModal(true)
-              }
-            }}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            Add {activeTab === 'brands' ? 'Brand' : 'Product'}
-          </button>
+              }}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              Add Brand
+            </button>
+          ) : (
+            <ProductAddDropdown
+              onSelectSingle={() => {
+                // Reset form state
+                setSelectedBrandId('')
+                setProductName('')
+                setProductSlug('')
+                setProductLineId(null)
+                setProductDescription('')
+                setFlavorCategories([])
+                setFlavorTags([])
+                setCarbonationLevel('')
+                setServingSize('')
+                setCalories('')
+                setTotalFat('')
+                setSodium('')
+                setTotalCarbohydrates('')
+                setTotalSugars('')
+                setProtein('')
+                setIngredients('')
+                setAmazonLink('')
+                setWalmartLink('')
+                setInstacartLink('')
+                setProductWebsiteLink('')
+                setProductFormError(null)
+                setProductSuccessMessage(null)
+                setProductValidationErrors({})
+                setProductModalType('single')
+                setShowProductModal(true)
+              }}
+              onSelectBulk={() => {
+                setProductModalType('bulk')
+                setShowProductModal(true)
+              }}
+            />
+          )}
         </div>
       </div>
 
@@ -769,6 +1299,576 @@ export default function AdminBrandsProducts() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Product Modal */}
+      {showProductModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-lg bg-card p-6 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-foreground">
+                {productModalType === 'single' ? 'Add New Product' : 'Bulk Import Products'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowProductModal(false)
+                  // Reset form when closing
+                  if (productModalType === 'single') {
+                    setSelectedBrandId('')
+                    setProductName('')
+                    setProductSlug('')
+                    setProductLineId(null)
+                    setProductDescription('')
+                    setFlavorCategories([])
+                    setFlavorTags([])
+                    setCarbonationLevel('')
+                    setServingSize('')
+                    setCalories('')
+                    setTotalFat('')
+                    setSodium('')
+                    setTotalCarbohydrates('')
+                    setTotalSugars('')
+                    setProtein('')
+                    setIngredients('')
+                    setAmazonLink('')
+                    setWalmartLink('')
+                    setInstacartLink('')
+                    setProductWebsiteLink('')
+                    setProductFormError(null)
+                    setProductSuccessMessage(null)
+                    setProductValidationErrors({})
+                  }
+                }}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <CloseIcon className="h-5 w-5" />
+              </button>
+            </div>
+
+            {productModalType === 'single' ? (
+              <form className="space-y-4" onSubmit={handleCreateProduct}>
+                {/* Brand Selection */}
+                <div>
+                  <label htmlFor="selectedBrandId" className="block text-sm font-medium text-foreground mb-1">
+                    Brand *
+                  </label>
+                  <select
+                    id="selectedBrandId"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    value={selectedBrandId}
+                    onChange={(e) => setSelectedBrandId(e.target.value)}
+                    required
+                  >
+                    <option value="">Select a brand</option>
+                    {allBrands.map((brand) => (
+                      <option key={brand.id} value={brand.id}>
+                        {brand.name}
+                      </option>
+                    ))}
+                  </select>
+                  {productValidationErrors.selectedBrandId && (
+                    <p className="text-sm text-red-500 mt-1">{productValidationErrors.selectedBrandId}</p>
+                  )}
+                </div>
+
+                {/* Product Name */}
+                <div>
+                  <label htmlFor="productName" className="block text-sm font-medium text-foreground mb-1">
+                    Product Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="productName"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    placeholder="Enter product name"
+                    value={productName}
+                    onChange={(e) => setProductName(e.target.value)}
+                    required
+                  />
+                  {productValidationErrors.productName && (
+                    <p className="text-sm text-red-500 mt-1">{productValidationErrors.productName}</p>
+                  )}
+                </div>
+
+                {/* Slug */}
+                <div>
+                  <label htmlFor="productSlug" className="block text-sm font-medium text-foreground mb-1">
+                    Slug *
+                  </label>
+                  <input
+                    type="text"
+                    id="productSlug"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    placeholder="auto-generated-slug"
+                    value={productSlug}
+                    onChange={(e) => setProductSlug(e.target.value)}
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Auto-generated from name, editable
+                  </p>
+                  {productValidationErrors.productSlug && (
+                    <p className="text-sm text-red-500 mt-1">{productValidationErrors.productSlug}</p>
+                  )}
+                </div>
+
+                {/* Product Line - only show if brand has product lines */}
+                {availableProductLines.length > 0 && (
+                  <div>
+                    <label htmlFor="productLineId" className="block text-sm font-medium text-foreground mb-1">
+                      Product Line
+                    </label>
+                    <select
+                      id="productLineId"
+                      className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                      value={productLineId || ''}
+                      onChange={(e) => setProductLineId(e.target.value || null)}
+                    >
+                      <option value="">None</option>
+                      {availableProductLines.map((line) => (
+                        <option key={line.id} value={line.id}>
+                          {line.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Description */}
+                <div>
+                  <label htmlFor="productDescription" className="block text-sm font-medium text-foreground mb-1">
+                    Description *
+                  </label>
+                  <textarea
+                    id="productDescription"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    rows={3}
+                    placeholder="Brief description of the product"
+                    value={productDescription}
+                    onChange={(e) => setProductDescription(e.target.value)}
+                    required
+                  />
+                  {productValidationErrors.productDescription && (
+                    <p className="text-sm text-red-500 mt-1">{productValidationErrors.productDescription}</p>
+                  )}
+                </div>
+
+                {/* Flavor Categories */}
+                <div>
+                  <label htmlFor="flavorCategories" className="block text-sm font-medium text-foreground mb-1">
+                    Flavor Categories
+                  </label>
+                  <select
+                    id="flavorCategories"
+                    multiple
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm min-h-[100px]"
+                    value={flavorCategories}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions, option => option.value)
+                      setFlavorCategories(selected)
+                    }}
+                  >
+                    {availableFlavorCategories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Hold Ctrl/Cmd to select multiple categories
+                  </p>
+                </div>
+
+                {/* Flavor Tags */}
+                <div>
+                  <label htmlFor="flavorTags" className="block text-sm font-medium text-foreground mb-1">
+                    Flavor Tags
+                  </label>
+                  <select
+                    id="flavorTags"
+                    multiple
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm min-h-[100px]"
+                    value={flavorTags}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions, option => option.value)
+                      setFlavorTags(selected)
+                    }}
+                  >
+                    {availableFlavorTags.map((tag) => (
+                      <option key={tag} value={tag}>
+                        {tag}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Hold Ctrl/Cmd to select multiple tags
+                  </p>
+                </div>
+
+                {/* Carbonation Level */}
+                <div>
+                  <label htmlFor="carbonationLevel" className="block text-sm font-medium text-foreground mb-1">
+                    Carbonation Level * (1-10)
+                  </label>
+                  <input
+                    type="number"
+                    id="carbonationLevel"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    placeholder="6"
+                    min="1"
+                    max="10"
+                    value={carbonationLevel}
+                    onChange={(e) => setCarbonationLevel(e.target.value ? Number(e.target.value) : '')}
+                    required
+                  />
+                  {productValidationErrors.carbonationLevel && (
+                    <p className="text-sm text-red-500 mt-1">{productValidationErrors.carbonationLevel}</p>
+                  )}
+                </div>
+
+                {/* Nutrition Information Section */}
+                <div className="border-t pt-4">
+                  <h3 className="text-sm font-semibold text-foreground mb-3">Nutrition Information (Optional)</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="servingSize" className="block text-sm font-medium text-foreground mb-1">
+                        Serving Size
+                      </label>
+                      <input
+                        type="text"
+                        id="servingSize"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        placeholder="12 FL OZ (355ML)"
+                        value={servingSize}
+                        onChange={(e) => setServingSize(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="calories" className="block text-sm font-medium text-foreground mb-1">
+                        Calories
+                      </label>
+                      <input
+                        type="number"
+                        id="calories"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        placeholder="0"
+                        value={calories}
+                        onChange={(e) => setCalories(e.target.value ? Number(e.target.value) : '')}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="totalFat" className="block text-sm font-medium text-foreground mb-1">
+                        Total Fat (g)
+                      </label>
+                      <input
+                        type="number"
+                        id="totalFat"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        placeholder="0"
+                        value={totalFat}
+                        onChange={(e) => setTotalFat(e.target.value ? Number(e.target.value) : '')}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="sodium" className="block text-sm font-medium text-foreground mb-1">
+                        Sodium (mg)
+                      </label>
+                      <input
+                        type="number"
+                        id="sodium"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        placeholder="0"
+                        value={sodium}
+                        onChange={(e) => setSodium(e.target.value ? Number(e.target.value) : '')}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="totalCarbohydrates" className="block text-sm font-medium text-foreground mb-1">
+                        Total Carbohydrates (g)
+                      </label>
+                      <input
+                        type="number"
+                        id="totalCarbohydrates"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        placeholder="0"
+                        value={totalCarbohydrates}
+                        onChange={(e) => setTotalCarbohydrates(e.target.value ? Number(e.target.value) : '')}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="totalSugars" className="block text-sm font-medium text-foreground mb-1">
+                        Total Sugars (g)
+                      </label>
+                      <input
+                        type="number"
+                        id="totalSugars"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        placeholder="0"
+                        value={totalSugars}
+                        onChange={(e) => setTotalSugars(e.target.value ? Number(e.target.value) : '')}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="protein" className="block text-sm font-medium text-foreground mb-1">
+                        Protein (g)
+                      </label>
+                      <input
+                        type="number"
+                        id="protein"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        placeholder="0"
+                        value={protein}
+                        onChange={(e) => setProtein(e.target.value ? Number(e.target.value) : '')}
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <label htmlFor="ingredients" className="block text-sm font-medium text-foreground mb-1">
+                      Ingredients
+                    </label>
+                    <textarea
+                      id="ingredients"
+                      className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                      rows={3}
+                      placeholder="List of ingredients"
+                      value={ingredients}
+                      onChange={(e) => setIngredients(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {/* Affiliate Links Section */}
+                <div className="border-t pt-4">
+                  <h3 className="text-sm font-semibold text-foreground mb-3">Affiliate Links (Optional)</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label htmlFor="amazonLink" className="block text-sm font-medium text-foreground mb-1">
+                        Amazon Link
+                      </label>
+                      <input
+                        type="url"
+                        id="amazonLink"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        placeholder="https://amazon.com/..."
+                        value={amazonLink}
+                        onChange={(e) => setAmazonLink(e.target.value)}
+                      />
+                      {productValidationErrors.amazonLink && (
+                        <p className="text-sm text-red-500 mt-1">{productValidationErrors.amazonLink}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="walmartLink" className="block text-sm font-medium text-foreground mb-1">
+                        Walmart Link
+                      </label>
+                      <input
+                        type="url"
+                        id="walmartLink"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        placeholder="https://walmart.com/..."
+                        value={walmartLink}
+                        onChange={(e) => setWalmartLink(e.target.value)}
+                      />
+                      {productValidationErrors.walmartLink && (
+                        <p className="text-sm text-red-500 mt-1">{productValidationErrors.walmartLink}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="instacartLink" className="block text-sm font-medium text-foreground mb-1">
+                        Instacart Link
+                      </label>
+                      <input
+                        type="url"
+                        id="instacartLink"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        placeholder="https://instacart.com/..."
+                        value={instacartLink}
+                        onChange={(e) => setInstacartLink(e.target.value)}
+                      />
+                      {productValidationErrors.instacartLink && (
+                        <p className="text-sm text-red-500 mt-1">{productValidationErrors.instacartLink}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="productWebsiteLink" className="block text-sm font-medium text-foreground mb-1">
+                        Product Website Link
+                      </label>
+                      <input
+                        type="url"
+                        id="productWebsiteLink"
+                        className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                        placeholder="https://productwebsite.com/..."
+                        value={productWebsiteLink}
+                        onChange={(e) => setProductWebsiteLink(e.target.value)}
+                      />
+                      {productValidationErrors.productWebsiteLink && (
+                        <p className="text-sm text-red-500 mt-1">{productValidationErrors.productWebsiteLink}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {productFormError && (
+                  <div className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+                    {productFormError}
+                  </div>
+                )}
+
+                {productSuccessMessage && (
+                  <div className="rounded-md bg-green-50 p-3 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                    {productSuccessMessage}
+                  </div>
+                )}
+
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowProductModal(false)}
+                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+                    disabled={isSubmittingProduct}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90"
+                    disabled={isSubmittingProduct}
+                  >
+                    {isSubmittingProduct ? 'Creating...' : 'Create Product'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="space-y-4">
+                {/* CSV Column Requirements */}
+                <div className="rounded-md bg-blue-50 dark:bg-blue-900/20 p-4">
+                  <h3 className="text-sm font-semibold text-foreground mb-2">CSV Column Requirements</h3>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <p><strong>Required columns:</strong> brand_id (UUID), name, slug, description, carbonation_level (1-10)</p>
+                    <p><strong>Optional columns:</strong> product_line_id (UUID), flavor_categories (comma-separated), flavor_tags (comma-separated), serving_size, calories, total_fat, sodium, total_carbohydrates, total_sugars, protein, ingredients, amazon_link, walmart_link, instacart_link, product_website_link</p>
+                  </div>
+                </div>
+
+                {/* File Upload Area */}
+                <div
+                  className="border-2 border-dashed border-border rounded-lg p-8 text-center"
+                  onDragOver={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    const file = e.dataTransfer.files[0]
+                    if (file && file.type === 'text/csv' || file.name.endsWith('.csv')) {
+                      setCsvFile(file)
+                      handleCsvFile(file)
+                    }
+                  }}
+                >
+                  <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-sm text-foreground mb-2">
+                    Drag and drop your CSV file here, or
+                  </p>
+                  <label htmlFor="csv-upload" className="cursor-pointer">
+                    <span className="text-sm text-primary hover:text-primary/80 underline">
+                      click to browse
+                    </span>
+                    <input
+                      id="csv-upload"
+                      type="file"
+                      accept=".csv"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          setCsvFile(file)
+                          handleCsvFile(file)
+                        }
+                      }}
+                    />
+                  </label>
+                  {csvFile && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Selected: {csvFile.name}
+                    </p>
+                  )}
+                </div>
+
+                {/* CSV Preview */}
+                {csvPreview.length > 0 && (
+                  <div className="border rounded-lg p-4 max-h-64 overflow-y-auto">
+                    <h4 className="text-sm font-semibold text-foreground mb-2">
+                      Preview ({csvPreview.length} products)
+                    </h4>
+                    <div className="text-xs text-muted-foreground space-y-1">
+                      {csvPreview.slice(0, 5).map((row, idx) => (
+                        <div key={idx} className="truncate">
+                          Row {idx + 1}: {row.name || 'No name'}
+                        </div>
+                      ))}
+                      {csvPreview.length > 5 && (
+                        <p>... and {csvPreview.length - 5} more</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* CSV Errors */}
+                {csvErrors.length > 0 && (
+                  <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-3">
+                    <h4 className="text-sm font-semibold text-red-700 dark:text-red-400 mb-2">
+                      Validation Errors:
+                    </h4>
+                    <ul className="text-xs text-red-600 dark:text-red-300 space-y-1 list-disc list-inside">
+                      {csvErrors.map((error, idx) => (
+                        <li key={idx}>{error}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Import Result */}
+                {importResult && (
+                  <div className={`rounded-md p-3 ${
+                    importResult.failed === 0
+                      ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                      : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400'
+                  }`}>
+                    <p className="text-sm">
+                      Import completed: {importResult.success} successful, {importResult.failed} failed
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProductModal(false)
+                      setCsvFile(null)
+                      setCsvPreview([])
+                      setCsvErrors([])
+                      setImportResult(null)
+                    }}
+                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+                    disabled={isImporting}
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleBulkImport}
+                    className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90"
+                    disabled={!csvFile || csvPreview.length === 0 || isImporting || csvErrors.length > 0}
+                  >
+                    {isImporting ? 'Importing...' : 'Import Products'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
