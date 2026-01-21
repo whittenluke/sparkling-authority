@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Crown, Cherry, Grid3x3 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { PostgrestError } from '@supabase/supabase-js'
 import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
 import { BrowseByFlavor } from '@/components/home/BrowseByFlavor'
 import { BrowseByBrand } from '@/components/home/BrowseByBrand'
@@ -49,7 +50,7 @@ export default async function Home() {
           name,
           slug
         )
-      `) as { data: Product[] | null, error: any }
+      `) as { data: Product[] | null, error: PostgrestError | null }
 
     if (productsError) {
       console.error('🏠 Homepage: Products query error:', productsError)

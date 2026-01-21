@@ -148,8 +148,8 @@ export default function TerminologyPage() {
                   <p>A water purification process that removes impurities and minerals. Sparkling water made with reverse osmosis water is often &quot;remineralized&quot; afterward to add back desirable minerals.</p>
                 </li>
                 <li className="pt-4">
-                  <span className="font-semibold text-primary block mb-2">Remineralization:</span>
-                  <p>The addition of minerals back into water, which can enhance flavor and mimic the naturally occurring mineral profile found in spring water.</p>
+                  <span className="font-semibold text-primary block mb-2">Key Point:</span>
+                  <p>Tonic water's unique taste makes it ideal for specific cocktails (like gin and tonic) but not a direct substitute for plain sparkling water.</p>
                 </li>
               </ul>
             </div>
