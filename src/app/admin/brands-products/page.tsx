@@ -179,6 +179,14 @@ export default function AdminBrandsProducts() {
   const [productSuccessMessage, setProductSuccessMessage] = useState<string | null>(null)
   const [productValidationErrors, setProductValidationErrors] = useState<Record<string, string | undefined>>({})
 
+  // Pagination state
+  const [brandsCurrentPage, setBrandsCurrentPage] = useState(1)
+  const [brandsTotalCount, setBrandsTotalCount] = useState(0)
+  const [productsCurrentPage, setProductsCurrentPage] = useState(1)
+  const [productsTotalCount, setProductsTotalCount] = useState(0)
+  const BRANDS_PER_PAGE = 20
+  const PRODUCTS_PER_PAGE = 50
+
   // CSV bulk import state
   const [csvFile, setCsvFile] = useState<File | null>(null)
   const [csvPreview, setCsvPreview] = useState<Array<Record<string, string>>>([])
@@ -207,6 +215,12 @@ export default function AdminBrandsProducts() {
       setProductSlug(generateSlug(productName))
     }
   }, [productName, editingBrand])
+
+  // Reset pagination when search term changes
+  useEffect(() => {
+    setBrandsCurrentPage(1)
+    setProductsCurrentPage(1)
+  }, [searchTerm])
 
   const validateForm = () => {
     const errors: Record<string, string> = {}
@@ -251,21 +265,33 @@ export default function AdminBrandsProducts() {
   const supabase = createClientComponentClient()
 
   // Load brands with product counts
-  const loadBrands = useCallback(async () => {
+  const loadBrands = useCallback(async (page: number = brandsCurrentPage) => {
     try {
       setError(null)
 
-      // Get brands with product counts
-      const { data: brandsData, error: brandsError } = await supabase
+      // Calculate offset for pagination
+      const offset = (page - 1) * BRANDS_PER_PAGE
+
+      let query = supabase
         .from('brands')
-        .select('*')
+        .select('*', { count: 'exact' })
         .order('name')
+        .range(offset, offset + BRANDS_PER_PAGE - 1)
+
+      // Apply search filter if present
+      if (searchTerm) {
+        query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
+      }
+
+      const { data: brandsData, error: brandsError, count } = await query
 
       if (brandsError) {
         console.error('Error loading brands:', brandsError)
         setError('Failed to load brands')
         return
       }
+
+      setBrandsTotalCount(count || 0)
 
       if (!brandsData) {
         setBrands([])
@@ -295,27 +321,22 @@ export default function AdminBrandsProducts() {
         products_count: countsMap[brand.id] || 0
       }))
 
-      // Apply search filter
-      const filteredBrands = searchTerm
-        ? brandsWithCounts.filter(brand =>
-            brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (brand.description && brand.description.toLowerCase().includes(searchTerm.toLowerCase()))
-          )
-        : brandsWithCounts
-
-      setBrands(filteredBrands)
+      setBrands(brandsWithCounts)
     } catch (err) {
       console.error('Unexpected error loading brands:', err)
       setError('An unexpected error occurred')
     }
-  }, [supabase, searchTerm])
+  }, [supabase, searchTerm, brandsCurrentPage])
 
   // Load products with brand info
-  const loadProducts = useCallback(async () => {
+  const loadProducts = useCallback(async (page: number = productsCurrentPage) => {
     try {
       setError(null)
 
-      const { data: productsData, error: productsError } = await supabase
+      // Calculate offset for pagination
+      const offset = (page - 1) * PRODUCTS_PER_PAGE
+
+      let query = supabase
         .from('products')
         .select(`
           id,
@@ -332,8 +353,16 @@ export default function AdminBrandsProducts() {
             name,
             slug
           )
-        `)
+        `, { count: 'exact' })
         .order('name')
+        .range(offset, offset + PRODUCTS_PER_PAGE - 1)
+
+      // Apply search filter if present
+      if (searchTerm) {
+        query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
+      }
+
+      const { data: productsData, error: productsError, count } = await query
 
       if (productsError) {
         console.error('Error loading products:', productsError)
@@ -341,21 +370,13 @@ export default function AdminBrandsProducts() {
         return
       }
 
-      // Apply search filter
-      const filteredProducts = searchTerm
-        ? (productsData || []).filter(product =>
-            product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.brands?.[0]?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))
-          )
-        : (productsData || [])
-
-      setProducts(filteredProducts)
+      setProductsTotalCount(count || 0)
+      setProducts(productsData || [])
     } catch (err) {
       console.error('Unexpected error loading products:', err)
       setError('An unexpected error occurred')
     }
-  }, [supabase, searchTerm])
+  }, [supabase, searchTerm, productsCurrentPage])
 
   // Fetch all brands for product form dropdown
   const fetchAllBrands = useCallback(async () => {
@@ -1046,6 +1067,40 @@ export default function AdminBrandsProducts() {
               </p>
             </div>
           )}
+
+          {/* Pagination Controls for Brands */}
+          {brandsTotalCount > BRANDS_PER_PAGE && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-border">
+              <div className="text-sm text-muted-foreground">
+                Showing {((brandsCurrentPage - 1) * BRANDS_PER_PAGE) + 1}-{Math.min(brandsCurrentPage * BRANDS_PER_PAGE, brandsTotalCount)} of {brandsTotalCount} brands
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    setBrandsCurrentPage(prev => prev - 1)
+                    loadBrands(brandsCurrentPage - 1)
+                  }}
+                  disabled={brandsCurrentPage === 1}
+                  className="px-3 py-1 text-sm border border-border rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <span className="text-sm text-muted-foreground">
+                  Page {brandsCurrentPage} of {Math.ceil(brandsTotalCount / BRANDS_PER_PAGE)}
+                </span>
+                <button
+                  onClick={() => {
+                    setBrandsCurrentPage(prev => prev + 1)
+                    loadBrands(brandsCurrentPage + 1)
+                  }}
+                  disabled={brandsCurrentPage === Math.ceil(brandsTotalCount / BRANDS_PER_PAGE)}
+                  className="px-3 py-1 text-sm border border-border rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -1159,6 +1214,40 @@ export default function AdminBrandsProducts() {
               <p className="text-sm text-muted-foreground">
                 {searchTerm ? 'Try adjusting your search terms.' : 'Get started by adding your first product.'}
               </p>
+            </div>
+          )}
+
+          {/* Pagination Controls for Products */}
+          {productsTotalCount > PRODUCTS_PER_PAGE && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-border">
+              <div className="text-sm text-muted-foreground">
+                Showing {((productsCurrentPage - 1) * PRODUCTS_PER_PAGE) + 1}-{Math.min(productsCurrentPage * PRODUCTS_PER_PAGE, productsTotalCount)} of {productsTotalCount} products
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    setProductsCurrentPage(prev => prev - 1)
+                    loadProducts(productsCurrentPage - 1)
+                  }}
+                  disabled={productsCurrentPage === 1}
+                  className="px-3 py-1 text-sm border border-border rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <span className="text-sm text-muted-foreground">
+                  Page {productsCurrentPage} of {Math.ceil(productsTotalCount / PRODUCTS_PER_PAGE)}
+                </span>
+                <button
+                  onClick={() => {
+                    setProductsCurrentPage(prev => prev + 1)
+                    loadProducts(productsCurrentPage + 1)
+                  }}
+                  disabled={productsCurrentPage === Math.ceil(productsTotalCount / PRODUCTS_PER_PAGE)}
+                  className="px-3 py-1 text-sm border border-border rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </div>
