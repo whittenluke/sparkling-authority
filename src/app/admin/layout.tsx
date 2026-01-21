@@ -4,7 +4,7 @@ import { Header } from '@/components/layout/header'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { isAdmin } from '@/lib/supabase/admin'
 import { useRouter } from 'next/navigation'
-import { LayoutDashboard, MessageSquare, Users, Settings } from 'lucide-react'
+import { LayoutDashboard, MessageSquare, Users, Settings, Package } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
@@ -62,6 +62,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               >
                 <LayoutDashboard className="h-4 w-4" />
                 <span>Dashboard</span>
+              </Link>
+              <Link
+                href="/admin/brands-products"
+                className="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground"
+              >
+                <Package className="h-4 w-4" />
+                <span>Brands & Products</span>
               </Link>
               <Link
                 href="/admin/reviews"
