@@ -40,7 +40,7 @@ interface Product {
     id: string
     name: string
     slug: string
-  }
+  }[]
   flavor_categories: string[] | null
   flavor_tags: string[] | null
   carbonation_level: number
@@ -156,7 +156,7 @@ export default function AdminBrandsProducts() {
       const filteredProducts = searchTerm
         ? (productsData || []).filter(product =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.brands?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.brands?.[0]?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))
           )
         : (productsData || [])
@@ -401,10 +401,10 @@ export default function AdminBrandsProducts() {
                     </td>
                     <td className="px-6 py-4">
                       <Link
-                        href={`/explore/brands/${product.brand.slug}`}
+                        href={`/explore/brands/${product.brands[0]?.slug}`}
                         className="text-primary hover:text-primary/80 text-sm"
                       >
-                        {product.brand.name}
+                        {product.brands[0]?.name}
                       </Link>
                     </td>
                     <td className="px-6 py-4">
