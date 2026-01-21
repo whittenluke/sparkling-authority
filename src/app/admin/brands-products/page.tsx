@@ -844,10 +844,10 @@ export default function AdminBrandsProducts() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]) // Only depend on activeTab, not the callback functions
 
-  // Tabs with counts - always show a number to prevent hydration mismatches
+  // Tabs with counts - show total counts regardless of pagination
   const tabs = [
-    { id: 'brands' as TabType, label: 'Brands', icon: Building2, count: brands.length },
-    { id: 'products' as TabType, label: 'Products', icon: Package, count: products.length }
+    { id: 'brands' as TabType, label: 'Brands', icon: Building2, count: brandsTotalCount },
+    { id: 'products' as TabType, label: 'Products', icon: Package, count: productsTotalCount }
   ]
 
   if (loading && brands.length === 0 && products.length === 0) {
