@@ -1860,9 +1860,25 @@ export default function AdminBrandsProducts() {
                 {/* CSV Column Requirements */}
                 <div className="rounded-md bg-blue-50 dark:bg-blue-900/20 p-4">
                   <h3 className="text-sm font-semibold text-foreground mb-2">CSV Column Requirements</h3>
-                  <div className="text-xs text-muted-foreground space-y-1">
-                    <p><strong>Required columns:</strong> brand_id (UUID), name, slug, description, carbonation_level (1-10)</p>
-                    <p><strong>Optional columns:</strong> product_line_id (UUID), flavor_categories (comma-separated), flavor_tags (comma-separated), serving_size, calories, total_fat, sodium, total_carbohydrates, total_sugars, protein, ingredients, amazon_link, walmart_link, instacart_link, product_website_link</p>
+                  <div className="text-xs text-muted-foreground space-y-2">
+                    <div>
+                      <p className="font-medium mb-1">Required columns (copy this as first row):</p>
+                      <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded text-xs font-mono break-all">
+                        brand_id,name,slug,description,carbonation_level
+                      </code>
+                    </div>
+                    <div>
+                      <p className="font-medium mb-1">All columns (copy this as first row for full import):</p>
+                      <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded text-xs font-mono break-all">
+                        brand_id,name,slug,description,carbonation_level,product_line_id,flavor_categories,flavor_tags,serving_size,calories,total_fat,sodium,total_carbohydrates,total_sugars,protein,ingredients,amazon_link,walmart_link,instacart_link,product_website_link
+                      </code>
+                    </div>
+                    <div className="text-xs space-y-1">
+                      <p>• <strong>brand_id:</strong> UUID from brands table</p>
+                      <p>• <strong>carbonation_level:</strong> Number 1-10</p>
+                      <p>• <strong>flavor_categories/flavor_tags:</strong> Comma-separated values</p>
+                      <p>• All other columns are strings unless specified</p>
+                    </div>
                   </div>
                 </div>
 
