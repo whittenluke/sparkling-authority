@@ -36,7 +36,7 @@ interface Product {
   name: string
   slug: string
   description: string | null
-  brand: {
+  brands: {
     id: string
     name: string
     slug: string
@@ -156,7 +156,7 @@ export default function AdminBrandsProducts() {
       const filteredProducts = searchTerm
         ? (productsData || []).filter(product =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.brand?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.brands?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))
           )
         : (productsData || [])

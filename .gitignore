@@ -58,10 +58,12 @@ schema.graphql
 *_brands.sql
 
 # Design and planning documents
+.Documentation
 DesignDoc.md
 SchemaRoadmap.md
 DesignSystem.md
 UpdateStructureRM.md
+AffiliateRoadmap.md
 **/design/
 **/docs/private/
 **/planning/
