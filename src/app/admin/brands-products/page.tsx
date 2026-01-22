@@ -383,7 +383,7 @@ export default function AdminBrandsProducts() {
     try {
       const { data, error } = await supabase
         .from('brands')
-        .select('id, name, slug')
+        .select('id, name, slug, description, website, country_of_origin, founded_year, is_active, created_at')
         .order('name')
 
       if (error) {
@@ -521,7 +521,7 @@ export default function AdminBrandsProducts() {
         // Check for unique constraint violations - handle different error formats
         const errorMessage = insertError.message || insertError.details || ''
         const errorCode = insertError.code || insertError.hint?.match(/\((\d+)\)/)?.[1]
-        
+
         if (errorCode === '23505' || errorMessage.includes('unique constraint') || errorMessage.includes('duplicate key')) {
           if (errorMessage.includes('brands_name_key') || errorMessage.includes('name')) {
             setFormError('A brand with this name already exists.')
@@ -613,7 +613,7 @@ export default function AdminBrandsProducts() {
         console.error('Product insert error:', insertError)
         const errorMessage = insertError.message || insertError.details || ''
         const errorCode = insertError.code || insertError.hint?.match(/\((\d+)\)/)?.[1]
-        
+
         if (errorCode === '23505' || errorMessage.includes('unique constraint') || errorMessage.includes('duplicate key')) {
           if (errorMessage.includes('products_name_key') || errorMessage.includes('name')) {
             setProductFormError('A product with this name already exists for this brand.')
@@ -669,7 +669,7 @@ export default function AdminBrandsProducts() {
     try {
       const text = await file.text()
       const lines = text.split('\n').filter(line => line.trim())
-      
+
       if (lines.length < 2) {
         setCsvErrors(['CSV file must have at least a header row and one data row.'])
         return
@@ -679,7 +679,7 @@ export default function AdminBrandsProducts() {
       const headers = lines[0].split(',').map(h => h.trim().toLowerCase())
       const requiredHeaders = ['brand_id', 'name', 'slug', 'description', 'carbonation_level']
       const missingHeaders = requiredHeaders.filter(h => !headers.includes(h))
-      
+
       if (missingHeaders.length > 0) {
         setCsvErrors([`Missing required columns: ${missingHeaders.join(', ')}`])
         return
@@ -692,7 +692,7 @@ export default function AdminBrandsProducts() {
       for (let i = 1; i < lines.length; i++) {
         const values = lines[i].split(',').map(v => v.trim())
         const row: Record<string, string> = {}
-        
+
         headers.forEach((header, idx) => {
           row[header] = values[idx] || ''
         })
@@ -950,19 +950,17 @@ export default function AdminBrandsProducts() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === tab.id
+              className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                   ? 'border-primary text-primary'
                   : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-              }`}
+                }`}
             >
               <tab.icon className="h-4 w-4" />
               {tab.label}
-              <span className={`ml-2 py-0.5 px-2 rounded-full text-xs ${
-                activeTab === tab.id
+              <span className={`ml-2 py-0.5 px-2 rounded-full text-xs ${activeTab === tab.id
                   ? 'bg-primary/10 text-primary'
                   : 'bg-muted text-muted-foreground'
-              }`}>
+                }`}>
                 {tab.count}
               </span>
             </button>
@@ -1019,11 +1017,10 @@ export default function AdminBrandsProducts() {
                       {brand.products_count}
                     </td>
                     <td className="px-3 py-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        brand.is_active
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${brand.is_active
                           ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
                           : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                      }`}>
+                        }`}>
                         {brand.is_active ? <Eye className="w-3 h-3 mr-1" /> : <EyeOff className="w-3 h-3 mr-1" />}
                         {brand.is_active ? 'Active' : 'Inactive'}
                       </span>
@@ -1167,11 +1164,10 @@ export default function AdminBrandsProducts() {
                       Level {product.carbonation_level}
                     </td>
                     <td className="px-3 py-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        !product.is_discontinued
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!product.is_discontinued
                           ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
                           : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                      }`}>
+                        }`}>
                         {!product.is_discontinued ? <Check className="w-3 h-3 mr-1" /> : <X className="w-3 h-3 mr-1" />}
                         {!product.is_discontinued ? 'Available' : 'Discontinued'}
                       </span>
@@ -1963,11 +1959,10 @@ export default function AdminBrandsProducts() {
 
                 {/* Import Result */}
                 {importResult && (
-                  <div className={`rounded-md p-3 ${
-                    importResult.failed === 0
+                  <div className={`rounded-md p-3 ${importResult.failed === 0
                       ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
                       : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400'
-                  }`}>
+                    }`}>
                     <p className="text-sm">
                       Import completed: {importResult.success} successful, {importResult.failed} failed
                     </p>
