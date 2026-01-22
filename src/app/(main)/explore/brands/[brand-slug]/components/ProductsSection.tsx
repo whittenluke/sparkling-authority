@@ -10,7 +10,8 @@ type Product = {
   thumbnail?: string | null
   product_line_id: string
   slug: string
-  averageRating?: number
+  averageRating?: number // Bayesian average (for sorting)
+  trueAverage?: number // True average (for display)
   ratingCount: number
   brand: {
     id: string
@@ -97,6 +98,7 @@ export function ProductsSection({ products, productLines }: Props) {
               flavor_tags: product.flavor_tags,
               thumbnail: product.thumbnail,
               averageRating: product.averageRating,
+              trueAverage: product.trueAverage,
               ratingCount: product.ratingCount
             }}
           />
