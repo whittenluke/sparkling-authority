@@ -951,15 +951,15 @@ export default function AdminBrandsProducts() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 }`}
             >
               <tab.icon className="h-4 w-4" />
               {tab.label}
               <span className={`ml-2 py-0.5 px-2 rounded-full text-xs ${activeTab === tab.id
-                  ? 'bg-primary/10 text-primary'
-                  : 'bg-muted text-muted-foreground'
+                ? 'bg-primary/10 text-primary'
+                : 'bg-muted text-muted-foreground'
                 }`}>
                 {tab.count}
               </span>
@@ -1018,8 +1018,8 @@ export default function AdminBrandsProducts() {
                     </td>
                     <td className="px-3 py-2">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${brand.is_active
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                          : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                        : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                         }`}>
                         {brand.is_active ? <Eye className="w-3 h-3 mr-1" /> : <EyeOff className="w-3 h-3 mr-1" />}
                         {brand.is_active ? 'Active' : 'Inactive'}
@@ -1165,8 +1165,8 @@ export default function AdminBrandsProducts() {
                     </td>
                     <td className="px-3 py-2">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!product.is_discontinued
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                          : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                        : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                         }`}>
                         {!product.is_discontinued ? <Check className="w-3 h-3 mr-1" /> : <X className="w-3 h-3 mr-1" />}
                         {!product.is_discontinued ? 'Available' : 'Discontinued'}
@@ -1963,8 +1963,8 @@ export default function AdminBrandsProducts() {
                 {/* Import Result */}
                 {importResult && (
                   <div className={`rounded-md p-3 ${importResult.failed === 0
-                      ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                      : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400'
+                    ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                    : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400'
                     }`}>
                     <p className="text-sm">
                       Import completed: {importResult.success} successful, {importResult.failed} failed
