@@ -62,6 +62,20 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
     setExpandedCategory(category)
     setIsLoading(true)
 
+    // Get mean rating across ALL products for Bayesian average
+    const { data: allProducts } = await supabase
+      .from('products')
+      .select(`
+        reviews (
+          overall_rating
+        )
+      `)
+
+    const allRatings = allProducts?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+    const meanRating = allRatings.length > 0
+      ? allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length
+      : 3.5 // Fallback to 3.5 if no ratings exist
+
     const { data, error } = await supabase
       .from('products')
       .select(`
@@ -86,19 +100,19 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
       console.error('Error fetching products:', error)
       setProducts([])
     } else {
-      const meanRating = 3.5 // Fallback mean rating
-      
       setProducts(data.map(p => {
         const ratings = p.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
         const ratingCount = ratings.length
 
-        // Calculate Bayesian average (for sorting)
-        const averageRating = ratingCount > 0
-          ? (ratings.reduce((a: number, b: number) => a + b, 0) / ratingCount) * 0.7 + meanRating * 0.3
+        // Calculate Bayesian average (for sorting) - consistent with other pages
+        const C = 10 // confidence factor
+        const sumOfRatings = ratings.reduce((a: number, b: number) => a + b, 0)
+        const bayesianAverage = ratingCount > 0
+          ? (C * meanRating + sumOfRatings) / (C + ratingCount)
           : undefined
 
         // Calculate true average (for display)
-        const trueAverage = ratingCount > 0 ? ratings.reduce((a: number, b: number) => a + b, 0) / ratingCount : undefined
+        const trueAverage = ratingCount > 0 ? sumOfRatings / ratingCount : undefined
 
         return {
           id: p.id,
@@ -108,7 +122,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
           thumbnail: p.thumbnail,
           brand: Array.isArray(p.brand) ? p.brand[0] : p.brand,
           reviews: p.reviews,
-          averageRating,
+          averageRating: bayesianAverage,
           trueAverage,
           ratingCount
         }
@@ -116,7 +130,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
     }
 
     setIsLoading(false)
-    
+
     // Scroll to the category after a brief delay to ensure content is rendered
     setTimeout(() => scrollToCategory(category), 100)
   }
@@ -126,6 +140,20 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
     if (initialExpandedCategory) {
       const loadInitialCategory = async () => {
         setIsLoading(true)
+
+        // Get mean rating across ALL products for Bayesian average
+        const { data: allProducts } = await supabase
+          .from('products')
+          .select(`
+            reviews (
+              overall_rating
+            )
+          `)
+
+        const allRatings = allProducts?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+        const meanRating = allRatings.length > 0
+          ? allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length
+          : 3.5 // Fallback to 3.5 if no ratings exist
 
         const { data, error } = await supabase
           .from('products')
@@ -151,19 +179,19 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
           console.error('Error fetching products:', error)
           setProducts([])
         } else {
-          const meanRating = 3.5 // Fallback mean rating
-          
           setProducts(data.map(p => {
             const ratings = p.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
             const ratingCount = ratings.length
 
-            // Calculate Bayesian average (for sorting)
-            const averageRating = ratingCount > 0
-              ? (ratings.reduce((a: number, b: number) => a + b, 0) / ratingCount) * 0.7 + meanRating * 0.3
+            // Calculate Bayesian average (for sorting) - consistent with other pages
+            const C = 10 // confidence factor
+            const sumOfRatings = ratings.reduce((a: number, b: number) => a + b, 0)
+            const bayesianAverage = ratingCount > 0
+              ? (C * meanRating + sumOfRatings) / (C + ratingCount)
               : undefined
 
             // Calculate true average (for display)
-            const trueAverage = ratingCount > 0 ? ratings.reduce((a: number, b: number) => a + b, 0) / ratingCount : undefined
+            const trueAverage = ratingCount > 0 ? sumOfRatings / ratingCount : undefined
 
             return {
               id: p.id,
@@ -173,7 +201,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
               thumbnail: p.thumbnail,
               brand: Array.isArray(p.brand) ? p.brand[0] : p.brand,
               reviews: p.reviews,
-              averageRating,
+              averageRating: bayesianAverage,
               trueAverage,
               ratingCount
             }
@@ -181,7 +209,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
         }
 
         setIsLoading(false)
-        
+
         // Scroll to the initial category after content is loaded
         setTimeout(() => scrollToCategory(initialExpandedCategory), 300)
       }
