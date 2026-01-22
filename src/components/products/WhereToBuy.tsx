@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ExternalLink, ShoppingCart } from 'lucide-react'
+import { ExternalLink, ShoppingCart, Info } from 'lucide-react'
 
 type WhereToBuyProps = {
   amazonLink?: string | null
@@ -28,25 +28,24 @@ export function WhereToBuy({
   if (retailers.length === 0) return null
 
   return (
-    <div className="rounded-xl bg-card p-4 shadow-sm ring-1 ring-border">
-      <h3 className="text-sm font-medium text-muted-foreground mb-3">
-        Where to Buy
-      </h3>
-      <div className="flex flex-wrap gap-2">
-        {retailers.map((retailer) => (
-          <Link
-            key={retailer.name}
-            href={retailer.link!}
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-foreground hover:bg-accent/80 transition-colors"
-          >
+    <div className="flex flex-wrap gap-2 my-6">
+      {retailers.map((retailer) => (
+        <Link
+          key={retailer.name}
+          href={retailer.link!}
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-foreground hover:bg-accent/80 transition-colors"
+        >
+          {retailer.name === brandName ? (
+            <Info className="h-4 w-4" />
+          ) : (
             <ShoppingCart className="h-4 w-4" />
-            {retailer.name}
-            <ExternalLink className="h-3 w-3 opacity-50" />
-          </Link>
-        ))}
-      </div>
+          )}
+          {retailer.name}
+          <ExternalLink className="h-3 w-3 opacity-50" />
+        </Link>
+      ))}
     </div>
   )
 }
