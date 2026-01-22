@@ -8,6 +8,8 @@ import { Metadata } from 'next'
 import { Star } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
+import { PartialStar } from '@/components/ui/PartialStar'
+import { getStarFillPercentages } from '@/lib/star-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -188,11 +190,10 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
     ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length 
     : 3.5 // Fallback to 3.5 if no ratings exist
 
-  // Calculate Bayesian average
-  const C = 10 // confidence factor - match other pages
+  // Calculate true average (display rating) - Bayesian average is only for sorting
   const sumOfRatings = ratings.reduce((a, b) => a + b, 0)
   const averageRating = ratingCount > 0
-    ? (C * meanRating + sumOfRatings) / (C + ratingCount)
+    ? sumOfRatings / ratingCount
     : undefined
 
   // Count reviews (rows with review_text)
@@ -442,14 +443,11 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                         )}
                       </div>
                       <div className="mt-2 flex gap-0.5">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`h-4 w-4 ${
-                              star <= Math.round(review.overall_rating)
-                                ? 'fill-yellow-400 text-yellow-400'
-                                : 'fill-transparent text-yellow-400/25'
-                            }`}
+                        {getStarFillPercentages(review.overall_rating).map((percentage, index) => (
+                          <PartialStar
+                            key={index}
+                            fillPercentage={percentage}
+                            size={16}
                           />
                         ))}
                       </div>

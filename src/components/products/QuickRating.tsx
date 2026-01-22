@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Star, MessageSquare } from 'lucide-react'
 import { ReviewModal } from './ReviewModal'
+import { PartialStar } from '@/components/ui/PartialStar'
+import { getStarFillPercentages } from '@/lib/star-utils'
 
 interface QuickRatingProps {
   productId: string
@@ -55,16 +57,21 @@ export function QuickRating({
           )}
         </div>
         <div className="flex gap-0.5">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <Star
-              key={star}
-              className={`h-5 w-5 ${
-                typeof averageRating === 'number' && star <= Math.round(averageRating)
-                  ? 'fill-yellow-400 text-yellow-400'
-                  : 'fill-transparent text-yellow-400/25'
-              }`}
-            />
-          ))}
+          {typeof averageRating === 'number'
+            ? getStarFillPercentages(averageRating).map((percentage, index) => (
+                <PartialStar
+                  key={index}
+                  fillPercentage={percentage}
+                  size={20}
+                />
+              ))
+            : [1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className="h-5 w-5 fill-transparent text-yellow-400/25"
+                />
+              ))
+          }
         </div>
       </div>
 
@@ -98,4 +105,4 @@ export function QuickRating({
       />
     </div>
   )
-} 
+}

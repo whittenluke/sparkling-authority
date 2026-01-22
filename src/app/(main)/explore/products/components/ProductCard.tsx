@@ -8,6 +8,8 @@ import { useAuth } from '@/lib/supabase/auth-context'
 import { useRouter } from 'next/navigation'
 import { ReviewModal } from '@/components/products/ReviewModal'
 import { createClientComponentClient } from '@/lib/supabase/client'
+import { PartialStar } from '@/components/ui/PartialStar'
+import { getStarFillPercentages } from '@/lib/star-utils'
 
 type Brand = {
   id: string
@@ -137,16 +139,21 @@ export function ProductCard({ product }: ProductCardProps) {
                 {typeof product.trueAverage === 'number' ? product.trueAverage.toFixed(1) : 'N/A'}
               </span>
               <div className="flex gap-0.5">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className={`h-4 w-4 ${
-                      typeof product.trueAverage === 'number' && star <= Math.round(product.trueAverage)
-                        ? 'fill-yellow-400 text-yellow-400'
-                        : 'fill-transparent text-yellow-400/25'
-                    }`}
-                  />
-                ))}
+                {typeof product.trueAverage === 'number'
+                  ? getStarFillPercentages(product.trueAverage).map((percentage, index) => (
+                      <PartialStar
+                        key={index}
+                        fillPercentage={percentage}
+                        size={16}
+                      />
+                    ))
+                  : [1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className="h-4 w-4 fill-transparent text-yellow-400/25"
+                      />
+                    ))
+                }
               </div>
               <span className="text-sm text-muted-foreground">
                 ({product.ratingCount})
