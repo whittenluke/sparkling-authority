@@ -1369,7 +1369,10 @@ export default function AdminBrandsProducts() {
                     className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
                     placeholder="2020"
                     value={foundedYear}
-                    onChange={(e) => setFoundedYear(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      setFoundedYear(value === '' ? '' : Number(value))
+                    }}
                     required
                   />
                   {validationErrors.foundedYear && (
