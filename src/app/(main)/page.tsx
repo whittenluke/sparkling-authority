@@ -36,7 +36,7 @@ export default async function Home() {
   try {
     console.log('🏠 Homepage: Starting load at', new Date().toISOString())
 
-    // Get products for top-rated calculation
+    // Get products with their reviews (using JOIN like best-overall page)
     const { data: products, error: productsError } = await supabase
       .from('products')
       .select(`
@@ -49,6 +49,10 @@ export default async function Home() {
           id,
           name,
           slug
+        ),
+        reviews (
+          overall_rating,
+          is_approved
         )
       `) as { data: Product[] | null, error: PostgrestError | null }
 
@@ -59,45 +63,15 @@ export default async function Home() {
 
     console.log(`🏠 Homepage: Fetched ${products?.length || 0} products`)
 
-    // Get aggregated review data separately for better performance
-    const productIds = products?.map(p => p.id) || []
-    const { data: reviewStats, error: reviewsError } = await supabase
-      .from('reviews')
-      .select('product_id, overall_rating')
-      .in('product_id', productIds)
-
-    if (reviewsError) {
-      console.error('🏠 Homepage: Reviews query error:', reviewsError)
-      // Continue with empty reviews rather than failing
-    }
-
-    console.log(`🏠 Homepage: Fetched ${reviewStats?.length || 0} reviews`)
-
-    // Group reviews by product for efficient processing
-    const reviewsByProduct = (reviewStats || []).reduce((acc, review) => {
-      if (!acc[review.product_id]) {
-        acc[review.product_id] = []
-      }
-      acc[review.product_id].push(review.overall_rating)
-      return acc
-    }, {} as Record<string, number[]>)
-
-    // Attach reviews to products
-    const productsWithReviews = products?.map(product => ({
-      ...product,
-      reviews: reviewsByProduct[product.id]?.map(rating => ({ overall_rating: rating })) || []
-    })) || []
-
-    console.log('🏠 Homepage: Processing complete, rendering page')
-
     // Calculate the mean rating across all products
-    const allRatings = productsWithReviews?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+    const allRatings = products?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
     const meanRating = allRatings.length > 0
       ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length
       : 3.5 // Fallback to 3.5 if no ratings exist
 
     // Calculate average ratings and sort
-    const topProducts = productsWithReviews ? productsWithReviews.map(product => {
+    const topProducts = products ? products.map(product => {
+      // Use ALL ratings regardless of approval status - approval only matters for review text
       const ratings = product.reviews?.map(r => r.overall_rating) || []
       const ratingCount = ratings.length
 
