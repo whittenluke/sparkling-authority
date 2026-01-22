@@ -112,7 +112,7 @@ export default async function Home() {
       <>
         {/* Exploration Section */}
         <div className="">
-          <h2 className="text-center font-clash-display text-2xl font-semibold text-primary mb-8">
+          <h2 className="text-center font-clash-display text-3xl font-medium text-primary mb-8">
             Explore sparkling waters by
           </h2>
 
