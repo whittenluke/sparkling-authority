@@ -110,20 +110,10 @@ export default async function Home() {
 
     return (
       <>
-        {/* Hero Section */}
-        <div className="max-w-3xl mx-auto space-y-3 text-center">
-          <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary sm:text-6xl">
-            Sparkling water, finally organized.
-          </h1>
-          <p className="font-plus-jakarta text-lg leading-8 text-primary/80">
-            Find, compare, and explore brands and flavors in one place
-          </p>
-        </div>
-
         {/* Exploration Section */}
-        <div className="mt-16">
-          <h2 className="text-center font-clash-display text-lg font-medium text-primary/60 mb-6">
-            Explore by
+        <div className="">
+          <h2 className="text-center font-clash-display text-2xl font-semibold text-primary mb-8">
+            Explore sparkling waters by
           </h2>
 
           {/* Main Exploration Cards */}
