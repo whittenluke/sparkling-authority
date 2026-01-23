@@ -24,12 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type FlavorsPageProps = {
-  searchParams: Promise<{ category?: string }>
+  searchParams: Promise<{ category?: string; tag?: string }>
 }
 
 export default async function FlavorsPage({ searchParams }: FlavorsPageProps) {
   const params = await searchParams
   const initialCategory = params.category
+  const initialTag = params.tag
 
   // Get categories from categoryTagMap.json instead of database
   const categories = Object.keys(categoryTagMap).sort()
@@ -38,7 +39,7 @@ export default async function FlavorsPage({ searchParams }: FlavorsPageProps) {
     <div className="space-y-6">
       <FlavorsHeader />
 
-      <FlavorsList categories={categories} initialExpandedCategory={initialCategory} />
+      <FlavorsList categories={categories} initialExpandedCategory={initialCategory} initialSelectedTag={initialTag} />
     </div>
   )
 }

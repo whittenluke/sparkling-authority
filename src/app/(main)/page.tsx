@@ -5,6 +5,7 @@ import { PostgrestError } from '@supabase/supabase-js'
 import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
 import { BrowseByFlavor } from '@/components/home/BrowseByFlavor'
 import { BrowseByBrand } from '@/components/home/BrowseByBrand'
+import { UnflavoredChampions } from '@/components/home/UnflavoredChampions'
 
 type Brand = {
   id: string
@@ -108,6 +109,68 @@ export default async function Home() {
       })
       .slice(0, 5) : [] // Show top 5 products
 
+    // Get total count of unflavored products
+    const { count: unflavoredTotalCount } = await supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .overlaps('flavor_tags', ['unflavored', 'natural', 'neutral', 'plain'])
+
+    // Get unflavored products for horizontal scroll section
+    const { data: unflavoredProductsData, error: unflavoredError } = await supabase
+      .from('products')
+      .select(`
+        id,
+        name,
+        slug,
+        flavor_tags,
+        thumbnail,
+        brand:brand_id (
+          id,
+          name,
+          slug
+        ),
+        reviews (
+          overall_rating
+        )
+      `)
+      .overlaps('flavor_tags', ['unflavored', 'natural', 'neutral', 'plain'])
+      .order('name')
+
+    const unflavoredProducts = unflavoredProductsData ? unflavoredProductsData.map(product => {
+      const ratings = product.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
+      const ratingCount = ratings.length
+
+      // Calculate Bayesian average (for sorting)
+      const C = 10 // confidence factor
+      const sumOfRatings = ratings.reduce((a: number, b: number) => a + b, 0)
+      const bayesianAverage = ratingCount > 0
+        ? (C * meanRating + sumOfRatings) / (C + ratingCount)
+        : undefined
+
+      // Calculate true average (for display)
+      const trueAverage = ratingCount > 0 ? sumOfRatings / ratingCount : undefined
+
+      return {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        flavor_tags: product.flavor_tags || [],
+        thumbnail: product.thumbnail,
+        brand: Array.isArray(product.brand) ? product.brand[0] : product.brand,
+        averageRating: bayesianAverage,
+        trueAverage,
+        ratingCount
+      }
+    })
+      .filter(p => p.ratingCount >= 3) // Lower threshold for unflavored section
+      .sort((a, b) => {
+        if (b.averageRating !== a.averageRating && b.averageRating && a.averageRating) {
+          return b.averageRating - a.averageRating
+        }
+        return b.ratingCount - a.ratingCount
+      })
+      .slice(0, 8) : [] // Show top 8 products for horizontal scroll
+
     return (
       <>
         {/* Exploration Section */}
@@ -140,6 +203,9 @@ export default async function Home() {
             </Link>
           </div>
         </div>
+
+        {/* Unflavored Champions Section */}
+        <UnflavoredChampions products={unflavoredProducts} totalCount={unflavoredTotalCount || undefined} />
 
         {/* Top Rated Section */}
         {topProducts.length > 0 && (

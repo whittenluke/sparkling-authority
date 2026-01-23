@@ -39,11 +39,12 @@ function formatCategoryName(category: string): string {
 type FlavorsListProps = {
   categories: string[]
   initialExpandedCategory?: string
+  initialSelectedTag?: string
 }
 
-export function FlavorsList({ categories, initialExpandedCategory }: FlavorsListProps) {
+export function FlavorsList({ categories, initialExpandedCategory, initialSelectedTag }: FlavorsListProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(initialExpandedCategory || null)
-  const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const [selectedTag, setSelectedTag] = useState<string | null>(initialSelectedTag || null)
   const [flavorTags, setFlavorTags] = useState<FlavorTag[]>([])
   const [allProducts, setAllProducts] = useState<FlavorProduct[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -293,7 +294,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
 
       loadInitialCategory()
     }
-  }, [initialExpandedCategory, supabase])
+  }, [initialExpandedCategory, initialSelectedTag, supabase])
 
   // Filter products based on selected tag
   const filteredProducts = selectedTag
