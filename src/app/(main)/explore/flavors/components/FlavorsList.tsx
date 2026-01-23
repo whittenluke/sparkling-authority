@@ -355,7 +355,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
                     <>
                       {filteredProducts.length === 0 ? (
                         <p className="text-sm text-muted-foreground">
-                          No products found with tag "{selectedTag}".
+                          No products found with tag &quot;{selectedTag}&quot;.
                         </p>
                       ) : (
                         <div className="space-y-3">
