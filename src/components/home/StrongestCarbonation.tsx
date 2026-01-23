@@ -96,12 +96,6 @@ export function StrongestCarbonation({ products, totalCount }: StrongestCarbonat
         </div>
       </div>
 
-      {/* Scroll Hint for Mobile */}
-      <div className="mt-4 text-center sm:hidden">
-        <p className="text-sm text-muted-foreground">
-          Swipe to see more →
-        </p>
-      </div>
     </div>
   )
 }
