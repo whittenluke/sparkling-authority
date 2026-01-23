@@ -7,6 +7,7 @@ import { BrowseByFlavor } from '@/components/home/BrowseByFlavor'
 import { BrowseByBrand } from '@/components/home/BrowseByBrand'
 import { UnflavoredChampions } from '@/components/home/UnflavoredChampions'
 import { StrongestCarbonation } from '@/components/home/StrongestCarbonation'
+import { CitrusCollection } from '@/components/home/CitrusCollection'
 
 type Brand = {
   id: string
@@ -173,6 +174,69 @@ export default async function Home() {
       })
       .slice(0, 8) : [] // Show top 8 products for horizontal scroll
 
+    // Get citrus products for horizontal scroll section
+    const { data: citrusProductsData, error: citrusError } = await supabase
+      .from('products')
+      .select(`
+        id,
+        name,
+        slug,
+        flavor_tags,
+        thumbnail,
+        brand:brand_id (
+          id,
+          name,
+          slug
+        ),
+        reviews (
+          overall_rating
+        )
+      `)
+      .contains('flavor_categories', ['citrus'])
+      .eq('is_discontinued', false)
+
+    const citrusProducts = citrusProductsData ? citrusProductsData.map(product => {
+      const ratings = product.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
+      const ratingCount = ratings.length
+
+      // Skip products with less than 5 reviews
+      if (ratingCount < 5) {
+        return {
+          ...product,
+          averageRating: 0,
+          ratingCount: 0
+        }
+      }
+
+      // Calculate Bayesian average (for sorting)
+      const C = 10 // confidence factor
+      const sumOfRatings = ratings.reduce((a: number, b: number) => a + b, 0)
+      const bayesianAverage = (C * meanRating + sumOfRatings) / (C + ratingCount)
+
+      // Calculate true average (for display)
+      const trueAverage = sumOfRatings / ratingCount
+
+      return {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        flavor_tags: product.flavor_tags || [],
+        thumbnail: product.thumbnail,
+        brand: Array.isArray(product.brand) ? product.brand[0] : product.brand,
+        averageRating: bayesianAverage,
+        trueAverage,
+        ratingCount
+      }
+    })
+      .filter(p => p.ratingCount >= 5) // Only include products with 5+ reviews
+      .sort((a, b) => {
+        if (b.averageRating !== a.averageRating && b.averageRating && a.averageRating) {
+          return b.averageRating - a.averageRating
+        }
+        return b.ratingCount - a.ratingCount
+      })
+      .slice(0, 8) : [] // Show top 8 products for horizontal scroll
+
     // Get strongest carbonation products for horizontal scroll section
     const { data: strongestCarbonationData, error: strongestCarbonationError } = await supabase
       .from('products')
@@ -241,6 +305,13 @@ export default async function Home() {
       })
       .slice(0, 8) : [] // Show top 8 products for horizontal scroll
 
+    // Calculate total count of products that would appear on citrus page
+    // (same filtering logic: citrus category, not discontinued, 5+ reviews)
+    const citrusTotalCount = citrusProductsData ? citrusProductsData.filter(product => {
+      const ratings = product.reviews?.map(r => r.overall_rating) || []
+      return ratings.length >= 5
+    }).length : 0
+
     // Calculate total count of products that would appear on strongest-carbonation page
     // (same filtering logic: carbonation 8-10, not discontinued, 5+ reviews)
     const strongestCarbonationTotalCount = strongestCarbonationData ? strongestCarbonationData.filter(product => {
@@ -283,6 +354,9 @@ export default async function Home() {
 
         {/* Strongest Carbonation Section */}
         <StrongestCarbonation products={strongestCarbonationProducts} totalCount={strongestCarbonationTotalCount || undefined} />
+
+        {/* Citrus Collection Section */}
+        <CitrusCollection products={citrusProducts} totalCount={citrusTotalCount || undefined} />
 
         {/* Unflavored Champions Section */}
         <UnflavoredChampions products={unflavoredProducts} totalCount={unflavoredTotalCount || undefined} />
