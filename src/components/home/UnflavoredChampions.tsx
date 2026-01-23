@@ -1,6 +1,8 @@
 'use client'
 
 import Link from 'next/link'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useRef } from 'react'
 import { ProductCardHorizontal } from '@/app/(main)/explore/products/components/ProductCardHorizontal'
 
 type Brand = {
@@ -32,6 +34,19 @@ export function UnflavoredChampions({ products, totalCount }: UnflavoredChampion
   }
 
   const displayCount = totalCount || products.length
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -280, behavior: 'smooth' })
+    }
+  }
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 280, behavior: 'smooth' })
+    }
+  }
 
   return (
     <div className="mt-24">
@@ -39,17 +54,38 @@ export function UnflavoredChampions({ products, totalCount }: UnflavoredChampion
         <h2 className="font-clash-display text-2xl font-medium text-primary">
           Unflavored Champions
         </h2>
-        <Link
-          href="/explore/flavors?category=unflavored&tag=unflavored"
-          className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
-        >
-          View All {displayCount}
-        </Link>
+        <div className="flex items-center gap-2">
+          {/* Carousel Navigation */}
+          <button
+            onClick={scrollLeft}
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            onClick={scrollRight}
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+
+          <Link
+            href="/explore/flavors?category=unflavored&tag=unflavored"
+            className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
+          >
+            View All {displayCount}
+          </Link>
+        </div>
       </div>
 
       {/* Horizontal Scroll Container */}
-      <div className="overflow-x-auto pb-4 scrollbar-hide scroll-smooth">
-        <div className="flex gap-3 sm:gap-4 w-max px-1">
+      <div
+        ref={scrollContainerRef}
+        className="overflow-x-auto pb-4 scrollbar-hide scroll-smooth"
+      >
+        <div className="flex gap-3 sm:gap-4 w-max px-1 pt-1">
           {products.map((product) => (
             <ProductCardHorizontal
               key={product.id}

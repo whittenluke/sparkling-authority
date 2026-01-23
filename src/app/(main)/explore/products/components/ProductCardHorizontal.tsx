@@ -104,83 +104,89 @@ export function ProductCardHorizontal({ product }: ProductCardHorizontalProps) {
   }
 
   return (
-    <div className="relative group block rounded-xl bg-card p-3 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all w-64 flex-shrink-0">
+    <div className="relative group block rounded-xl bg-card p-4 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all w-64 flex-shrink-0 min-h-[140px]">
       <Link
         href={`/explore/brands/${product.brand.slug}/products/${product.slug}`}
-        className="block"
+        className="block h-full"
       >
-        <div className="flex gap-3">
-          {/* Product Thumbnail */}
-          <div className="h-12 w-12 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
-            {product.thumbnail ? (
-              <Image
-                src={product.thumbnail}
-                alt={product.name}
-                width={48}
-                height={48}
-                className="object-cover h-full w-full"
-              />
-            ) : (
-              <div className="h-full w-full bg-muted flex items-center justify-center text-foreground text-sm font-medium">
-                {product.name.charAt(0)}
-              </div>
-            )}
-          </div>
-
-          {/* Product Content */}
-          <div className="flex flex-col gap-1 flex-1 min-w-0">
-            {/* Title and Rating */}
-            <div className="flex items-start justify-between gap-2">
-              <h3 className="font-medium text-foreground group-hover:text-primary text-sm truncate pr-2 leading-tight">
-                {product.name}
-              </h3>
-              <div className="flex items-center gap-1 shrink-0">
-                <span className="font-medium text-foreground text-sm">
-                  {typeof product.trueAverage === 'number' ? product.trueAverage.toFixed(1) : 'N/A'}
-                </span>
-                <div className="flex gap-0.5">
-                  {typeof product.trueAverage === 'number'
-                    ? getStarFillPercentages(product.trueAverage).map((percentage, index) => (
-                        <PartialStar
-                          key={index}
-                          fillPercentage={percentage}
-                          size={12}
-                        />
-                      ))
-                    : [1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          className="h-3 w-3 fill-transparent text-yellow-400/25"
-                        />
-                      ))
-                  }
-                </div>
-              </div>
-            </div>
-
-            {/* Brand and Tags */}
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground truncate">
-                by {product.brand.name}
-              </p>
-              {product.flavor_tags && product.flavor_tags.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {product.flavor_tags.slice(0, 2).map((flavor) => (
-                    <span
-                      key={flavor}
-                      className="inline-flex items-center rounded-full bg-accent px-1.5 py-0.5 text-xs text-accent-foreground"
-                    >
-                      {flavor}
-                    </span>
-                  ))}
-                  {product.flavor_tags.length > 2 && (
-                    <span className="text-xs text-muted-foreground">
-                      +{product.flavor_tags.length - 2}
-                    </span>
-                  )}
+        <div className="flex flex-col gap-3 h-full">
+          {/* Top Row: Thumbnail and Rating */}
+          <div className="flex items-start justify-between">
+            {/* Product Thumbnail */}
+            <div className="h-14 w-14 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
+              {product.thumbnail ? (
+                <Image
+                  src={product.thumbnail}
+                  alt={product.name}
+                  width={56}
+                  height={56}
+                  className="object-cover h-full w-full"
+                />
+              ) : (
+                <div className="h-full w-full bg-muted flex items-center justify-center text-foreground text-base font-medium">
+                  {product.name.charAt(0)}
                 </div>
               )}
             </div>
+
+            {/* Rating Section - Right Aligned */}
+            <div className="flex flex-col items-end shrink-0">
+              <span className="font-semibold text-foreground text-base">
+                {typeof product.trueAverage === 'number' ? product.trueAverage.toFixed(1) : 'N/A'}
+              </span>
+              <div className="flex gap-0.5 mt-1">
+                {typeof product.trueAverage === 'number'
+                  ? getStarFillPercentages(product.trueAverage).map((percentage, index) => (
+                      <PartialStar
+                        key={index}
+                        fillPercentage={percentage}
+                        size={14}
+                      />
+                    ))
+                  : [1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className="h-3.5 w-3.5 fill-transparent text-yellow-400/25"
+                      />
+                    ))
+                }
+              </div>
+              <span className="text-xs text-muted-foreground mt-1">
+                ({product.ratingCount})
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom Section: Title, Brand, Tags */}
+          <div className="flex flex-col gap-2 flex-1">
+            {/* Product Title */}
+            <h3 className="font-semibold text-foreground group-hover:text-primary text-sm leading-tight line-clamp-2">
+              {product.name}
+            </h3>
+
+            {/* Brand */}
+            <p className="text-xs text-muted-foreground">
+              by {product.brand.name}
+            </p>
+
+            {/* Flavor Tags */}
+            {product.flavor_tags && product.flavor_tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-auto">
+                {product.flavor_tags.slice(0, 2).map((flavor) => (
+                  <span
+                    key={flavor}
+                    className="inline-flex items-center rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground"
+                  >
+                    {flavor}
+                  </span>
+                ))}
+                {product.flavor_tags.length > 2 && (
+                  <span className="text-xs text-muted-foreground self-center">
+                    +{product.flavor_tags.length - 2}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </Link>
@@ -188,7 +194,7 @@ export function ProductCardHorizontal({ product }: ProductCardHorizontalProps) {
       {/* Rate/Review Button - Positioned absolutely */}
       <button
         onClick={handleRateClick}
-        className="absolute bottom-2 right-2 flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/90 bg-card/80 backdrop-blur-sm px-1.5 py-1 rounded-md"
+        className="absolute bottom-3 right-3 flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/90 bg-card/90 backdrop-blur-sm px-2 py-1 rounded-md shadow-sm"
       >
         <MessageSquare className="h-3 w-3" />
         {userReview?.rating ? 'Update' : 'Rate'}
