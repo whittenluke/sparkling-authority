@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createClientComponentClient } from '@/lib/supabase/client'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
+import categoryTagMap from '@/categoryTagMap.json'
 
 type FlavorProduct = {
   id: string
@@ -72,6 +73,9 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
     setSelectedTag(null) // Reset tag selection when changing categories
     setIsLoading(true)
 
+    // Get the tags that belong to this category from the mapping
+    const categoryTags = categoryTagMap[category as keyof typeof categoryTagMap] || []
+
     // Get mean rating across ALL products for Bayesian average
     const { data: allProductsData } = await supabase
       .from('products')
@@ -86,6 +90,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
       ? allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length
       : 3.5 // Fallback to 3.5 if no ratings exist
 
+    // Query products that have any of the category's tags
     const { data, error } = await supabase
       .from('products')
       .select(`
@@ -103,7 +108,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
           overall_rating
         )
       `)
-      .contains('flavor_categories', [category])
+      .overlaps('flavor_tags', categoryTags)
       .order('name')
 
     if (error) {
@@ -141,11 +146,14 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
 
       setAllProducts(processedProducts)
 
-      // Extract and count flavor tags
+      // Extract and count flavor tags, but only include tags that belong to this category
       const tagCounts: { [key: string]: number } = {}
       processedProducts.forEach(product => {
-        product.flavor_tags.forEach(tag => {
-          tagCounts[tag] = (tagCounts[tag] || 0) + 1
+        product.flavor_tags.forEach((tag: string) => {
+          // Only count tags that belong to this category
+          if (categoryTags.includes(tag)) {
+            tagCounts[tag] = (tagCounts[tag] || 0) + 1
+          }
         })
       })
 
@@ -181,6 +189,9 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
       const loadInitialCategory = async () => {
         setIsLoading(true)
 
+        // Get the tags that belong to this category from the mapping
+        const categoryTags = categoryTagMap[initialExpandedCategory as keyof typeof categoryTagMap] || []
+
         // Get mean rating across ALL products for Bayesian average
         const { data: allProductsData } = await supabase
           .from('products')
@@ -195,6 +206,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
           ? allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length
           : 3.5 // Fallback to 3.5 if no ratings exist
 
+        // Query products that have any of the category's tags
         const { data, error } = await supabase
           .from('products')
           .select(`
@@ -212,7 +224,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
               overall_rating
             )
           `)
-          .contains('flavor_categories', [initialExpandedCategory])
+          .overlaps('flavor_tags', categoryTags)
           .order('name')
 
         if (error) {
@@ -250,11 +262,14 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
 
           setAllProducts(processedProducts)
 
-          // Extract and count flavor tags
+          // Extract and count flavor tags, but only include tags that belong to this category
           const tagCounts: { [key: string]: number } = {}
           processedProducts.forEach(product => {
-            product.flavor_tags.forEach(tag => {
-              tagCounts[tag] = (tagCounts[tag] || 0) + 1
+            product.flavor_tags.forEach((tag: string) => {
+              // Only count tags that belong to this category
+              if (categoryTags.includes(tag)) {
+                tagCounts[tag] = (tagCounts[tag] || 0) + 1
+              }
             })
           })
 
