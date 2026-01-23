@@ -6,6 +6,7 @@ import { ProductCard } from '@/app/(main)/explore/products/components/ProductCar
 import { BrowseByFlavor } from '@/components/home/BrowseByFlavor'
 import { BrowseByBrand } from '@/components/home/BrowseByBrand'
 import { UnflavoredChampions } from '@/components/home/UnflavoredChampions'
+import { StrongestCarbonation } from '@/components/home/StrongestCarbonation'
 
 type Brand = {
   id: string
@@ -20,6 +21,7 @@ type Product = {
   flavor_tags: string[]
   thumbnail?: string | null
   brand: Brand
+  carbonation_level?: number
   reviews?: Array<{
     overall_rating: number
     is_approved: boolean
@@ -171,6 +173,81 @@ export default async function Home() {
       })
       .slice(0, 8) : [] // Show top 8 products for horizontal scroll
 
+    // Get strongest carbonation products for horizontal scroll section
+    const { data: strongestCarbonationData, error: strongestCarbonationError } = await supabase
+      .from('products')
+      .select(`
+        id,
+        name,
+        slug,
+        flavor_tags,
+        thumbnail,
+        carbonation_level,
+        brand:brand_id (
+          id,
+          name,
+          slug
+        ),
+        reviews (
+          overall_rating,
+          is_approved
+        )
+      `)
+      .gte('carbonation_level', 8)
+      .lte('carbonation_level', 10)
+      .eq('is_discontinued', false) as { data: Product[] | null, error: PostgrestError | null }
+
+    const strongestCarbonationProducts = strongestCarbonationData ? strongestCarbonationData.map(product => {
+      // Use ALL ratings regardless of approval status - approval only matters for review text
+      const ratings = product.reviews?.map(r => r.overall_rating) || []
+      const ratingCount = ratings.length
+
+      // Skip products with less than 5 reviews
+      if (ratingCount < 5) {
+        return {
+          ...product,
+          averageRating: 0,
+          ratingCount: 0
+        }
+      }
+
+      // Calculate Bayesian average (for sorting)
+      const C = 10 // confidence factor
+      const sumOfRatings = ratings.reduce((a, b) => a + b, 0)
+      const bayesianAverage = (C * meanRating + sumOfRatings) / (C + ratingCount)
+
+      // Calculate true average (for display)
+      const trueAverage = sumOfRatings / ratingCount
+
+      return {
+        ...product,
+        averageRating: bayesianAverage,
+        trueAverage: trueAverage,
+        ratingCount
+      }
+    })
+      .filter(p => p.ratingCount >= 5) // Only include products with 5+ reviews
+      .sort((a, b) => {
+        // First sort by carbonation level (highest first)
+        if (a.carbonation_level !== b.carbonation_level) {
+          return b.carbonation_level! - a.carbonation_level!
+        }
+        // Then by Bayesian average
+        if (b.averageRating !== a.averageRating) {
+          return b.averageRating - a.averageRating
+        }
+        // Finally by rating count
+        return b.ratingCount - a.ratingCount
+      })
+      .slice(0, 8) : [] // Show top 8 products for horizontal scroll
+
+    // Calculate total count of products that would appear on strongest-carbonation page
+    // (same filtering logic: carbonation 8-10, not discontinued, 5+ reviews)
+    const strongestCarbonationTotalCount = strongestCarbonationData ? strongestCarbonationData.filter(product => {
+      const ratings = product.reviews?.map(r => r.overall_rating) || []
+      return ratings.length >= 5
+    }).length : 0
+
     return (
       <>
         {/* Exploration Section */}
@@ -203,6 +280,9 @@ export default async function Home() {
             </Link>
           </div>
         </div>
+
+        {/* Strongest Carbonation Section */}
+        <StrongestCarbonation products={strongestCarbonationProducts} totalCount={strongestCarbonationTotalCount || undefined} />
 
         {/* Unflavored Champions Section */}
         <UnflavoredChampions products={unflavoredProducts} totalCount={unflavoredTotalCount || undefined} />
