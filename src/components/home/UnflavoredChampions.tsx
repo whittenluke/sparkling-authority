@@ -72,12 +72,12 @@ export function UnflavoredChampions({ products, totalCount }: UnflavoredChampion
             <ChevronRight className="h-4 w-4" />
           </button>
 
-          <Link
-            href="/explore/flavors?category=unflavored&tag=unflavored"
-            className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
-          >
-            View All {displayCount}
-          </Link>
+        <Link
+          href="/explore/flavors?category=Unflavored&tag=unflavored"
+          className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
+        >
+          View All {displayCount}
+        </Link>
         </div>
       </div>
 

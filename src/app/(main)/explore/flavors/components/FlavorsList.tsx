@@ -296,6 +296,17 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
     }
   }, [initialExpandedCategory, initialSelectedTag, supabase])
 
+  // Auto-select the initial tag after category data is loaded
+  useEffect(() => {
+    if (initialSelectedTag && expandedCategory === initialExpandedCategory && flavorTags.length > 0) {
+      // Check if the initial tag exists in the loaded flavor tags
+      const tagExists = flavorTags.some(flavorTag => flavorTag.tag === initialSelectedTag)
+      if (tagExists && selectedTag !== initialSelectedTag) {
+        setSelectedTag(initialSelectedTag)
+      }
+    }
+  }, [initialSelectedTag, initialExpandedCategory, expandedCategory, flavorTags, selectedTag])
+
   // Filter products based on selected tag
   const filteredProducts = selectedTag
     ? allProducts.filter(product => product.flavor_tags.includes(selectedTag))
