@@ -22,6 +22,11 @@ type FlavorProduct = {
   ratingCount: number
 }
 
+type FlavorTag = {
+  tag: string
+  count: number
+}
+
 // Helper function to format category name for display
 function formatCategoryName(category: string): string {
   return category
@@ -37,7 +42,9 @@ type FlavorsListProps = {
 
 export function FlavorsList({ categories, initialExpandedCategory }: FlavorsListProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(initialExpandedCategory || null)
-  const [products, setProducts] = useState<FlavorProduct[]>([])
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const [flavorTags, setFlavorTags] = useState<FlavorTag[]>([])
+  const [allProducts, setAllProducts] = useState<FlavorProduct[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const supabase = createClientComponentClient()
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
@@ -55,15 +62,18 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
   const toggleCategory = async (category: string) => {
     if (expandedCategory === category) {
       setExpandedCategory(null)
-      setProducts([])
+      setSelectedTag(null)
+      setFlavorTags([])
+      setAllProducts([])
       return
     }
 
     setExpandedCategory(category)
+    setSelectedTag(null) // Reset tag selection when changing categories
     setIsLoading(true)
 
     // Get mean rating across ALL products for Bayesian average
-    const { data: allProducts } = await supabase
+    const { data: allProductsData } = await supabase
       .from('products')
       .select(`
         reviews (
@@ -71,7 +81,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
         )
       `)
 
-    const allRatings = allProducts?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+    const allRatings = allProductsData?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
     const meanRating = allRatings.length > 0
       ? allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length
       : 3.5 // Fallback to 3.5 if no ratings exist
@@ -98,9 +108,10 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
 
     if (error) {
       console.error('Error fetching products:', error)
-      setProducts([])
+      setAllProducts([])
+      setFlavorTags([])
     } else {
-      setProducts(data.map(p => {
+      const processedProducts = data.map(p => {
         const ratings = p.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
         const ratingCount = ratings.length
 
@@ -126,13 +137,42 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
           trueAverage,
           ratingCount
         }
-      }))
+      })
+
+      setAllProducts(processedProducts)
+
+      // Extract and count flavor tags
+      const tagCounts: { [key: string]: number } = {}
+      processedProducts.forEach(product => {
+        product.flavor_tags.forEach(tag => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1
+        })
+      })
+
+      const sortedTags: FlavorTag[] = Object.entries(tagCounts)
+        .map(([tag, count]) => ({ tag, count }))
+        .sort((a, b) => {
+          if (b.count !== a.count) {
+            return b.count - a.count // Most products first
+          }
+          return a.tag.localeCompare(b.tag) // Alphabetical for ties
+        })
+
+      setFlavorTags(sortedTags)
     }
 
     setIsLoading(false)
 
     // Scroll to the category after a brief delay to ensure content is rendered
     setTimeout(() => scrollToCategory(category), 100)
+  }
+
+  const selectTag = (tag: string) => {
+    if (selectedTag === tag) {
+      setSelectedTag(null) // Deselect if clicking the same tag
+    } else {
+      setSelectedTag(tag)
+    }
   }
 
   // Auto-load products for initial category on mount
@@ -142,7 +182,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
         setIsLoading(true)
 
         // Get mean rating across ALL products for Bayesian average
-        const { data: allProducts } = await supabase
+        const { data: allProductsData } = await supabase
           .from('products')
           .select(`
             reviews (
@@ -150,7 +190,7 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
             )
           `)
 
-        const allRatings = allProducts?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+        const allRatings = allProductsData?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
         const meanRating = allRatings.length > 0
           ? allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length
           : 3.5 // Fallback to 3.5 if no ratings exist
@@ -177,9 +217,10 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
 
         if (error) {
           console.error('Error fetching products:', error)
-          setProducts([])
+          setAllProducts([])
+          setFlavorTags([])
         } else {
-          setProducts(data.map(p => {
+          const processedProducts = data.map(p => {
             const ratings = p.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
             const ratingCount = ratings.length
 
@@ -205,7 +246,28 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
               trueAverage,
               ratingCount
             }
-          }))
+          })
+
+          setAllProducts(processedProducts)
+
+          // Extract and count flavor tags
+          const tagCounts: { [key: string]: number } = {}
+          processedProducts.forEach(product => {
+            product.flavor_tags.forEach(tag => {
+              tagCounts[tag] = (tagCounts[tag] || 0) + 1
+            })
+          })
+
+          const sortedTags: FlavorTag[] = Object.entries(tagCounts)
+            .map(([tag, count]) => ({ tag, count }))
+            .sort((a, b) => {
+              if (b.count !== a.count) {
+                return b.count - a.count // Most products first
+              }
+              return a.tag.localeCompare(b.tag) // Alphabetical for ties
+            })
+
+          setFlavorTags(sortedTags)
         }
 
         setIsLoading(false)
@@ -217,6 +279,11 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
       loadInitialCategory()
     }
   }, [initialExpandedCategory, supabase])
+
+  // Filter products based on selected tag
+  const filteredProducts = selectedTag
+    ? allProducts.filter(product => product.flavor_tags.includes(selectedTag))
+    : allProducts
 
   return (
     <div className="space-y-3">
@@ -244,26 +311,59 @@ export function FlavorsList({ categories, initialExpandedCategory }: FlavorsList
             <div className="px-4 py-3 border-t border-border sm:px-6 sm:py-4">
               {isLoading ? (
                 <p className="text-sm text-muted-foreground">Loading products...</p>
-              ) : products.length === 0 ? (
+              ) : allProducts.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No products found in this category.</p>
               ) : (
-                <div className="space-y-3">
-                  {products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={{
-                        id: product.id,
-                        name: product.name,
-                        slug: product.slug,
-                        brand: product.brand,
-                        flavor_tags: product.flavor_tags,
-                        thumbnail: product.thumbnail,
-                        averageRating: product.averageRating, // Bayesian for sorting
-                        trueAverage: product.trueAverage, // True average for display
-                        ratingCount: product.ratingCount
-                      }}
-                    />
-                  ))}
+                <div className="space-y-4">
+                  {/* Flavor Tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {flavorTags.map((flavorTag) => (
+                      <button
+                        key={flavorTag.tag}
+                        onClick={() => selectTag(flavorTag.tag)}
+                        className={`inline-flex items-center rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                          selectedTag === flavorTag.tag
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-accent text-accent-foreground hover:bg-accent/80'
+                        }`}
+                      >
+                        {flavorTag.tag}
+                        <span className="ml-1.5 text-xs opacity-75">
+                          ({flavorTag.count})
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Filtered Products - Only show when a tag is selected */}
+                  {selectedTag && (
+                    <>
+                      {filteredProducts.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                          No products found with tag "{selectedTag}".
+                        </p>
+                      ) : (
+                        <div className="space-y-3">
+                          {filteredProducts.map((product) => (
+                            <ProductCard
+                              key={product.id}
+                              product={{
+                                id: product.id,
+                                name: product.name,
+                                slug: product.slug,
+                                brand: product.brand,
+                                flavor_tags: product.flavor_tags,
+                                thumbnail: product.thumbnail,
+                                averageRating: product.averageRating, // Bayesian for sorting
+                                trueAverage: product.trueAverage, // True average for display
+                                ratingCount: product.ratingCount
+                              }}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               )}
             </div>
