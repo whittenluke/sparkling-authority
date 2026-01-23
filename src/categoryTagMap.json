@@ -23,6 +23,7 @@
   "Citrus": [
     "lime",
     "lemon",
+    "pink lemon",
     "grapefruit",
     "orange",
     "tangerine",
@@ -30,7 +31,9 @@
     "meyer lemon",
     "blood orange",
     "pomelo",
-    "key lime"
+    "key lime",
+    "lemonade",
+    "limeade"
   ],
   "Cream": [
     "cream",
@@ -59,8 +62,7 @@
     "lemongrass",
     "mint",
     "sage",
-    "holy basil",
-    "green bean"
+    "holy basil"
   ],
   "Melon": [
     "melon",
