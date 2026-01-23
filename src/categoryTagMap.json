@@ -1,0 +1,117 @@
+{
+  "Apple": [
+    "apple",
+    "apple cider",
+    "fuji apple",
+    "granny smith",
+    "pink apple",
+    "red delicious"
+  ],
+  "Berry": [
+    "strawberry",
+    "blueberry",
+    "raspberry",
+    "black raspberry",
+    "blackberry",
+    "cranberry",
+    "pomegranate",
+    "elderberry",
+    "acai",
+    "goji berry",
+    "mixed berry"
+  ],
+  "Citrus": [
+    "lime",
+    "lemon",
+    "grapefruit",
+    "orange",
+    "tangerine",
+    "yuzu",
+    "meyer lemon",
+    "blood orange",
+    "pomelo",
+    "key lime"
+  ],
+  "Cream": [
+    "cream",
+    "vanilla",
+    "cake",
+    "butter"
+  ],
+  "Floral": [
+    "hibiscus",
+    "lavender",
+    "rose",
+    "elderflower",
+    "chamomile",
+    "cherry blossom"
+  ],
+  "Grape": [
+    "grape",
+    "red grape",
+    "white grape",
+    "concord grape"
+  ],
+  "Herbal": [
+    "ginger",
+    "cucumber",
+    "basil",
+    "lemongrass",
+    "mint",
+    "sage",
+    "holy basil",
+    "green bean"
+  ],
+  "Melon": [
+    "melon",
+    "cantaloupe",
+    "honeydew",
+    "watermelon",
+    "rockmelon"
+  ],
+  "Soda": [
+    "cola",
+    "root beer",
+    "dr pepper",
+    "sprite",
+    "cherry cola"
+  ],
+  "Spicy": [
+    "jalapeno",
+    "habanero",
+    "cayenne",
+    "hot pepper"
+  ],
+  "Stone Fruit": [
+    "peach",
+    "nectarine",
+    "apricot",
+    "plum",
+    "cherry"
+  ],
+  "Tea": [
+    "tea",
+    "black tea",
+    "green tea",
+    "white tea",
+    "oolong tea"
+  ],
+  "Tropical": [
+    "pineapple",
+    "mango",
+    "banana",
+    "papaya",
+    "passionfruit",
+    "guava",
+    "coconut",
+    "lychee",
+    "dragon fruit",
+    "prickly pear"
+  ],
+  "Unflavored": [
+    "unflavored",
+    "natural",
+    "neutral",
+    "plain"
+  ]
+}
