@@ -29,12 +29,13 @@ interface UnflavoredChampionsProps {
 }
 
 export function UnflavoredChampions({ products, totalCount }: UnflavoredChampionsProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
   if (products.length === 0) {
     return null
   }
 
   const displayCount = totalCount || products.length
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
