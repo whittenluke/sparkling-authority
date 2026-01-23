@@ -363,7 +363,7 @@ export default async function Home() {
 
         {/* Top Rated Section */}
         {topProducts.length > 0 && (
-          <div className="mt-24 max-w-3xl mx-auto w-full px-4 sm:px-0">
+          <div className="mt-16 max-w-3xl mx-auto w-full px-4 sm:px-0">
             <div className="flex items-center justify-between mb-6">
               <Link
                 href="/ratings/best-overall"

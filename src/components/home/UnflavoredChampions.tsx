@@ -50,7 +50,7 @@ export function UnflavoredChampions({ products, totalCount }: UnflavoredChampion
   }
 
   return (
-    <div className="mt-24">
+    <div className="mt-16">
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-clash-display text-2xl font-medium text-primary">
           Unflavored Champions
