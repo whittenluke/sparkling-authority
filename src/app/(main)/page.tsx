@@ -335,24 +335,24 @@ export default async function Home() {
           {/* Main Exploration Cards */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <Link href="/explore/brands" className="group relative block rounded-2xl bg-card p-6 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3 mx-auto sm:mx-0">
                 <Crown className="h-6 w-6" />
               </div>
-              <h3 className="text-lg font-clash-display font-medium text-primary">Brand</h3>
+              <h3 className="text-lg font-clash-display font-medium text-primary text-center sm:text-left">Brand</h3>
             </Link>
 
             <Link href="/explore/flavors" className="group relative block rounded-2xl bg-card p-6 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3 mx-auto sm:mx-0">
                 <Cherry className="h-6 w-6" />
               </div>
-              <h3 className="text-lg font-clash-display font-medium text-primary">Flavor</h3>
+              <h3 className="text-lg font-clash-display font-medium text-primary text-center sm:text-left">Flavor</h3>
             </Link>
 
             <Link href="/explore/products" className="group relative block rounded-2xl bg-card p-6 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3 mx-auto sm:mx-0">
                 <Grid3x3 className="h-6 w-6" />
               </div>
-              <h3 className="text-lg font-clash-display font-medium text-primary">All Products</h3>
+              <h3 className="text-lg font-clash-display font-medium text-primary text-center sm:text-left">All Products</h3>
             </Link>
           </div>
         </div>
