@@ -1,29 +1,21 @@
 import Link from 'next/link'
-import Image from 'next/image'
-import berryIcon from '@/components/icons/berry.svg'
-import citrusIcon from '@/components/icons/citrus.svg'
-import creamIcon from '@/components/icons/cream.svg'
-import floralIcon from '@/components/icons/floral.svg'
-import melonIcon from '@/components/icons/melon.svg'
-import sodaIcon from '@/components/icons/soda.svg'
-import tropicalIcon from '@/components/icons/tropical.svg'
-import unflavoredIcon from '@/components/icons/unflavored.svg'
+import { Cherry, Citrus, Milk, Flower, Apple, Coffee, Palmtree, Droplet } from 'lucide-react'
 
 type FlavorCategory = {
   name: string
   slug: string
-  iconSrc: string
+  icon: React.ReactNode
 }
 
 const flavorCategories: FlavorCategory[] = [
-  { name: 'Berry', slug: 'berry', iconSrc: berryIcon },
-  { name: 'Citrus', slug: 'citrus', iconSrc: citrusIcon },
-  { name: 'Cream', slug: 'cream', iconSrc: creamIcon },
-  { name: 'Floral', slug: 'floral', iconSrc: floralIcon },
-  { name: 'Melon', slug: 'melon', iconSrc: melonIcon },
-  { name: 'Soda', slug: 'soda', iconSrc: sodaIcon },
-  { name: 'Tropical', slug: 'tropical', iconSrc: tropicalIcon },
-  { name: 'Unflavored', slug: 'unflavored', iconSrc: unflavoredIcon },
+  { name: 'Berry', slug: 'berry', icon: <Cherry className="h-7 w-7" /> },
+  { name: 'Citrus', slug: 'citrus', icon: <Citrus className="h-7 w-7" /> },
+  { name: 'Cream', slug: 'cream', icon: <Milk className="h-7 w-7" /> },
+  { name: 'Floral', slug: 'floral', icon: <Flower className="h-7 w-7" /> },
+  { name: 'Melon', slug: 'melon', icon: <Apple className="h-7 w-7" /> },
+  { name: 'Soda', slug: 'soda', icon: <Coffee className="h-7 w-7" /> },
+  { name: 'Tropical', slug: 'tropical', icon: <Palmtree className="h-7 w-7" /> },
+  { name: 'Unflavored', slug: 'unflavored', icon: <Droplet className="h-7 w-7" /> },
 ]
 
 export function BrowseByFlavor() {
@@ -48,13 +40,7 @@ export function BrowseByFlavor() {
             className="group relative flex flex-col items-center justify-center rounded-2xl bg-card p-6 shadow-sm ring-1 ring-border hover:ring-primary transition-all text-center"
           >
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
-              <Image
-                src={category.iconSrc}
-                alt={`${category.name} icon`}
-                width={28}
-                height={28}
-                className="h-7 w-7"
-              />
+              {category.icon}
             </div>
             <h3 className="text-base font-clash-display font-medium text-primary">
               {category.name}
