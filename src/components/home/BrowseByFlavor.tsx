@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Apple, Cherry, Leaf, Citrus, Coffee, Milk, Flame, Palmtree, Droplet } from 'lucide-react'
+import { Cherry, Citrus, Milk, Flower, Apple, Coffee, Palmtree, Droplet } from 'lucide-react'
 
 type FlavorCategory = {
   name: string
@@ -8,16 +8,12 @@ type FlavorCategory = {
 }
 
 const flavorCategories: FlavorCategory[] = [
-  { name: 'Apple', slug: 'apple', icon: <Apple className="h-7 w-7" /> },
   { name: 'Berry', slug: 'berry', icon: <Cherry className="h-7 w-7" /> },
-  { name: 'Botanical', slug: 'botanical', icon: <Leaf className="h-7 w-7" /> },
   { name: 'Citrus', slug: 'citrus', icon: <Citrus className="h-7 w-7" /> },
-  { name: 'Cola', slug: 'cola', icon: <Coffee className="h-7 w-7" /> },
   { name: 'Cream', slug: 'cream', icon: <Milk className="h-7 w-7" /> },
-  { name: 'Grape', slug: 'grape', icon: <Cherry className="h-7 w-7" /> },
+  { name: 'Floral', slug: 'floral', icon: <Flower className="h-7 w-7" /> },
   { name: 'Melon', slug: 'melon', icon: <Apple className="h-7 w-7" /> },
-  { name: 'Spice', slug: 'spice', icon: <Flame className="h-7 w-7" /> },
-  { name: 'Stone Fruit', slug: 'stone_fruit', icon: <Apple className="h-7 w-7" /> },
+  { name: 'Soda', slug: 'soda', icon: <Coffee className="h-7 w-7" /> },
   { name: 'Tropical', slug: 'tropical', icon: <Palmtree className="h-7 w-7" /> },
   { name: 'Unflavored', slug: 'unflavored', icon: <Droplet className="h-7 w-7" /> },
 ]
@@ -37,7 +33,7 @@ export function BrowseByFlavor() {
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {flavorCategories.slice(0, 8).map((category) => (
+        {flavorCategories.map((category) => (
           <Link
             key={category.slug}
             href={`/explore/flavors?category=${category.slug}`}

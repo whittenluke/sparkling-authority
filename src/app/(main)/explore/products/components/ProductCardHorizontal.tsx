@@ -113,13 +113,13 @@ export function ProductCardHorizontal({ product }: ProductCardHorizontalProps) {
           {/* Top Row: Thumbnail and Rating */}
           <div className="flex items-start justify-between">
             {/* Product Thumbnail */}
-            <div className="h-14 w-14 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
+            <div className="h-20 w-20 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
               {product.thumbnail ? (
                 <Image
                   src={product.thumbnail}
                   alt={product.name}
-                  width={56}
-                  height={56}
+                  width={80}
+                  height={80}
                   className="object-cover h-full w-full"
                 />
               ) : (
