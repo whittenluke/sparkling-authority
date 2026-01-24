@@ -25,17 +25,14 @@ type Product = {
 
 interface StrongestCarbonationProps {
   products: Product[]
-  totalCount?: number
 }
 
-export function StrongestCarbonation({ products, totalCount }: StrongestCarbonationProps) {
+export function StrongestCarbonation({ products }: StrongestCarbonationProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   if (products.length === 0) {
     return null
   }
-
-  const displayCount = totalCount || products.length
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -72,12 +69,12 @@ export function StrongestCarbonation({ products, totalCount }: StrongestCarbonat
             <ChevronRight className="h-4 w-4" />
           </button>
 
-        <Link
-          href="/ratings/strongest-carbonation"
-          className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
-        >
-          View All {displayCount}
-        </Link>
+          <Link
+            href="/ratings/strongest-carbonation"
+            className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
+          >
+            View All
+          </Link>
         </div>
       </div>
 

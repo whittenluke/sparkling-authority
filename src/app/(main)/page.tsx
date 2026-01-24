@@ -358,13 +358,13 @@ export default async function Home() {
         </div>
 
         {/* Strongest Carbonation Section */}
-        <StrongestCarbonation products={strongestCarbonationProducts} totalCount={strongestCarbonationTotalCount || undefined} />
+        <StrongestCarbonation products={strongestCarbonationProducts} />
 
         {/* Citrus Collection Section */}
-        <CitrusCollection products={citrusProducts} totalCount={citrusTotalCount || undefined} />
+        <CitrusCollection products={citrusProducts} />
 
         {/* Unflavored Champions Section */}
-        <UnflavoredChampions products={unflavoredProducts} totalCount={unflavoredTotalCount || undefined} />
+        <UnflavoredChampions products={unflavoredProducts} />
 
         {/* Top Rated Section */}
         {topProducts.length > 0 && (

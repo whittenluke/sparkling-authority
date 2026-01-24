@@ -25,17 +25,14 @@ type Product = {
 
 interface CitrusCollectionProps {
   products: Product[]
-  totalCount?: number
 }
 
-export function CitrusCollection({ products, totalCount }: CitrusCollectionProps) {
+export function CitrusCollection({ products }: CitrusCollectionProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   if (products.length === 0) {
     return null
   }
-
-  const displayCount = totalCount || products.length
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -76,7 +73,7 @@ export function CitrusCollection({ products, totalCount }: CitrusCollectionProps
             href="/explore/flavors?category=Citrus"
             className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
           >
-            View All {displayCount}
+            View All
           </Link>
         </div>
       </div>
