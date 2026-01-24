@@ -202,7 +202,12 @@ export default async function Home() {
       // Skip products with less than 5 reviews
       if (ratingCount < 5) {
         return {
-          ...product,
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          flavor_tags: product.flavor_tags || [],
+          thumbnail: product.thumbnail,
+          brand: Array.isArray(product.brand) ? product.brand[0] : product.brand,
           averageRating: 0,
           ratingCount: 0
         }
