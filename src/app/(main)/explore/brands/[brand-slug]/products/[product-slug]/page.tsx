@@ -5,7 +5,7 @@ import { WhereToBuy } from '@/components/products/WhereToBuy'
 import { AffiliateDisclosure } from '@/components/products/AffiliateDisclosure'
 import Link from 'next/link'
 import { Metadata } from 'next'
-import { Star } from 'lucide-react'
+import { Star, Sparkles } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { PartialStar } from '@/components/ui/PartialStar'
@@ -248,71 +248,108 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
             </nav>
 
             {/* Product Header */}
-            <div>
-              <div className="flex items-center gap-6">
-                {/* Product Image */}
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Left Column: Product Image */}
+              <div className="lg:w-1/3 lg:shrink-0">
                 {product.thumbnail ? (
-                  <div className="h-32 w-32 rounded-xl overflow-hidden flex items-center justify-center shrink-0">
+                  <div className="w-full aspect-square max-w-md mx-auto lg:max-w-none rounded-xl overflow-hidden flex items-center justify-center">
                     <Image
                       src={product.thumbnail}
                       alt={product.name}
-                      width={128}
-                      height={128}
-                      className="h-full w-full object-cover"
+                      width={400}
+                      height={400}
+                      className="w-full h-full object-contain"
                     />
                   </div>
                 ) : (
-                  <div className="h-32 w-32 rounded-xl bg-muted flex items-center justify-center text-foreground text-5xl font-medium shrink-0">
+                  <div className="w-full aspect-square max-w-md mx-auto lg:max-w-none rounded-xl bg-muted flex items-center justify-center text-foreground text-8xl font-medium">
                     {product.name.charAt(0)}
                   </div>
                 )}
-                
-                <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
-                  <p className="mt-2 text-lg text-muted-foreground">
-                    by {product.brands.name}
-                  </p>
-                  
-                  {/* Rating Section */}
-                  <div className="mt-4">
-                    <QuickRating
-                      productId={product.id}
-                      productName={product.name}
-                      brandName={product.brands.name}
-                      initialRating={userRating}
-                      initialReview={userReviewText}
-                      averageRating={averageRating}
-                      totalRatings={ratings.length}
-                      totalReviews={reviewCount}
-                    />
-                  </div>
-                </div>
               </div>
 
+              {/* Right Column: Product Details */}
+              <div className="flex-1 min-w-0">
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
+                <p className="mt-2 text-lg text-muted-foreground">
+                  by {product.brands.name}
+                </p>
+                
+                {/* Rating Section */}
+                <div className="mt-4">
+                  <QuickRating
+                    productId={product.id}
+                    productName={product.name}
+                    brandName={product.brands.name}
+                    initialRating={userRating}
+                    initialReview={userReviewText}
+                    averageRating={averageRating}
+                    totalRatings={ratings.length}
+                    totalReviews={reviewCount}
+                  />
+                </div>
+
+                {/* Profile Section: Flavor + Carbonation */}
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                  {/* Flavor Section */}
+                  {product.flavor_tags && product.flavor_tags.length > 0 && (
+                    <div>
+                      <span className="text-sm font-medium text-muted-foreground block mb-3">Flavors</span>
+                      <div className="flex flex-wrap gap-2">
+                        {product.flavor_tags.map((flavor: string) => (
+                          <span
+                            key={flavor}
+                            className="inline-flex items-center rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground"
+                          >
+                            {flavor}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Carbonation Section */}
+                  {product.carbonation_level && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-muted-foreground">Carbonation Level</span>
+                      </div>
+                      <span className="text-xl font-semibold text-foreground">{product.carbonation_level}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Single Column Section: Purchase, Description */}
+            <div>
+
               {/* Where to Buy Section */}
-              <WhereToBuy
-                amazonLink={product.amazon_link || product.brands.amazon_link}
-                walmartLink={product.walmart_link || product.brands.walmart_link}
-                instacartLink={product.instacart_link || product.brands.instacart_link}
-                brandLink={product.product_website_link || product.brands.brand_website_link}
-                brandName={product.brands.name}
-              />
+              <div className="mt-6">
+                <WhereToBuy
+                  amazonLink={product.amazon_link || product.brands.amazon_link}
+                  walmartLink={product.walmart_link || product.brands.walmart_link}
+                  instacartLink={product.instacart_link || product.brands.instacart_link}
+                  brandLink={product.product_website_link || product.brands.brand_website_link}
+                  brandName={product.brands.name}
+                />
+              </div>
+
+              {/* Sparkling Authority Review Header */}
+              {product.description && (
+                <h2 className="mt-6 text-xl font-semibold text-foreground">Sparkling Authority Review</h2>
+              )}
 
               {/* Description */}
               {product.description && (
-                <p className="mt-6 text-muted-foreground">
+                <p className="mt-4 text-muted-foreground">
                   {product.description}
                 </p>
               )}
 
               {/* Product Quick Stats */}
               <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
-                  <dt className="text-sm font-medium text-muted-foreground">Carbonation</dt>
-                  <dd className="mt-1 text-lg font-medium text-foreground">
-                    Level {product.carbonation_level}
-                  </dd>
-                </div>
                 <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
                   <dt className="text-sm font-medium text-muted-foreground">Calories</dt>
                   <dd className="mt-1 text-lg font-medium text-foreground">
@@ -335,21 +372,6 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                   </dd>
                 </div>
               </dl>
-            </div>
-
-            {/* Flavor Tags */}
-            <div>
-              <h2 className="text-lg font-medium text-foreground">Flavors</h2>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {product.flavor_tags && product.flavor_tags.map((flavor: string) => (
-                  <span
-                    key={flavor}
-                    className="inline-flex items-center rounded-full bg-accent px-3 py-1 text-sm font-medium text-accent-foreground ring-1 ring-inset ring-border"
-                  >
-                    {flavor}
-                  </span>
-                ))}
-              </div>
             </div>
 
             {/* Nutrition Information */}
