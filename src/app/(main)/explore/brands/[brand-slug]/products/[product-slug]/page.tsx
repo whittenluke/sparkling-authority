@@ -3,9 +3,11 @@ import { createClient } from '@/lib/supabase/server'
 import { QuickRating } from '@/components/products/QuickRating'
 import { WhereToBuy } from '@/components/products/WhereToBuy'
 import { AffiliateDisclosure } from '@/components/products/AffiliateDisclosure'
+import { NutritionDropdown } from '@/components/products/NutritionDropdown'
+import { IngredientsDropdown } from '@/components/products/IngredientsDropdown'
 import Link from 'next/link'
 import { Metadata } from 'next'
-import { Star, Sparkles } from 'lucide-react'
+import { Star, ChevronDown, ChevronUp } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { PartialStar } from '@/components/ui/PartialStar'
@@ -267,27 +269,27 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                   </div>
                 )}
               </div>
-
+                
               {/* Right Column: Product Details */}
               <div className="flex-1 min-w-0">
-                <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
-                <p className="mt-2 text-lg text-muted-foreground">
-                  by {product.brands.name}
-                </p>
-                
-                {/* Rating Section */}
-                <div className="mt-4">
-                  <QuickRating
-                    productId={product.id}
-                    productName={product.name}
-                    brandName={product.brands.name}
-                    initialRating={userRating}
-                    initialReview={userReviewText}
-                    averageRating={averageRating}
-                    totalRatings={ratings.length}
-                    totalReviews={reviewCount}
-                  />
-                </div>
+                  <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
+                  <p className="mt-2 text-lg text-muted-foreground">
+                    by {product.brands.name}
+                  </p>
+                  
+                  {/* Rating Section */}
+                  <div className="mt-4">
+                    <QuickRating
+                      productId={product.id}
+                      productName={product.name}
+                      brandName={product.brands.name}
+                      initialRating={userRating}
+                      initialReview={userReviewText}
+                      averageRating={averageRating}
+                      totalRatings={ratings.length}
+                      totalReviews={reviewCount}
+                    />
+                  </div>
 
                 {/* Profile Section: Flavor + Carbonation */}
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
@@ -311,10 +313,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                   {/* Carbonation Section */}
                   {product.carbonation_level && (
                     <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <Sparkles className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium text-muted-foreground">Carbonation Level</span>
-                      </div>
+                      <span className="text-sm font-medium text-muted-foreground block mb-3">Carbonation Level</span>
                       <span className="text-xl font-semibold text-foreground">{product.carbonation_level}</span>
                     </div>
                   )}
@@ -327,13 +326,13 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
 
               {/* Where to Buy Section */}
               <div className="mt-6">
-                <WhereToBuy
-                  amazonLink={product.amazon_link || product.brands.amazon_link}
-                  walmartLink={product.walmart_link || product.brands.walmart_link}
-                  instacartLink={product.instacart_link || product.brands.instacart_link}
-                  brandLink={product.product_website_link || product.brands.brand_website_link}
-                  brandName={product.brands.name}
-                />
+              <WhereToBuy
+                amazonLink={product.amazon_link || product.brands.amazon_link}
+                walmartLink={product.walmart_link || product.brands.walmart_link}
+                instacartLink={product.instacart_link || product.brands.instacart_link}
+                brandLink={product.product_website_link || product.brands.brand_website_link}
+                brandName={product.brands.name}
+              />
               </div>
 
               {/* Sparkling Authority Review Header */}
@@ -348,89 +347,11 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                 </p>
               )}
 
-              {/* Product Quick Stats */}
-              <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                <div className="rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
-                  <dt className="text-sm font-medium text-muted-foreground">Calories</dt>
-                  <dd className="mt-1 text-lg font-medium text-foreground">
-                    {nutrition.calories}
-                  </dd>
-                </div>
-                <div className="col-span-2 rounded-lg bg-card px-4 py-3 shadow-sm ring-1 ring-border">
-                  <dt className="text-sm font-medium text-muted-foreground">Available Containers</dt>
-                  <dd className="mt-1 space-y-1">
-                    {(Object.entries(containersByType) as [string, string[]][]).map(([type, sizes]) => (
-                      <div key={type} className="flex items-center gap-1.5">
-                        <span className="text-sm font-medium text-foreground capitalize">
-                          {type}:
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          {sizes.sort().join(', ')}
-                        </span>
-                      </div>
-                    ))}
-                  </dd>
-                </div>
-              </dl>
-            </div>
+              {/* Nutrition Facts Dropdown */}
+              <NutritionDropdown nutrition={nutrition} />
 
-            {/* Nutrition Information */}
-            <div>
-              <h2 className="text-lg font-medium text-foreground">Nutrition Facts</h2>
-              <div className="mt-4 rounded-lg bg-card shadow-sm ring-1 ring-border">
-                <dl className="divide-y divide-border">
-                  <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-muted-foreground">Serving Size</dt>
-                    <dd className="mt-1 text-sm text-foreground sm:col-span-2 sm:mt-0">
-                      {nutrition.serving_size}
-                    </dd>
-                  </div>
-                  <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-muted-foreground">Calories</dt>
-                    <dd className="mt-1 text-sm text-foreground sm:col-span-2 sm:mt-0">
-                      {nutrition.calories}
-                    </dd>
-                  </div>
-                  <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-muted-foreground">Total Fat</dt>
-                    <dd className="mt-1 text-sm text-foreground sm:col-span-2 sm:mt-0">
-                      {nutrition.total_fat}g
-                    </dd>
-                  </div>
-                  <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-muted-foreground">Sodium</dt>
-                    <dd className="mt-1 text-sm text-foreground sm:col-span-2 sm:mt-0">
-                      {nutrition.sodium}mg
-                    </dd>
-                  </div>
-                  <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-muted-foreground">Total Carbohydrates</dt>
-                    <dd className="mt-1 text-sm text-foreground sm:col-span-2 sm:mt-0">
-                      {nutrition.total_carbohydrates}g
-                    </dd>
-                  </div>
-                  <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-muted-foreground">Total Sugars</dt>
-                    <dd className="mt-1 text-sm text-foreground sm:col-span-2 sm:mt-0">
-                      {nutrition.total_sugars}g
-                    </dd>
-                  </div>
-                  <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt className="text-sm font-medium text-muted-foreground">Protein</dt>
-                    <dd className="mt-1 text-sm text-foreground sm:col-span-2 sm:mt-0">
-                      {nutrition.protein}g
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-            </div>
-
-            {/* Ingredients */}
-            <div>
-              <h2 className="text-lg font-medium text-foreground">Ingredients</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {nutrition.ingredients}
-              </p>
+              {/* Ingredients Dropdown */}
+              <IngredientsDropdown ingredients={nutrition.ingredients} />
             </div>
 
             {/* Affiliate Disclosure */}
