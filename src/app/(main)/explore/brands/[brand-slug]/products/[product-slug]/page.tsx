@@ -26,7 +26,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { 'brand-slug': brandSlug, 'product-slug': productSlug } = await params
   const supabase = createClient()
-  
+
   // First get the brand to ensure it exists
   const { data: brand } = await supabase
     .from('brands')
@@ -104,7 +104,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
   const supabase = createClient()
   const { data: { session } } = await supabase.auth.getSession()
   const resolvedParams = await params
-  
+
   // First get the brand to ensure it exists
   const { data: brand } = await supabase
     .from('brands')
@@ -188,8 +188,8 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
     `)
 
   const allRatings = allProducts?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
-  const meanRating = allRatings.length > 0 
-    ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length 
+  const meanRating = allRatings.length > 0
+    ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length
     : 3.5 // Fallback to 3.5 if no ratings exist
 
   // Calculate true average (display rating) - Bayesian average is only for sorting
@@ -202,7 +202,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
   const reviewCount = ratingData?.filter(r => r.review_text?.trim()).length || 0
 
   // Get user's rating from the fetched data
-  const userReview = session?.user 
+  const userReview = session?.user
     ? ratingData?.find(r => r.user_id === session.user.id)
     : null
 
@@ -218,7 +218,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
             <nav className="flex" aria-label="Breadcrumb">
               <ol className="flex items-center space-x-2">
                 <li>
-                  <Link 
+                  <Link
                     href="/explore/brands"
                     className="text-sm font-medium text-muted-foreground hover:text-foreground"
                   >
@@ -231,7 +231,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                   </svg>
                 </li>
                 <li>
-                  <Link 
+                  <Link
                     href={`/explore/brands/${resolvedParams['brand-slug']}`}
                     className="text-sm font-medium text-muted-foreground hover:text-foreground"
                   >
@@ -272,53 +272,53 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                 
               {/* Right Column: Product Details */}
               <div className="flex-1 min-w-0">
-                  <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
-                  <p className="mt-2 text-lg text-muted-foreground">
-                    by {product.brands.name}
-                  </p>
-                  
-                  {/* Rating Section */}
-                  <div className="mt-4">
-                    <QuickRating
-                      productId={product.id}
-                      productName={product.name}
-                      brandName={product.brands.name}
-                      initialRating={userRating}
-                      initialReview={userReviewText}
-                      averageRating={averageRating}
-                      totalRatings={ratings.length}
-                      totalReviews={reviewCount}
-                    />
-                  </div>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
+                <p className="mt-2 text-lg text-muted-foreground">
+                  by {product.brands.name}
+                </p>
 
-                {/* Profile Section: Flavor + Carbonation */}
-                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-                  {/* Flavor Section */}
-                  {product.flavor_tags && product.flavor_tags.length > 0 && (
-                    <div>
-                      <span className="text-sm font-medium text-muted-foreground block mb-3">Flavors</span>
-                      <div className="flex flex-wrap gap-2">
-                        {product.flavor_tags.map((flavor: string) => (
-                          <span
-                            key={flavor}
-                            className="inline-flex items-center rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground"
-                          >
-                            {flavor}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Carbonation Section */}
-                  {product.carbonation_level && (
-                    <div>
-                      <span className="text-sm font-medium text-muted-foreground block mb-3">Carbonation Level</span>
-                      <span className="text-xl font-semibold text-foreground">{product.carbonation_level}</span>
-                    </div>
-                  )}
+                {/* Rating Section */}
+                <div className="mt-4">
+                  <QuickRating
+                    productId={product.id}
+                    productName={product.name}
+                    brandName={product.brands.name}
+                    initialRating={userRating}
+                    initialReview={userReviewText}
+                    averageRating={averageRating}
+                    totalRatings={ratings.length}
+                    totalReviews={reviewCount}
+                  />
                 </div>
               </div>
+            </div>
+
+            {/* Profile Section: Flavor + Carbonation - Full Width */}
+            <div className="mt-6 flex flex-col sm:flex-row gap-6 sm:gap-8">
+              {/* Flavor Section */}
+              {product.flavor_tags && product.flavor_tags.length > 0 && (
+                <div className="rounded-lg bg-card p-4 shadow-sm ring-1 ring-border">
+                  <span className="text-sm font-medium text-muted-foreground block mb-3">Flavors</span>
+                  <div className="flex flex-wrap gap-2">
+                    {product.flavor_tags.map((flavor: string) => (
+                      <span
+                        key={flavor}
+                        className="inline-flex items-center rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground"
+                      >
+                        {flavor}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Carbonation Section */}
+              {product.carbonation_level && (
+                <div className="rounded-lg bg-card p-4 shadow-sm ring-1 ring-border">
+                  <span className="text-sm font-medium text-muted-foreground block mb-3">Carbonation Level</span>
+                  <span className="text-xl font-semibold text-foreground">{product.carbonation_level}</span>
+                </div>
+              )}
             </div>
 
             {/* Single Column Section: Purchase, Description */}
@@ -326,13 +326,13 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
 
               {/* Where to Buy Section */}
               <div className="mt-6">
-              <WhereToBuy
-                amazonLink={product.amazon_link || product.brands.amazon_link}
-                walmartLink={product.walmart_link || product.brands.walmart_link}
-                instacartLink={product.instacart_link || product.brands.instacart_link}
-                brandLink={product.product_website_link || product.brands.brand_website_link}
-                brandName={product.brands.name}
-              />
+                <WhereToBuy
+                  amazonLink={product.amazon_link || product.brands.amazon_link}
+                  walmartLink={product.walmart_link || product.brands.walmart_link}
+                  instacartLink={product.instacart_link || product.brands.instacart_link}
+                  brandLink={product.product_website_link || product.brands.brand_website_link}
+                  brandName={product.brands.name}
+                />
               </div>
 
               {/* Sparkling Authority Review Header */}
@@ -364,9 +364,9 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
               <h2 className="text-lg font-medium text-foreground">Reviews</h2>
               <div className="mt-4 space-y-6">
                 {ratingData
-                  ?.filter(r => 
+                  ?.filter(r =>
                     // Must have review text
-                    r.review_text?.trim() && 
+                    r.review_text?.trim() &&
                     // And must be either approved or be the user's own review
                     (r.is_approved || r.user_id === session?.user?.id)
                   )
