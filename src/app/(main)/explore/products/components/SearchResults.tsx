@@ -41,7 +41,7 @@ type FlavorCategory = {
 }
 
 const PRODUCTS_PER_PAGE = 12
-const INITIAL_PRODUCTS_COUNT = 7
+const INITIAL_PRODUCTS_COUNT = 5
 
 export function SearchResults({ searchQuery }: SearchResultsProps) {
   const [products, setProducts] = useState<Product[]>([])
@@ -54,7 +54,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
   const [showAllProducts, setShowAllProducts] = useState(false)
   const loadingRef = useRef(false)
   const supabase = createClientComponentClient()
-  
+
   // Get mean rating for Bayesian average calculation
   const getMeanRating = useCallback(async () => {
     const { data } = await supabase
@@ -74,13 +74,13 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
   // Fetch products with enhanced search
   const fetchProducts = useCallback(async (pageNum: number) => {
     if (loadingRef.current || !searchQuery) return []
-    
+
     try {
       loadingRef.current = true
-      
+
       const start = (pageNum - 1) * PRODUCTS_PER_PAGE
       const end = start + PRODUCTS_PER_PAGE - 1
-      
+
       let query = supabase
         .from('products')
         .select(`
@@ -100,7 +100,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
         `)
         .range(start, end)
         .order('name', { ascending: true })
-        
+
       // Enhanced search: search in product name, brand name, and flavor tags
       if (searchQuery) {
         // First, get brand IDs that match the search query
@@ -108,29 +108,29 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
           .from('brands')
           .select('id')
           .ilike('name', `%${searchQuery}%`)
-        
+
         const brandIds = matchingBrands?.map(b => b.id) || []
-        
-        // Build the OR condition properly
+
+        // Build the OR condition properly - prioritize product name first
         let orConditions = [`name.ilike.%${searchQuery}%`]
-        
+
         // Add brand ID conditions
         if (brandIds.length > 0) {
           orConditions.push(`brand_id.in.(${brandIds.join(',')})`)
         }
-        
-        // Add flavor tag conditions
+
+        // Add flavor tag conditions (lower priority)
         orConditions.push(`flavor_tags.cs.{${searchQuery}}`)
-        
+
         query = query.or(orConditions.join(','))
       }
-      
+
       const { data, error } = await query
-      
+
       if (error) {
         throw error
       }
-      
+
       const meanRating = await getMeanRating()
       const transformedProducts = data.map(product => {
         const ratings = product.reviews?.map(r => r.overall_rating) || []
@@ -147,7 +147,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
         const trueAverage = ratingCount > 0 ? sumOfRatings / ratingCount : undefined
 
         const brand = Array.isArray(product.brand) ? product.brand[0] : product.brand
-        
+
         return {
           id: product.id,
           name: product.name,
@@ -169,9 +169,49 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
           ratingCount
         }
       })
-      
-      setHasMoreProducts(transformedProducts.length === PRODUCTS_PER_PAGE)
-      return transformedProducts
+
+      // Sort products by search relevance: exact name matches first, then partial name matches, then brand matches, then flavor tag matches
+      const sortedProducts = transformedProducts.sort((a, b) => {
+        const searchLower = searchQuery.toLowerCase()
+
+        // Check for exact name matches
+        const aExactNameMatch = a.name.toLowerCase() === searchLower
+        const bExactNameMatch = b.name.toLowerCase() === searchLower
+
+        // Check for partial name matches
+        const aPartialNameMatch = a.name.toLowerCase().includes(searchLower)
+        const bPartialNameMatch = b.name.toLowerCase().includes(searchLower)
+
+        // Check if brand name matches
+        const aBrandMatch = a.brand.name.toLowerCase().includes(searchLower)
+        const bBrandMatch = b.brand.name.toLowerCase().includes(searchLower)
+
+        // Check if flavor tags match
+        const aFlavorMatch = a.flavor_tags.some((tag: string) => tag.toLowerCase().includes(searchLower))
+        const bFlavorMatch = b.flavor_tags.some((tag: string) => tag.toLowerCase().includes(searchLower))
+
+        // Priority 1: Exact name matches come first
+        if (aExactNameMatch && !bExactNameMatch) return -1
+        if (!aExactNameMatch && bExactNameMatch) return 1
+
+        // Priority 2: Partial name matches come second
+        if (aPartialNameMatch && !bPartialNameMatch) return -1
+        if (!aPartialNameMatch && bPartialNameMatch) return 1
+
+        // Priority 3: Brand matches come third
+        if (aBrandMatch && !bBrandMatch) return -1
+        if (!aBrandMatch && bBrandMatch) return 1
+
+        // Priority 4: Flavor tag matches come last
+        if (aFlavorMatch && !bFlavorMatch) return -1
+        if (!aFlavorMatch && bFlavorMatch) return 1
+
+        // Final tie-breaker: alphabetical by name
+        return a.name.localeCompare(b.name)
+      })
+
+      setHasMoreProducts(sortedProducts.length === PRODUCTS_PER_PAGE)
+      return sortedProducts
     } catch (err) {
       console.error('Error fetching products:', err)
       setError('Error fetching products: ' + (err instanceof Error ? err.message : String(err)))
@@ -240,7 +280,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
       const categoriesWithMatches: string[] = []
 
       Object.entries(categoryTagMap).forEach(([category, tags]) => {
-        const matchingCategoryTags = tags.filter((tag: string) => 
+        const matchingCategoryTags = tags.filter((tag: string) =>
           tag.toLowerCase().includes(searchQuery.toLowerCase())
         )
         if (matchingCategoryTags.length > 0) {
@@ -295,7 +335,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
         const trueAverage = ratingCount > 0 ? sumOfRatings / ratingCount : undefined
 
         const brand = Array.isArray(product.brand) ? product.brand[0] : product.brand
-        
+
         return {
           id: product.id,
           name: product.name,
@@ -321,11 +361,11 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
       // Group products by flavor category
       const categoryGroups: FlavorCategory[] = categoriesWithMatches.map(category => {
         const categoryTags = categoryTagMap[category as keyof typeof categoryTagMap] || []
-        const matchingCategoryTags = categoryTags.filter((tag: string) => 
+        const matchingCategoryTags = categoryTags.filter((tag: string) =>
           tag.toLowerCase().includes(searchQuery.toLowerCase())
         )
-        
-        const categoryProducts = transformedProducts.filter(product => 
+
+        const categoryProducts = transformedProducts.filter(product =>
           product.flavor_tags.some((tag: string) => categoryTags.includes(tag))
         )
 
@@ -366,7 +406,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
 
     setLoading(true)
     setError(null)
-    
+
     try {
       // Load initial products
       const initialProducts = await fetchProducts(1)
@@ -389,10 +429,10 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
   // Load more products
   const loadMoreProducts = useCallback(async () => {
     if (loadingRef.current || !hasMoreProducts || !searchQuery) return
-    
+
     const nextPage = productPage + 1
     const newProducts = await fetchProducts(nextPage)
-    
+
     if (newProducts.length > 0) {
       setProducts(prev => {
         const existingIds = new Set(prev.map(p => p.id))
@@ -410,10 +450,10 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
   // Handle show more products
   const handleShowMoreProducts = useCallback(async () => {
     if (loadingRef.current || !hasMoreProducts || !searchQuery) return
-    
+
     const nextPage = productPage + 1
     const newProducts = await fetchProducts(nextPage)
-    
+
     if (newProducts.length > 0) {
       setProducts(prev => {
         const existingIds = new Set(prev.map(p => p.id))
@@ -421,7 +461,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
         return [...prev, ...uniqueNewProducts]
       })
       setProductPage(nextPage)
-      setShowAllProducts(true)
+      // Don't set showAllProducts to true - keep loading incrementally
     } else {
       setHasMoreProducts(false)
     }
@@ -446,7 +486,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
         debouncedLoadMore()
       }
     }
-    
+
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [debouncedLoadMore, hasMoreProducts, searchQuery])
@@ -461,7 +501,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
 
   if (loading && !products.length && !brands.length && !flavorCategories.length) {
     return (
-      <div className="text-center">
+      <div className="text-center text-muted-foreground">
         Loading search results...
       </div>
     )
@@ -493,7 +533,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
           </div>
           {loading && (
             <div className="text-center py-4 text-muted-foreground">
-              Loading more products...
+              Loading search results...
             </div>
           )}
           {!showAllProducts && products.length > INITIAL_PRODUCTS_COUNT && (
@@ -543,7 +583,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
                     {category.categoryDisplayName}
                   </span>
                 </button>
-                
+
                 <div className="px-4 py-3 border-t border-border sm:px-6 sm:py-4">
                   <div className="flex flex-wrap gap-2">
                     {category.matchingTags.map((tag: string) => (
