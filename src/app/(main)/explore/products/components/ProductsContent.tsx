@@ -45,7 +45,7 @@ export function ProductsContent({ topRatedProducts }: ProductsContentProps) {
         // Show search results when query exists
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-primary">
-            Search Results for '{searchQuery}'
+            Search Results for "{searchQuery}"
           </h2>
           <ProductList searchQuery={searchQuery} />
         </div>
