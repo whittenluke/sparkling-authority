@@ -297,13 +297,13 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
             <div className="mt-6 flex flex-col sm:flex-row gap-6 sm:gap-8">
               {/* Flavor Section */}
               {product.flavor_tags && product.flavor_tags.length > 0 && (
-                <div className="rounded-lg bg-card p-4 shadow-sm ring-1 ring-border">
-                  <span className="text-sm font-medium text-muted-foreground block mb-3">Flavors</span>
+                <div className="rounded-lg bg-card p-3 shadow-sm ring-1 ring-border">
+                  <span className="text-sm font-medium text-muted-foreground block mb-2">Flavors</span>
                   <div className="flex flex-wrap gap-2">
                     {product.flavor_tags.map((flavor: string) => (
                       <span
                         key={flavor}
-                        className="inline-flex items-center rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground"
+                        className="inline-flex items-center rounded-full bg-accent px-3 py-1 text-sm font-medium text-accent-foreground"
                       >
                         {flavor}
                       </span>
@@ -314,8 +314,8 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
               
               {/* Carbonation Section */}
               {product.carbonation_level && (
-                <div className="rounded-lg bg-card p-4 shadow-sm ring-1 ring-border">
-                  <span className="text-sm font-medium text-muted-foreground block mb-3">Carbonation Level</span>
+                <div className="rounded-lg bg-card p-3 shadow-sm ring-1 ring-border">
+                  <span className="text-sm font-medium text-muted-foreground block mb-2">Carbonation Level</span>
                   <span className="text-xl font-semibold text-foreground">{product.carbonation_level}</span>
                 </div>
               )}
