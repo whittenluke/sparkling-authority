@@ -15,8 +15,15 @@ type FlavorIconProps = {
   size?: number
 }
 
+type IconType = {
+  src: string
+  height: number
+  width: number
+  blurDataURL?: string
+}
+
 export function FlavorIcon({ category, size = 28 }: FlavorIconProps) {
-  const iconMap: Record<string, any> = {
+  const iconMap: Record<string, IconType> = {
     berry: berryIcon,
     citrus: citrusIcon,
     cream: creamIcon,
