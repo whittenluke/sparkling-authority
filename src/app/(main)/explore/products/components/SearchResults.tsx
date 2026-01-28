@@ -52,6 +52,7 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
   const [productPage, setProductPage] = useState(1)
   const [hasMoreProducts, setHasMoreProducts] = useState(true)
   const [showAllProducts, setShowAllProducts] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
   const loadingRef = useRef(false)
   const supabase = createClientComponentClient()
 
@@ -449,21 +450,31 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
 
   // Handle show more products
   const handleShowMoreProducts = useCallback(async () => {
-    if (loadingRef.current || !hasMoreProducts || !searchQuery) return
+    if (loadingMore || !hasMoreProducts || !searchQuery) return
 
-    const nextPage = productPage + 1
-    const newProducts = await fetchProducts(nextPage)
+    setLoadingMore(true)
 
-    if (newProducts.length > 0) {
-      setProducts(prev => {
-        const existingIds = new Set(prev.map(p => p.id))
-        const uniqueNewProducts = newProducts.filter(p => !existingIds.has(p.id))
-        return [...prev, ...uniqueNewProducts]
-      })
-      setProductPage(nextPage)
-      // Don't set showAllProducts to true - keep loading incrementally
-    } else {
-      setHasMoreProducts(false)
+    try {
+      const nextPage = productPage + 1
+      const newProducts = await fetchProducts(nextPage)
+
+      if (newProducts.length > 0) {
+        setProducts(prev => {
+          const existingIds = new Set(prev.map(p => p.id))
+          const uniqueNewProducts = newProducts.filter(p => !existingIds.has(p.id))
+          return [...prev, ...uniqueNewProducts]
+        })
+        setProductPage(nextPage)
+        // Show all products that have been loaded
+        setShowAllProducts(true)
+      } else {
+        setHasMoreProducts(false)
+      }
+    } catch (err) {
+      console.error('Error loading more products:', err)
+      setError('Error loading more products: ' + (err instanceof Error ? err.message : String(err)))
+    } finally {
+      setLoadingMore(false)
     }
   }, [productPage, hasMoreProducts, searchQuery, fetchProducts])
 
@@ -540,9 +551,10 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
             <div className="text-center">
               <button
                 onClick={handleShowMoreProducts}
-                className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                disabled={loadingMore}
+                className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Show More Products
+                {loadingMore ? 'Loading...' : 'Show More Products'}
               </button>
             </div>
           )}
