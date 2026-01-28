@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { ProductList } from './ProductList'
 import { SearchSection } from './SearchSection'
-import { ProductCard } from './ProductCard'
+import { SearchResults } from './SearchResults'
 
 type Brand = {
   id: string
@@ -42,13 +41,8 @@ export function ProductsContent({ topRatedProducts }: ProductsContentProps) {
       </div>
 
       {searchQuery && (
-        // Show search results when query exists
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-primary">
-            Search Results for &quot;{searchQuery}&quot;
-          </h2>
-          <ProductList searchQuery={searchQuery} />
-        </div>
+        // Show enhanced search results when query exists
+        <SearchResults searchQuery={searchQuery} />
       )}
     </div>
   )
