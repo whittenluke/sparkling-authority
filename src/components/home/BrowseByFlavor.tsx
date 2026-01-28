@@ -1,21 +1,20 @@
 import Link from 'next/link'
-import { Cherry, Citrus, Milk, Flower, Apple, Coffee, Palmtree, Droplet } from 'lucide-react'
+import { FlavorIcon } from './FlavorIcon'
 
 type FlavorCategory = {
   name: string
   slug: string
-  icon: React.ReactNode
 }
 
-const flavorCategories: FlavorCategory[] = [
-  { name: 'Berry', slug: 'berry', icon: <Cherry className="h-7 w-7" /> },
-  { name: 'Citrus', slug: 'citrus', icon: <Citrus className="h-7 w-7" /> },
-  { name: 'Cream', slug: 'cream', icon: <Milk className="h-7 w-7" /> },
-  { name: 'Floral', slug: 'floral', icon: <Flower className="h-7 w-7" /> },
-  { name: 'Melon', slug: 'melon', icon: <Apple className="h-7 w-7" /> },
-  { name: 'Soda', slug: 'soda', icon: <Coffee className="h-7 w-7" /> },
-  { name: 'Tropical', slug: 'tropical', icon: <Palmtree className="h-7 w-7" /> },
-  { name: 'Unflavored', slug: 'unflavored', icon: <Droplet className="h-7 w-7" /> },
+const flavorCategories = [
+  { name: 'Berry', slug: 'berry' },
+  { name: 'Citrus', slug: 'citrus' },
+  { name: 'Cream', slug: 'cream' },
+  { name: 'Floral', slug: 'floral' },
+  { name: 'Melon', slug: 'melon' },
+  { name: 'Soda', slug: 'soda' },
+  { name: 'Tropical', slug: 'tropical' },
+  { name: 'Unflavored', slug: 'unflavored' },
 ]
 
 export function BrowseByFlavor() {
@@ -39,10 +38,8 @@ export function BrowseByFlavor() {
             href={`/explore/flavors?category=${category.slug}`}
             className="group relative flex flex-col items-center justify-center rounded-2xl bg-card p-6 shadow-sm ring-1 ring-border hover:ring-primary transition-all text-center"
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
-              {category.icon}
-            </div>
-            <h3 className="text-base font-clash-display font-medium text-primary">
+            <FlavorIcon category={category.slug} />
+            <h3 className="text-base font-clash-display font-medium text-primary mt-4">
               {category.name}
             </h3>
           </Link>
