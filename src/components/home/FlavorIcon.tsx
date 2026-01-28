@@ -38,7 +38,7 @@ export function FlavorIcon({ category, size = 28 }: FlavorIconProps) {
   const altText = `${category} flavor icon`
 
   return (
-    <div className="flex h-20 w-20 items-center justify-center bg-white">
+    <div className="flex h-20 w-20 items-center justify-center bg-white dark:rounded-xl">
       <Image
         src={iconSrc}
         alt={altText}
