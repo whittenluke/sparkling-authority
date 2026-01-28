@@ -38,7 +38,7 @@ export function ProductsContent({ topRatedProducts }: ProductsContentProps) {
             Browse our comprehensive collection of sparkling water products.
           </p>
         </div>
-        <SearchSection onSearchChange={setSearchQuery} />
+        <SearchSection onSearchChangeAction={setSearchQuery} />
       </div>
 
       {searchQuery && (

@@ -5,16 +5,19 @@ import { useState, useEffect } from 'react'
 import { useDebounce } from '@/hooks/useDebounce'
 
 type SearchSectionProps = {
-  onSearchChange: (query: string) => void
+  onSearchChangeAction: (query: string) => void
 }
 
-export function SearchSection({ onSearchChange }: SearchSectionProps) {
+export function SearchSection({ onSearchChangeAction }: SearchSectionProps) {
   const [searchValue, setSearchValue] = useState('')
   const debouncedSearchValue = useDebounce(searchValue, 500)
 
   useEffect(() => {
-    onSearchChange(debouncedSearchValue)
-  }, [debouncedSearchValue, onSearchChange])
+    // Only trigger search if search value is empty or has 2+ characters
+    if (debouncedSearchValue.length === 0 || debouncedSearchValue.length >= 2) {
+      onSearchChangeAction(debouncedSearchValue)
+    }
+  }, [debouncedSearchValue, onSearchChangeAction])
 
   return (
     <div className="relative">
@@ -30,4 +33,4 @@ export function SearchSection({ onSearchChange }: SearchSectionProps) {
       />
     </div>
   )
-} 
+}
