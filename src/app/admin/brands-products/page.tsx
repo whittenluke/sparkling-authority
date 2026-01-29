@@ -146,14 +146,26 @@ export default function AdminBrandsProducts() {
   const [searchTerm, setSearchTerm] = useState('')
   const [showBrandModal, setShowBrandModal] = useState(false)
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null)
+  const [showEditBrandModal, setShowEditBrandModal] = useState(false)
+  const [editBrandName, setEditBrandName] = useState('')
+  const [editBrandDescription, setEditBrandDescription] = useState('')
+  const [editBrandWebsite, setEditBrandWebsite] = useState('')
+  const [editBrandCountryOfOrigin, setEditBrandCountryOfOrigin] = useState('')
+  const [editBrandFoundedYear, setEditBrandFoundedYear] = useState<number | ''>('')
+  const [editBrandIsActive, setEditBrandIsActive] = useState(true)
+  const [editBrandFormError, setEditBrandFormError] = useState<string | null>(null)
+  const [editBrandSuccessMessage, setEditBrandSuccessMessage] = useState<string | null>(null)
+  const [editBrandValidationErrors, setEditBrandValidationErrors] = useState<Record<string, string | undefined>>({})
+  const [isSubmittingEditBrand, setIsSubmittingEditBrand] = useState(false)
 
-  // Form state for adding/editing brands
+  // Form state for adding brands only
   const [brandName, setBrandName] = useState('')
   const [brandSlug, setBrandSlug] = useState('') // Renamed to avoid conflict with `slug` in Product interface
   const [description, setDescription] = useState('')
   const [website, setWebsite] = useState('')
   const [countryOfOrigin, setCountryOfOrigin] = useState('')
   const [foundedYear, setFoundedYear] = useState<number | ''>('')
+  const [isActive, setIsActive] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
@@ -256,6 +268,17 @@ export default function AdminBrandsProducts() {
       errors.foundedYear = 'Valid Founded Year is required (e.g., 1800-2026).'
     }
     setValidationErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  const validateEditBrandForm = () => {
+    const errors: Record<string, string> = {}
+    if (!editBrandName.trim()) errors.editBrandName = 'Brand Name is required.'
+    if (editBrandWebsite.trim() && !isValidUrl(editBrandWebsite.trim())) errors.editBrandWebsite = 'Please enter a valid URL.'
+    if (editBrandFoundedYear !== '' && (isNaN(Number(editBrandFoundedYear)) || Number(editBrandFoundedYear) < 1800 || Number(editBrandFoundedYear) > new Date().getFullYear() + 5)) {
+      errors.editBrandFoundedYear = 'Founded Year must be between 1800 and ' + (new Date().getFullYear() + 5) + ', or leave empty.'
+    }
+    setEditBrandValidationErrors(errors)
     return Object.keys(errors).length === 0
   }
 
@@ -596,6 +619,75 @@ export default function AdminBrandsProducts() {
     }
   }
 
+  const handleUpdateBrand = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setEditBrandFormError(null)
+    setEditBrandSuccessMessage(null)
+    setEditBrandValidationErrors({})
+    if (!editingBrand) return
+    if (!validateEditBrandForm()) return
+
+    setIsSubmittingEditBrand(true)
+    try {
+      const trimmedName = editBrandName.trim()
+      const updatePayload: {
+        description: string | null
+        website: string | null
+        country_of_origin: string | null
+        founded_year: number | null
+        is_active: boolean
+        name?: string
+      } = {
+        description: editBrandDescription.trim() || null,
+        website: editBrandWebsite.trim() || null,
+        country_of_origin: editBrandCountryOfOrigin.trim() || null,
+        founded_year: editBrandFoundedYear === '' ? null : Number(editBrandFoundedYear),
+        is_active: editBrandIsActive,
+      }
+      if (trimmedName !== editingBrand.name) {
+        updatePayload.name = trimmedName
+      }
+
+      const { data, error } = await supabase
+        .from('brands')
+        .update(updatePayload)
+        .eq('id', editingBrand.id)
+        .select('id')
+        .single()
+
+      if (error) {
+        const errorMessage = error.message || ''
+        if (error.code === '23505' || errorMessage.includes('unique constraint') || errorMessage.includes('duplicate key')) {
+          if (errorMessage.includes('brands_name_key') || errorMessage.includes('name')) {
+            setEditBrandFormError('A brand with this name already exists.')
+          } else {
+            setEditBrandFormError('A brand with this information already exists. Please check your input.')
+          }
+        } else {
+          setEditBrandFormError(errorMessage || 'Failed to update brand.')
+        }
+        return
+      }
+
+      if (!data) {
+        setEditBrandFormError('Update did not apply; you may not have permission.')
+        return
+      }
+
+      setEditBrandSuccessMessage('Brand updated successfully!')
+      await loadBrands()
+      setTimeout(() => {
+        setShowEditBrandModal(false)
+        setEditingBrand(null)
+      }, 1500)
+    } catch (err) {
+      console.error('Unexpected error updating brand:', err)
+      setEditBrandFormError('An unexpected error occurred.')
+    } finally {
+      setIsSubmittingEditBrand(false)
+    }
+  }
+
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     setProductFormError(null)
@@ -866,6 +958,20 @@ export default function AdminBrandsProducts() {
     setShowEditProductModal(true)
   }
 
+  const openEditBrandModal = (brand: Brand) => {
+    setEditingBrand(brand)
+    setEditBrandName(brand.name)
+    setEditBrandDescription(brand.description ?? '')
+    setEditBrandWebsite(brand.website ?? '')
+    setEditBrandCountryOfOrigin(brand.country_of_origin ?? '')
+    setEditBrandFoundedYear(brand.founded_year ?? '')
+    setEditBrandIsActive(brand.is_active)
+    setEditBrandFormError(null)
+    setEditBrandSuccessMessage(null)
+    setEditBrandValidationErrors({})
+    setShowEditBrandModal(true)
+  }
+
   const validateEditProductForm = () => {
     const errors: Record<string, string> = {}
     if (!editProductName.trim()) errors.editProductName = 'Product name is required.'
@@ -1006,8 +1112,10 @@ export default function AdminBrandsProducts() {
                 setWebsite('')
                 setCountryOfOrigin('')
                 setFoundedYear('')
+                setIsActive(true)
                 setFormError(null)
                 setSuccessMessage(null)
+                setValidationErrors({})
                 setIsSubmitting(false)
                 setShowBrandModal(true)
               }}
@@ -1113,66 +1221,73 @@ export default function AdminBrandsProducts() {
                 <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Actions
                 </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {brands.map((brand) => (
-                  <tr key={brand.id} className="hover:bg-muted/50">
-                    <td className="px-3 py-2 text-sm font-medium text-foreground">
-                      {brand.name}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-muted-foreground">
-                      {brand.slug}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-foreground">
-                      {brand.country_of_origin || '—'}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-foreground">
-                      {brand.founded_year || '—'}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-foreground">
-                      {brand.products_count}
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${brand.is_active
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                        : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                        }`}>
-                        {brand.is_active ? <Eye className="w-3 h-3 mr-1" /> : <EyeOff className="w-3 h-3 mr-1" />}
-                        {brand.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <div className="flex items-center space-x-2">
-                        <button
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {brands.map((brand) => (
+                <tr
+                  key={brand.id}
+                  className="hover:bg-muted/50 cursor-pointer"
+                  onClick={() => openEditBrandModal(brand)}
+                >
+                  <td className="px-3 py-2 text-sm font-medium text-foreground">
+                    {brand.name}
+                  </td>
+                  <td className="px-3 py-2 text-sm text-muted-foreground">
+                    {brand.slug}
+                  </td>
+                  <td className="px-3 py-2 text-sm text-foreground">
+                    {brand.country_of_origin || '—'}
+                  </td>
+                  <td className="px-3 py-2 text-sm text-foreground">
+                    {brand.founded_year || '—'}
+                  </td>
+                  <td className="px-3 py-2 text-sm text-foreground">
+                    {brand.products_count}
+                  </td>
+                  <td className="px-3 py-2">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${brand.is_active
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                      : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                      }`}>
+                      {brand.is_active ? <Eye className="w-3 h-3 mr-1" /> : <EyeOff className="w-3 h-3 mr-1" />}
+                      {brand.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        type="button"
+                        className="text-muted-foreground hover:text-foreground p-1"
+                        title="Edit brand"
+                        onClick={() => openEditBrandModal(brand)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        className="text-muted-foreground hover:text-red-600 p-1"
+                        title="Delete brand"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                      {brand.website && (
+                        <Link
+                          href={brand.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="text-muted-foreground hover:text-foreground p-1"
-                          title="Edit brand"
+                          title="Visit website"
                         >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          className="text-muted-foreground hover:text-red-600 p-1"
-                          title="Delete brand"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                        {brand.website && (
-                          <Link
-                            href={brand.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-muted-foreground hover:text-foreground p-1"
-                            title="Visit website"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Link>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          <ExternalLink className="h-4 w-4" />
+                        </Link>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
           {brands.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -1247,92 +1362,92 @@ export default function AdminBrandsProducts() {
                 <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Actions
                 </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {products.map((product) => (
-                  <tr
-                    key={product.id}
-                    className="hover:bg-muted/50 cursor-pointer"
-                    onClick={() => openEditProductModal(product)}
-                  >
-                    <td className="px-3 py-2">
-                      <div>
-                        <div className="text-sm font-medium text-foreground">{product.name}</div>
-                        <div className="text-xs text-muted-foreground">{product.slug}</div>
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 text-sm text-foreground">
-                      {product.brands[0]?.name || '—'}
-                    </td>
-                    <td className="px-3 py-2">
-                      {product.trueAverage !== undefined ? (
-                        <div className="flex items-center gap-1">
-                          <span className="text-sm font-medium text-foreground">{product.trueAverage.toFixed(1)}</span>
-                          <div className="flex gap-0.5">
-                            {getStarFillPercentages(product.trueAverage).map((pct, i) => (
-                              <PartialStar key={i} fillPercentage={pct} size={14} />
-                            ))}
-                          </div>
-                          <span className="text-xs text-muted-foreground">({product.ratingCount})</span>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {products.map((product) => (
+                <tr
+                  key={product.id}
+                  className="hover:bg-muted/50 cursor-pointer"
+                  onClick={() => openEditProductModal(product)}
+                >
+                  <td className="px-3 py-2">
+                    <div>
+                      <div className="text-sm font-medium text-foreground">{product.name}</div>
+                      <div className="text-xs text-muted-foreground">{product.slug}</div>
+                    </div>
+                  </td>
+                  <td className="px-3 py-2 text-sm text-foreground">
+                    {product.brands[0]?.name || '—'}
+                  </td>
+                  <td className="px-3 py-2">
+                    {product.trueAverage !== undefined ? (
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-foreground">{product.trueAverage.toFixed(1)}</span>
+                        <div className="flex gap-0.5">
+                          {getStarFillPercentages(product.trueAverage).map((pct, i) => (
+                            <PartialStar key={i} fillPercentage={pct} size={14} />
+                          ))}
                         </div>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">No ratings</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-muted-foreground">
-                      {product.review_status === 'review_complete'
-                        ? 'Review complete'
-                        : product.review_status === 'blocked'
-                          ? 'Blocked'
-                          : product.review_status === 'needs_review'
-                            ? 'Needs review'
-                            : '—'}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-foreground">
-                      Level {product.carbonation_level}
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!product.is_discontinued
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                        : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                        }`}>
-                        {!product.is_discontinued ? <Check className="w-3 h-3 mr-1" /> : <X className="w-3 h-3 mr-1" />}
-                        {!product.is_discontinued ? 'Available' : 'Discontinued'}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex items-center space-x-2">
-                        <button
-                          type="button"
-                          className="text-muted-foreground hover:text-foreground p-1"
-                          title="Edit product"
-                          onClick={() => openEditProductModal(product)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          className="text-muted-foreground hover:text-red-600 p-1"
-                          title="Delete product"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                        {product.brands[0]?.slug && (
-                          <Link
-                            href={`/explore/brands/${product.brands[0].slug}/products/${product.slug}`}
-                            className="text-muted-foreground hover:text-foreground p-1"
-                            title="View product"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                        )}
+                        <span className="text-xs text-muted-foreground">({product.ratingCount})</span>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">No ratings</span>
+                    )}
+                  </td>
+                  <td className="px-3 py-2 text-sm text-muted-foreground">
+                    {product.review_status === 'review_complete'
+                      ? 'Review complete'
+                      : product.review_status === 'blocked'
+                        ? 'Blocked'
+                        : product.review_status === 'needs_review'
+                          ? 'Needs review'
+                          : '—'}
+                  </td>
+                  <td className="px-3 py-2 text-sm text-foreground">
+                    Level {product.carbonation_level}
+                  </td>
+                  <td className="px-3 py-2">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!product.is_discontinued
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                      : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                      }`}>
+                      {!product.is_discontinued ? <Check className="w-3 h-3 mr-1" /> : <X className="w-3 h-3 mr-1" />}
+                      {!product.is_discontinued ? 'Available' : 'Discontinued'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        type="button"
+                        className="text-muted-foreground hover:text-foreground p-1"
+                        title="Edit product"
+                        onClick={() => openEditProductModal(product)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        className="text-muted-foreground hover:text-red-600 p-1"
+                        title="Delete product"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                      {product.brands[0]?.slug && (
+                        <Link
+                          href={`/explore/brands/${product.brands[0].slug}/products/${product.slug}`}
+                          className="text-muted-foreground hover:text-foreground p-1"
+                          title="View product"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
           {products.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -1471,6 +1586,9 @@ export default function AdminBrandsProducts() {
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                 />
+                {validationErrors.website && (
+                  <p className="text-sm text-red-500 mt-1">{validationErrors.website}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -1514,8 +1632,6 @@ export default function AdminBrandsProducts() {
                 </div>
               </div>
 
-              {/* Active checkbox removed as per instructions */}
-
               {formError && (
                 <div className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
                   {formError}
@@ -1542,7 +1658,175 @@ export default function AdminBrandsProducts() {
                   className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Creating...' : (editingBrand ? 'Update Brand' : 'Create Brand')}
+                  {isSubmitting ? 'Creating...' : 'Create Brand'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Brand Modal */}
+      {showEditBrandModal && editingBrand && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-lg bg-card p-6 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-foreground">Edit Brand</h2>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEditBrandModal(false)
+                  setEditingBrand(null)
+                }}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <CloseIcon className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form className="space-y-4" onSubmit={handleUpdateBrand}>
+              <div>
+                <label htmlFor="editBrandName" className="block text-sm font-medium text-foreground mb-1">
+                  Brand Name *
+                </label>
+                <input
+                  type="text"
+                  id="editBrandName"
+                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                  placeholder="Enter brand name"
+                  value={editBrandName}
+                  onChange={(e) => setEditBrandName(e.target.value)}
+                  required
+                />
+                {editBrandValidationErrors.editBrandName && (
+                  <p className="text-sm text-red-500 mt-1">{editBrandValidationErrors.editBrandName}</p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="editBrandSlug" className="block text-sm font-medium text-foreground mb-1">
+                  Slug
+                </label>
+                <input
+                  type="text"
+                  id="editBrandSlug"
+                  readOnly
+                  disabled
+                  className="w-full px-3 py-2 rounded-md border border-input bg-muted text-muted-foreground text-sm cursor-not-allowed"
+                  value={editingBrand.slug}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="editBrandDescription" className="block text-sm font-medium text-foreground mb-1">
+                  Description
+                </label>
+                <textarea
+                  id="editBrandDescription"
+                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                  rows={3}
+                  placeholder="Brief description of the brand"
+                  value={editBrandDescription}
+                  onChange={(e) => setEditBrandDescription(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="editBrandWebsite" className="block text-sm font-medium text-foreground mb-1">
+                  Website
+                </label>
+                <input
+                  type="url"
+                  id="editBrandWebsite"
+                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                  placeholder="https://example.com"
+                  value={editBrandWebsite}
+                  onChange={(e) => setEditBrandWebsite(e.target.value)}
+                />
+                {editBrandValidationErrors.editBrandWebsite && (
+                  <p className="text-sm text-red-500 mt-1">{editBrandValidationErrors.editBrandWebsite}</p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="editBrandCountryOfOrigin" className="block text-sm font-medium text-foreground mb-1">
+                    Country of Origin
+                  </label>
+                  <input
+                    type="text"
+                    id="editBrandCountryOfOrigin"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    placeholder="United States"
+                    value={editBrandCountryOfOrigin}
+                    onChange={(e) => setEditBrandCountryOfOrigin(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="editBrandFoundedYear" className="block text-sm font-medium text-foreground mb-1">
+                    Founded Year
+                  </label>
+                  <input
+                    type="number"
+                    id="editBrandFoundedYear"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    placeholder="2020"
+                    value={editBrandFoundedYear}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      setEditBrandFoundedYear(value === '' ? '' : Number(value))
+                    }}
+                  />
+                  {editBrandValidationErrors.editBrandFoundedYear && (
+                    <p className="text-sm text-red-500 mt-1">{editBrandValidationErrors.editBrandFoundedYear}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="editBrandIsActive"
+                  checked={editBrandIsActive}
+                  onChange={(e) => setEditBrandIsActive(e.target.checked)}
+                  className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
+                />
+                <label htmlFor="editBrandIsActive" className="text-sm font-medium text-foreground">
+                  Active
+                </label>
+              </div>
+
+              {editBrandFormError && (
+                <div className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+                  {editBrandFormError}
+                </div>
+              )}
+
+              {editBrandSuccessMessage && (
+                <div className="rounded-md bg-green-50 p-3 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                  {editBrandSuccessMessage}
+                </div>
+              )}
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditBrandModal(false)
+                    setEditingBrand(null)
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+                  disabled={isSubmittingEditBrand}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90"
+                  disabled={isSubmittingEditBrand}
+                >
+                  {isSubmittingEditBrand ? 'Updating...' : 'Update Brand'}
                 </button>
               </div>
             </form>
@@ -1570,145 +1854,145 @@ export default function AdminBrandsProducts() {
 
             <form className="flex flex-col flex-1 min-h-0 p-6 pt-0" onSubmit={handleUpdateProduct}>
               <div className="overflow-y-auto flex-1 min-h-0 space-y-4 pr-3">
-              <div>
-                <label htmlFor="editProductName" className="block text-sm font-medium text-foreground mb-1">
-                  Name *
-                </label>
-                <input
-                  type="text"
-                  id="editProductName"
-                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
-                  placeholder="Product name"
-                  value={editProductName}
-                  onChange={(e) => setEditProductName(e.target.value)}
-                  required
-                />
-                {editValidationErrors.editProductName && (
-                  <p className="text-sm text-red-500 mt-1">{editValidationErrors.editProductName}</p>
-                )}
-              </div>
+                <div>
+                  <label htmlFor="editProductName" className="block text-sm font-medium text-foreground mb-1">
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="editProductName"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    placeholder="Product name"
+                    value={editProductName}
+                    onChange={(e) => setEditProductName(e.target.value)}
+                    required
+                  />
+                  {editValidationErrors.editProductName && (
+                    <p className="text-sm text-red-500 mt-1">{editValidationErrors.editProductName}</p>
+                  )}
+                </div>
 
-              <div>
-                <label htmlFor="editProductSlug" className="block text-sm font-medium text-foreground mb-1">
-                  Slug
-                </label>
-                <input
-                  type="text"
-                  id="editProductSlug"
-                  readOnly
-                  disabled
-                  className="w-full px-3 py-2 rounded-md border border-input bg-muted text-muted-foreground text-sm cursor-not-allowed"
-                  value={editingProduct.slug}
-                />
-              </div>
+                <div>
+                  <label htmlFor="editProductSlug" className="block text-sm font-medium text-foreground mb-1">
+                    Slug
+                  </label>
+                  <input
+                    type="text"
+                    id="editProductSlug"
+                    readOnly
+                    disabled
+                    className="w-full px-3 py-2 rounded-md border border-input bg-muted text-muted-foreground text-sm cursor-not-allowed"
+                    value={editingProduct.slug}
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="editProductVerdict" className="block text-sm font-medium text-foreground mb-1">
-                  Verdict
-                </label>
-                <textarea
-                  id="editProductVerdict"
-                  className="w-full min-h-[100px] resize rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  placeholder="Brief verdict or review snippet"
-                  value={editProductVerdict}
-                  onChange={(e) => setEditProductVerdict(e.target.value)}
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  {editProductVerdict.trim() ? editProductVerdict.trim().split(/\s+/).filter(Boolean).length : 0} words, {editProductVerdict.length} characters
-                </p>
-              </div>
+                <div>
+                  <label htmlFor="editProductVerdict" className="block text-sm font-medium text-foreground mb-1">
+                    Verdict
+                  </label>
+                  <textarea
+                    id="editProductVerdict"
+                    className="w-full min-h-[100px] resize rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    placeholder="Brief verdict or review snippet"
+                    value={editProductVerdict}
+                    onChange={(e) => setEditProductVerdict(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {editProductVerdict.trim() ? editProductVerdict.trim().split(/\s+/).filter(Boolean).length : 0} words, {editProductVerdict.length} characters
+                  </p>
+                </div>
 
-              <div>
-                <label htmlFor="editProductReviewFull" className="block text-sm font-medium text-foreground mb-1">
-                  Review full
-                </label>
-                <textarea
-                  id="editProductReviewFull"
-                  className="w-full min-h-[100px] resize rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  placeholder="Full review content; double space for paragraphs"
-                  value={editProductReviewFull}
-                  onChange={(e) => setEditProductReviewFull(e.target.value)}
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  {editProductReviewFull.trim() ? editProductReviewFull.trim().split(/\s+/).filter(Boolean).length : 0} words, {editProductReviewFull.length} characters
-                </p>
-              </div>
+                <div>
+                  <label htmlFor="editProductReviewFull" className="block text-sm font-medium text-foreground mb-1">
+                    Review full
+                  </label>
+                  <textarea
+                    id="editProductReviewFull"
+                    className="w-full min-h-[100px] resize rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    placeholder="Full review content; double space for paragraphs"
+                    value={editProductReviewFull}
+                    onChange={(e) => setEditProductReviewFull(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {editProductReviewFull.trim() ? editProductReviewFull.trim().split(/\s+/).filter(Boolean).length : 0} words, {editProductReviewFull.length} characters
+                  </p>
+                </div>
 
-              <div>
-                <label htmlFor="editProductBrandId" className="block text-sm font-medium text-foreground mb-1">
-                  Brand *
-                </label>
-                <select
-                  id="editProductBrandId"
-                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
-                  value={editProductBrandId}
-                  onChange={(e) => setEditProductBrandId(e.target.value)}
-                  required
-                >
-                  <option value="">Select a brand</option>
-                  {allBrands.map((brand) => (
-                    <option key={brand.id} value={brand.id}>
-                      {brand.name}
-                    </option>
-                  ))}
-                </select>
-                {editValidationErrors.editProductBrandId && (
-                  <p className="text-sm text-red-500 mt-1">{editValidationErrors.editProductBrandId}</p>
-                )}
-              </div>
+                <div>
+                  <label htmlFor="editProductBrandId" className="block text-sm font-medium text-foreground mb-1">
+                    Brand *
+                  </label>
+                  <select
+                    id="editProductBrandId"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    value={editProductBrandId}
+                    onChange={(e) => setEditProductBrandId(e.target.value)}
+                    required
+                  >
+                    <option value="">Select a brand</option>
+                    {allBrands.map((brand) => (
+                      <option key={brand.id} value={brand.id}>
+                        {brand.name}
+                      </option>
+                    ))}
+                  </select>
+                  {editValidationErrors.editProductBrandId && (
+                    <p className="text-sm text-red-500 mt-1">{editValidationErrors.editProductBrandId}</p>
+                  )}
+                </div>
 
-              <div>
-                <label htmlFor="editProductReviewStatus" className="block text-sm font-medium text-foreground mb-1">
-                  Review Status
-                </label>
-                <select
-                  id="editProductReviewStatus"
-                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
-                  value={editProductReviewStatus}
-                  onChange={(e) => setEditProductReviewStatus(e.target.value)}
-                >
-                  <option value="needs_review">Needs review</option>
-                  <option value="review_complete">Review complete</option>
-                  <option value="blocked">Blocked</option>
-                </select>
-              </div>
+                <div>
+                  <label htmlFor="editProductReviewStatus" className="block text-sm font-medium text-foreground mb-1">
+                    Review Status
+                  </label>
+                  <select
+                    id="editProductReviewStatus"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    value={editProductReviewStatus}
+                    onChange={(e) => setEditProductReviewStatus(e.target.value)}
+                  >
+                    <option value="needs_review">Needs review</option>
+                    <option value="review_complete">Review complete</option>
+                    <option value="blocked">Blocked</option>
+                  </select>
+                </div>
 
-              <div>
-                <label htmlFor="editProductCarbonationLevel" className="block text-sm font-medium text-foreground mb-1">
-                  Carbonation Level * (1-10)
-                </label>
-                <select
-                  id="editProductCarbonationLevel"
-                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
-                  value={editProductCarbonationLevel}
-                  onChange={(e) => setEditProductCarbonationLevel(Number(e.target.value))}
-                  required
-                >
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-                    <option key={n} value={n}>
-                      {n}
-                    </option>
-                  ))}
-                </select>
-                {editValidationErrors.editProductCarbonationLevel && (
-                  <p className="text-sm text-red-500 mt-1">{editValidationErrors.editProductCarbonationLevel}</p>
-                )}
-              </div>
+                <div>
+                  <label htmlFor="editProductCarbonationLevel" className="block text-sm font-medium text-foreground mb-1">
+                    Carbonation Level * (1-10)
+                  </label>
+                  <select
+                    id="editProductCarbonationLevel"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    value={editProductCarbonationLevel}
+                    onChange={(e) => setEditProductCarbonationLevel(Number(e.target.value))}
+                    required
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                  {editValidationErrors.editProductCarbonationLevel && (
+                    <p className="text-sm text-red-500 mt-1">{editValidationErrors.editProductCarbonationLevel}</p>
+                  )}
+                </div>
 
-              <div>
-                <label htmlFor="editProductStatus" className="block text-sm font-medium text-foreground mb-1">
-                  Status
-                </label>
-                <select
-                  id="editProductStatus"
-                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
-                  value={editProductIsDiscontinued ? 'discontinued' : 'available'}
-                  onChange={(e) => setEditProductIsDiscontinued(e.target.value === 'discontinued')}
-                >
-                  <option value="available">Available</option>
-                  <option value="discontinued">Discontinued</option>
-                </select>
-              </div>
+                <div>
+                  <label htmlFor="editProductStatus" className="block text-sm font-medium text-foreground mb-1">
+                    Status
+                  </label>
+                  <select
+                    id="editProductStatus"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    value={editProductIsDiscontinued ? 'discontinued' : 'available'}
+                    onChange={(e) => setEditProductIsDiscontinued(e.target.value === 'discontinued')}
+                  >
+                    <option value="available">Available</option>
+                    <option value="discontinued">Discontinued</option>
+                  </select>
+                </div>
               </div>
 
               {editFormError && (
