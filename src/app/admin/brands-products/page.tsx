@@ -20,6 +20,9 @@ import {
   Upload
 } from 'lucide-react'
 import Link from 'next/link'
+import { PartialStar } from '@/components/ui/PartialStar'
+import { getStarFillPercentages } from '@/lib/star-utils'
+import { calculateMeanRating, calculateProductRatings } from '@/lib/product-utils'
 
 interface Brand {
   id: string
@@ -49,6 +52,9 @@ interface Product {
   carbonation_level: number
   is_discontinued: boolean
   created_at: string
+  reviews?: Array<{ overall_rating: number }>
+  trueAverage?: number
+  ratingCount: number
 }
 
 type TabType = 'brands' | 'products'
@@ -352,6 +358,9 @@ export default function AdminBrandsProducts() {
             id,
             name,
             slug
+          ),
+          reviews (
+            overall_rating
           )
         `, { count: 'exact' })
         .order('name')
@@ -370,8 +379,21 @@ export default function AdminBrandsProducts() {
         return
       }
 
+      // Calculate mean rating across all products for Bayesian average
+      const meanRating = calculateMeanRating(productsData || [])
+
+      // Calculate ratings for each product
+      const productsWithRatings = (productsData || []).map(product => {
+        const ratings = calculateProductRatings(product, meanRating)
+        return {
+          ...product,
+          trueAverage: ratings.trueAverage,
+          ratingCount: ratings.ratingCount
+        }
+      })
+
       setProductsTotalCount(count || 0)
-      setProducts(productsData || [])
+      setProducts(productsWithRatings)
     } catch (err) {
       console.error('Unexpected error loading products:', err)
       setError('An unexpected error occurred')
@@ -677,7 +699,7 @@ export default function AdminBrandsProducts() {
 
       // Parse header
       const headers = lines[0].split(',').map(h => h.trim().toLowerCase())
-      const requiredHeaders = ['brand_id', 'name', 'slug', 'description', 'carbonation_level']
+      const requiredHeaders = ['brand_id', 'name', 'slug', 'verdict', 'carbonation_level']
       const missingHeaders = requiredHeaders.filter(h => !headers.includes(h))
 
       if (missingHeaders.length > 0) {
@@ -970,32 +992,31 @@ export default function AdminBrandsProducts() {
 
       {/* Brands Tab */}
       {activeTab === 'brands' && (
-        <div className="rounded-lg border bg-card">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-border">
-                <tr className="text-left">
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Brand
-                  </th>
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Slug
-                  </th>
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Country
-                  </th>
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Founded
-                  </th>
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Products
-                  </th>
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Actions
-                  </th>
+        <div className="rounded-lg border bg-card overflow-x-auto">
+          <table className="w-full min-w-full">
+            <thead className="border-b border-border">
+              <tr className="text-left">
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Brand
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Slug
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Country
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Founded
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Products
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Actions
+                </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -1056,7 +1077,6 @@ export default function AdminBrandsProducts() {
                 ))}
               </tbody>
             </table>
-          </div>
 
           {brands.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -1106,29 +1126,31 @@ export default function AdminBrandsProducts() {
 
       {/* Products Tab */}
       {activeTab === 'products' && (
-        <div className="rounded-lg border bg-card">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-border">
-                <tr className="text-left">
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Product
-                  </th>
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Brand
-                  </th>
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Flavors
-                  </th>
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Carbonation
-                  </th>
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Actions
-                  </th>
+        <div className="rounded-lg border bg-card overflow-x-auto">
+          <table className="w-full min-w-full">
+            <thead className="border-b border-border">
+              <tr className="text-left">
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Product
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Brand
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Rating
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Review Status
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Carbonation
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Actions
+                </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -1141,24 +1163,25 @@ export default function AdminBrandsProducts() {
                       </div>
                     </td>
                     <td className="px-3 py-2 text-sm text-foreground">
-                      {product.brands[0]?.name}
+                      {product.brands[0]?.name || '—'}
                     </td>
                     <td className="px-3 py-2">
-                      <div className="flex flex-wrap gap-1">
-                        {product.flavor_categories?.slice(0, 2).map((category) => (
-                          <span
-                            key={category}
-                            className="inline-block px-2 py-0.5 text-xs bg-primary/10 text-primary rounded-full"
-                          >
-                            {category}
-                          </span>
-                        ))}
-                        {product.flavor_categories && product.flavor_categories.length > 2 && (
-                          <span className="text-xs text-muted-foreground">
-                            +{product.flavor_categories.length - 2} more
-                          </span>
-                        )}
-                      </div>
+                      {product.trueAverage !== undefined ? (
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium text-foreground">{product.trueAverage.toFixed(1)}</span>
+                          <div className="flex gap-0.5">
+                            {getStarFillPercentages(product.trueAverage).map((pct, i) => (
+                              <PartialStar key={i} fillPercentage={pct} size={14} />
+                            ))}
+                          </div>
+                          <span className="text-xs text-muted-foreground">({product.ratingCount})</span>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">No ratings</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-sm text-muted-foreground">
+                      —
                     </td>
                     <td className="px-3 py-2 text-sm text-foreground">
                       Level {product.carbonation_level}
@@ -1186,20 +1209,21 @@ export default function AdminBrandsProducts() {
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
-                        <Link
-                          href={`/explore/products/${product.slug}`}
-                          className="text-muted-foreground hover:text-foreground p-1"
-                          title="View product"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Link>
+                        {product.brands[0]?.slug && (
+                          <Link
+                            href={`/explore/brands/${product.brands[0].slug}/products/${product.slug}`}
+                            className="text-muted-foreground hover:text-foreground p-1"
+                            title="View product"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        )}
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
 
           {products.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -1863,7 +1887,7 @@ export default function AdminBrandsProducts() {
                     <div>
                       <p className="font-medium mb-1">Required columns (copy this as first row):</p>
                       <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded text-xs font-mono break-all">
-                        brand_id,name,slug,description,carbonation_level
+                        brand_id,name,slug,verdict,carbonation_level
                       </code>
                     </div>
                     <div>

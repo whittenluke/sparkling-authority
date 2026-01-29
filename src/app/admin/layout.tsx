@@ -16,6 +16,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const { user } = useAuth()
   const [isAuthorized, setIsAuthorized] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isScrolled, setIsScrolled] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -38,6 +39,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     checkAdmin()
   }, [user?.email, router])
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   if (isLoading) {
     return null // Or a loading spinner
   }
@@ -48,7 +58,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="sticky top-0 z-50 w-full">
+      <div className={`sticky top-0 z-50 w-full transition-transform duration-300 ${isScrolled ? '-translate-y-full' : ''}`}>
         <Header />
       </div>
       <div className="flex">
