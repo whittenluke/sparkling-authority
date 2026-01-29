@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { createClientComponentClient } from '@/lib/supabase/client'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
+import { CompactProductCard } from '@/app/(main)/explore/products/components/CompactProductCard'
+import { FlavorIcon } from '@/components/home/FlavorIcon'
 import categoryTagMap from '@/categoryTagMap.json'
 
 type FlavorProduct = {
@@ -36,6 +37,14 @@ function formatCategoryName(category: string): string {
     .join(' ')
 }
 
+// Available icon categories
+const ICON_CATEGORIES = ['berry', 'citrus', 'cream', 'floral', 'melon', 'soda', 'tropical', 'unflavored']
+
+// Helper to check if category has a custom icon
+function hasCustomIcon(category: string): boolean {
+  return ICON_CATEGORIES.includes(category.toLowerCase())
+}
+
 type FlavorsListProps = {
   categories: string[]
   initialExpandedCategory?: string
@@ -51,15 +60,6 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
   const supabase = createClientComponentClient()
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
-  const scrollToCategory = (category: string) => {
-    const element = categoryRefs.current[category]
-    if (element) {
-      // Scroll with a small offset from the top for better UX
-      const yOffset = -20
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset
-      window.scrollTo({ top: y, behavior: 'smooth' })
-    }
-  }
 
   const toggleCategory = async (category: string) => {
     if (expandedCategory === category) {
@@ -171,9 +171,6 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
     }
 
     setIsLoading(false)
-
-    // Scroll to the category after a brief delay to ensure content is rendered
-    setTimeout(() => scrollToCategory(category), 100)
   }
 
   const selectTag = (tag: string) => {
@@ -287,9 +284,6 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
         }
 
         setIsLoading(false)
-
-        // Scroll to the initial category after content is loaded
-        setTimeout(() => scrollToCategory(initialExpandedCategory), 300)
       }
 
       loadInitialCategory()
@@ -312,91 +306,120 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
     ? allProducts.filter(product => product.flavor_tags.includes(selectedTag))
     : allProducts
 
+  // Helper to get product count for a category
+  const getProductCount = (category: string) => {
+    if (expandedCategory === category && allProducts.length > 0) {
+      return allProducts.length
+    }
+    return 0
+  }
+
   return (
-    <div className="space-y-3">
-      {categories.map((category) => (
-        <div
-          key={category}
-          ref={(el) => {
-            categoryRefs.current[category] = el
-          }}
-          className="rounded-xl bg-card shadow-sm ring-1 ring-border overflow-hidden"
-        >
-          <button
-            onClick={() => toggleCategory(category)}
-            className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-accent sm:px-6 sm:py-4"
+    <div className="space-y-4">
+      {categories.map((category) => {
+        const productCount = getProductCount(category)
+        const categoryName = formatCategoryName(category)
+        const categorySlug = category.toLowerCase()
+        const isExpanded = expandedCategory === category
+
+        return (
+          <div
+            key={category}
+            ref={(el) => {
+              categoryRefs.current[category] = el
+            }}
+            className="rounded-2xl bg-card shadow-sm ring-1 ring-border overflow-hidden"
           >
-            <span className="text-base font-medium text-foreground sm:text-lg">{formatCategoryName(category)}</span>
-            {expandedCategory === category ? (
-              <ChevronUp className="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
-            )}
-          </button>
-
-          {expandedCategory === category && (
-            <div className="px-4 py-3 border-t border-border sm:px-6 sm:py-4">
-              {isLoading ? (
-                <p className="text-sm text-muted-foreground">Loading products...</p>
-              ) : allProducts.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No products found in this category.</p>
-              ) : (
-                <div className="space-y-4">
-                  {/* Flavor Tags */}
-                  <div className="flex flex-wrap gap-2">
-                    {flavorTags.map((flavorTag) => (
-                      <button
-                        key={flavorTag.tag}
-                        onClick={() => selectTag(flavorTag.tag)}
-                        className={`inline-flex items-center rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
-                          selectedTag === flavorTag.tag
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-accent text-accent-foreground hover:bg-accent/80'
-                        }`}
-                      >
-                        {flavorTag.tag}
-                        <span className="ml-1.5 text-xs opacity-75">
-                          ({flavorTag.count})
-                        </span>
-                      </button>
-                    ))}
+            <button
+              onClick={() => toggleCategory(category)}
+              className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-accent/50 transition-colors"
+            >
+              <div className="flex items-center gap-4 flex-1">
+                {hasCustomIcon(categorySlug) ? (
+                  <FlavorIcon category={categorySlug} size={32} />
+                ) : (
+                  <div className="h-20 w-20 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-2xl font-semibold flex-shrink-0">
+                    {categoryName.charAt(0)}
                   </div>
-
-                  {/* Filtered Products - Only show when a tag is selected */}
-                  {selectedTag && (
-                    <>
-                      {filteredProducts.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">
-                          No products found with tag &quot;{selectedTag}&quot;.
-                        </p>
-                      ) : (
-                        <div className="space-y-3">
-                          {filteredProducts.map((product) => (
-                            <ProductCard
-                              key={product.id}
-                              product={{
-                                id: product.id,
-                                name: product.name,
-                                slug: product.slug,
-                                brand: product.brand,
-                                flavor_tags: product.flavor_tags,
-                                thumbnail: product.thumbnail,
-                                averageRating: product.averageRating, // Bayesian for sorting
-                                trueAverage: product.trueAverage, // True average for display
-                                ratingCount: product.ratingCount
-                              }}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </>
+                )}
+                <div className="flex items-center gap-2 flex-1">
+                  <span className="text-lg font-semibold text-foreground">{categoryName}</span>
+                  {isExpanded && productCount > 0 && (
+                    <span className="text-sm text-muted-foreground">
+                      ({productCount} {productCount === 1 ? 'product' : 'products'})
+                    </span>
                   )}
                 </div>
+              </div>
+              {isExpanded ? (
+                <ChevronUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0" />
               )}
-            </div>
-          )}
-        </div>
-      ))}
+            </button>
+
+            {isExpanded && (
+              <div className="px-6 py-4 border-t border-border">
+                {isLoading ? (
+                  <p className="text-sm text-muted-foreground">Loading products...</p>
+                ) : allProducts.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No products found in this category.</p>
+                ) : (
+                  <div className="space-y-6">
+                    {/* Flavor Tags */}
+                    <div className="flex flex-wrap gap-3">
+                      {flavorTags.map((flavorTag) => (
+                        <button
+                          key={flavorTag.tag}
+                          onClick={() => selectTag(flavorTag.tag)}
+                          className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                            selectedTag === flavorTag.tag
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-accent text-accent-foreground hover:bg-accent/80'
+                          }`}
+                        >
+                          {flavorTag.tag}
+                          <span className="ml-2 text-xs opacity-75">
+                            ({flavorTag.count})
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Filtered Products - Only show when a tag is selected */}
+                    {selectedTag && (
+                      <>
+                        {filteredProducts.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">
+                            No products found with tag &quot;{selectedTag}&quot;.
+                          </p>
+                        ) : (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                            {filteredProducts.map((product) => (
+                              <CompactProductCard
+                                key={product.id}
+                                product={{
+                                  id: product.id,
+                                  name: product.name,
+                                  slug: product.slug,
+                                  brand: product.brand,
+                                  thumbnail: product.thumbnail,
+                                  trueAverage: product.trueAverage,
+                                  ratingCount: product.ratingCount
+                                }}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }
