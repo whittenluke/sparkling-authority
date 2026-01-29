@@ -362,7 +362,7 @@ export default async function Home() {
               <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 text-primary mb-6">
                 <Grid3x3 className="h-12 w-12" />
               </div>
-              <h3 className="text-2xl font-clash-display font-semibold text-primary mb-2">Catalog</h3>
+              <h3 className="text-2xl font-clash-display font-semibold text-primary mb-2">Directory</h3>
               <p className="text-base font-normal text-muted-foreground mb-6">Search all products</p>
               <div className="mt-auto inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
                 <span>Explore</span>
