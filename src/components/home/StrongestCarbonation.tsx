@@ -1,9 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useRef } from 'react'
-import { ProductCardHorizontal } from '@/app/(main)/explore/products/components/ProductCardHorizontal'
+import { CompactProductCard } from '@/app/(main)/explore/products/components/CompactProductCard'
 
 type Brand = {
   id: string
@@ -15,10 +13,8 @@ type Product = {
   id: string
   name: string
   slug: string
-  flavor_tags: string[]
   thumbnail?: string | null
   brand: Brand
-  averageRating?: number // Bayesian average (for sorting)
   trueAverage?: number // True average (for display)
   ratingCount: number
 }
@@ -28,22 +24,8 @@ interface StrongestCarbonationProps {
 }
 
 export function StrongestCarbonation({ products }: StrongestCarbonationProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-
   if (products.length === 0) {
     return null
-  }
-
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -280, behavior: 'smooth' })
-    }
-  }
-
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 280, behavior: 'smooth' })
-    }
   }
 
   return (
@@ -52,47 +34,41 @@ export function StrongestCarbonation({ products }: StrongestCarbonationProps) {
         <h2 className="font-clash-display text-xl font-medium text-primary">
           Strongest Carbonation
         </h2>
-        <div className="flex items-center gap-2">
-          {/* Carousel Navigation */}
-          <button
-            onClick={scrollLeft}
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-            aria-label="Scroll left"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <button
-            onClick={scrollRight}
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-            aria-label="Scroll right"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-
-          <Link
-            href="/ratings/strongest-carbonation"
-            className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
-          >
-            View All
-          </Link>
-        </div>
+        <Link
+          href="/ratings/strongest-carbonation"
+          className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
+        >
+          View All
+        </Link>
       </div>
 
-      {/* Horizontal Scroll Container */}
-      <div
-        ref={scrollContainerRef}
-        className="overflow-x-auto pb-4 scrollbar-hide scroll-smooth"
-      >
-        <div className="flex gap-3 sm:gap-4 w-max px-1 pt-1">
-          {products.map((product) => (
-            <ProductCardHorizontal
+      {/* Responsive Grid/Scroll Container */}
+      <div className="relative">
+        {/* Desktop/Tablet: Grid Layout */}
+        <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {products.slice(0, 8).map((product) => (
+            <CompactProductCard
               key={product.id}
               product={product}
             />
           ))}
         </div>
-      </div>
 
+        {/* Mobile: Horizontal Scroll with Fade Edge */}
+        <div className="md:hidden relative">
+          <div className="overflow-x-auto pb-4 scrollbar-hide scroll-smooth -mx-4 px-4">
+            <div className="flex gap-3 w-max">
+              {products.map((product) => (
+                <div key={product.id} className="w-[160px] flex-shrink-0">
+                  <CompactProductCard product={product} />
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Fade edge effect on right */}
+          <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+        </div>
+      </div>
     </div>
   )
 }
