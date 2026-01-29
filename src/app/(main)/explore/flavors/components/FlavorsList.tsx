@@ -57,6 +57,7 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
   const [flavorTags, setFlavorTags] = useState<FlavorTag[]>([])
   const [allProducts, setAllProducts] = useState<FlavorProduct[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({})
   const supabase = createClientComponentClient()
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
@@ -301,6 +302,40 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
     }
   }, [initialSelectedTag, initialExpandedCategory, expandedCategory, flavorTags, selectedTag])
 
+  // Fetch product count for a category
+  const fetchCategoryCount = async (category: string) => {
+    // Skip if already fetched
+    if (categoryCounts[category] !== undefined) {
+      return
+    }
+
+    const categoryTags = categoryTagMap[category as keyof typeof categoryTagMap] || []
+    if (categoryTags.length === 0) {
+      setCategoryCounts(prev => ({ ...prev, [category]: 0 }))
+      return
+    }
+
+    try {
+      const { count } = await supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true })
+        .overlaps('flavor_tags', categoryTags)
+
+      setCategoryCounts(prev => ({ ...prev, [category]: count || 0 }))
+    } catch (error) {
+      console.error(`Error fetching count for category ${category}:`, error)
+      setCategoryCounts(prev => ({ ...prev, [category]: 0 }))
+    }
+  }
+
+  // Fetch counts for all categories on mount
+  useEffect(() => {
+    categories.forEach(category => {
+      fetchCategoryCount(category)
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories])
+
   // Filter products based on selected tag
   const filteredProducts = selectedTag
     ? allProducts.filter(product => product.flavor_tags.includes(selectedTag))
@@ -308,10 +343,12 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
 
   // Helper to get product count for a category
   const getProductCount = (category: string) => {
+    // If category is expanded and we have products loaded, use that count (more accurate)
     if (expandedCategory === category && allProducts.length > 0) {
       return allProducts.length
     }
-    return 0
+    // Otherwise use the stored count
+    return categoryCounts[category] || 0
   }
 
   return (
@@ -336,15 +373,15 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
             >
               <div className="flex items-center gap-4 flex-1">
                 {hasCustomIcon(categorySlug) ? (
-                  <FlavorIcon category={categorySlug} size={32} />
+                  <FlavorIcon category={categorySlug} size={40} />
                 ) : (
                   <div className="h-20 w-20 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-2xl font-semibold flex-shrink-0">
                     {categoryName.charAt(0)}
                   </div>
                 )}
                 <div className="flex items-center gap-2 flex-1">
-                  <span className="text-lg font-semibold text-foreground">{categoryName}</span>
-                  {isExpanded && productCount > 0 && (
+                  <span className="text-lg font-bold text-foreground">{categoryName}</span>
+                  {productCount > 0 && (
                     <span className="text-sm text-muted-foreground">
                       ({productCount} {productCount === 1 ? 'product' : 'products'})
                     </span>
