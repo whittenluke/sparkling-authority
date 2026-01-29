@@ -38,7 +38,7 @@ function formatCategoryName(category: string): string {
 }
 
 // Available icon categories
-const ICON_CATEGORIES = ['berry', 'citrus', 'cream', 'floral', 'melon', 'soda', 'tropical', 'unflavored']
+const ICON_CATEGORIES = ['apple', 'berry', 'citrus', 'cream', 'floral', 'grape', 'herbal', 'melon', 'soda', 'spicy', 'stone fruit', 'tea', 'tropical', 'unflavored']
 
 // Helper to check if category has a custom icon
 function hasCustomIcon(category: string): boolean {
