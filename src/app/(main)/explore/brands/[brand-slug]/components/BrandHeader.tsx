@@ -45,7 +45,7 @@ export function BrandHeader({ brand, productCount }: BrandHeaderProps) {
         <div className="flex-1 min-w-0">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">{brand.name}</h1>
           {brand.description && (
-            <p className="mt-2 text-lg text-muted-foreground">{brand.description}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{brand.description}</p>
           )}
         </div>
       </div>
