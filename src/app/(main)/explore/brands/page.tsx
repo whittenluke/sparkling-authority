@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { BrandsGrid } from './components/BrandsGrid'
-import { BrandsHeader } from './components/BrandsHeader'
+import { BrandsContent } from './components/BrandsContent'
 import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
@@ -62,10 +61,5 @@ export default async function BrandsPage() {
     slug: brand.slug
   }))
 
-  return (
-    <div className="space-y-8">
-      <BrandsHeader />
-      <BrandsGrid brands={brandEntries} />
-    </div>
-  )
+  return <BrandsContent initialBrands={brandEntries} />
 }

@@ -1,8 +1,12 @@
 'use client'
 
-import { Search } from 'lucide-react'
+import { BrandSearch } from './BrandSearch'
 
-export function BrandsHeader() {
+type BrandsHeaderProps = {
+  onSearchChange: (query: string) => void
+}
+
+export function BrandsHeader({ onSearchChange }: BrandsHeaderProps) {
   return (
     <div className="space-y-4">
       {/* Title and Description */}
@@ -15,16 +19,7 @@ export function BrandsHeader() {
 
       {/* Search */}
       <div>
-        <div className="relative flex-grow">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <Search className="h-5 w-5 text-muted-foreground" />
-          </div>
-          <input
-            type="search"
-            placeholder="Search brands..."
-            className="font-plus-jakarta block w-full rounded-lg border border-input py-3 pl-10 pr-4 text-foreground bg-background placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm"
-          />
-        </div>
+        <BrandSearch onSearchChange={onSearchChange} />
       </div>
     </div>
   )
