@@ -378,9 +378,6 @@ export default async function Home() {
         {/* Citrus Collection Section */}
         <CitrusCollection products={citrusProducts} />
 
-        {/* Unflavored Champions Section */}
-        <UnflavoredChampions products={unflavoredProducts} />
-
         {/* Top Rated Section */}
         {topProducts.length > 0 && (
           <div className="mt-16 max-w-3xl mx-auto w-full px-4 sm:px-0">
@@ -422,6 +419,9 @@ export default async function Home() {
             </div>
           </div>
         )}
+
+        {/* Unflavored Champions Section */}
+        <UnflavoredChampions products={unflavoredProducts} />
 
         {/* Browse by Brand Section */}
         <BrowseByBrand />
