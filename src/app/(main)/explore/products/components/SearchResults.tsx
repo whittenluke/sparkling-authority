@@ -34,6 +34,16 @@ type Product = {
   ratingCount: number
 }
 
+type SupabaseProductData = {
+  id: string
+  name: string
+  slug: string
+  flavor_tags: string[] | null
+  thumbnail: string | null
+  brand: Brand | Brand[]
+  reviews?: Array<{ overall_rating: number }> | null
+}
+
 const INITIAL_PRODUCTS_COUNT = 16
 
 export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
@@ -93,9 +103,9 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
       const matchingFlavorTags = Array.from(allFlavorTags)
 
       // Build queries for different priority levels
-      let priority1Products: any[] = [] // Product name match
-      let priority2Products: any[] = [] // Brand AND Flavor match
-      let priority3Products: any[] = [] // Brand OR Flavor match
+      let priority1Products: SupabaseProductData[] = [] // Product name match
+      let priority2Products: SupabaseProductData[] = [] // Brand AND Flavor match
+      const priority3Products: SupabaseProductData[] = [] // Brand OR Flavor match
 
       // Priority 1: Product name match
       if (searchQuery.length >= 2) {
@@ -120,7 +130,7 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
           .order('name', { ascending: true })
 
         if (nameMatchData) {
-          priority1Products = nameMatchData
+          priority1Products = nameMatchData as SupabaseProductData[]
         }
       }
 
@@ -150,7 +160,7 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
         if (brandAndFlavorData) {
           // Filter out products already in priority 1
           const priority1Ids = new Set(priority1Products.map(p => p.id))
-          priority2Products = brandAndFlavorData.filter(p => !priority1Ids.has(p.id))
+          priority2Products = brandAndFlavorData.filter(p => !priority1Ids.has(p.id)) as SupabaseProductData[]
         }
       }
 
@@ -386,7 +396,7 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
     const scopeText = scope === 'products' ? 'products' : 'brands'
     return (
       <div className="text-center text-muted-foreground py-8">
-        No {scopeText} found for "{searchQuery}". Try a different search term.
+        No {scopeText} found for &quot;{searchQuery}&quot;. Try a different search term.
       </div>
     )
   }

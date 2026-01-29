@@ -9,14 +9,14 @@ type Review = {
 
 type ProductWithReviews = {
   reviews?: Review[]
-  [key: string]: any
+  [key: string]: unknown
 }
 
 type ProductWithRatings = {
   averageRating?: number // Bayesian average (for sorting)
   trueAverage?: number // True average (for display)
   ratingCount: number
-  [key: string]: any
+  [key: string]: unknown
 }
 
 /**
