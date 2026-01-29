@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
+import { useState, useMemo } from 'react'
+import { CompactProductCard } from '@/app/(main)/explore/products/components/CompactProductCard'
+import { ChevronDown } from 'lucide-react'
 
 type Product = {
   id: string
   name: string
-  flavor_tags: string[]
   thumbnail?: string | null
   product_line_id: string
   slug: string
@@ -32,14 +32,37 @@ type Props = {
   productLines: ProductLine[]
 }
 
+type SortOption = 'rating' | 'name'
+
 export function ProductsSection({ products, productLines }: Props) {
   const [selectedLineId, setSelectedLineId] = useState<string | null>(
     productLines.length > 1 ? null : productLines[0]?.id || null
   )
+  const [sortBy, setSortBy] = useState<SortOption>('rating')
 
-  const filteredProducts = selectedLineId
-    ? products.filter(p => p.product_line_id === selectedLineId)
-    : products
+  // Filter products by selected line
+  const filteredProducts = useMemo(() => {
+    return selectedLineId
+      ? products.filter(p => p.product_line_id === selectedLineId)
+      : products
+  }, [products, selectedLineId])
+
+  // Sort filtered products
+  const sortedProducts = useMemo(() => {
+    return [...filteredProducts].sort((a, b) => {
+      if (sortBy === 'rating') {
+        // Sort by Bayesian average (descending)
+        if (b.averageRating !== a.averageRating) {
+          return (b.averageRating || 0) - (a.averageRating || 0)
+        }
+        // Tie-breaker: rating count
+        return b.ratingCount - a.ratingCount
+      } else {
+        // Sort by name (ascending)
+        return a.name.localeCompare(b.name)
+      }
+    })
+  }, [filteredProducts, sortBy])
 
   return (
     <div>
@@ -81,10 +104,34 @@ export function ProductsSection({ products, productLines }: Props) {
         </div>
       )}
 
+      {/* Products Header with Sort */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold text-foreground">
+          Products ({sortedProducts.length})
+        </h2>
+        <div className="flex items-center gap-2">
+          <label htmlFor="sort-select" className="text-sm text-muted-foreground">
+            Sort:
+          </label>
+          <div className="relative">
+            <select
+              id="sort-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="appearance-none bg-background border border-input rounded-lg px-3 py-1.5 pr-8 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary cursor-pointer"
+            >
+              <option value="rating">Rating</option>
+              <option value="name">Name A-Z</option>
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          </div>
+        </div>
+      </div>
+
       {/* Products Grid */}
-      <div className="space-y-3">
-        {filteredProducts.map((product) => (
-          <ProductCard
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {sortedProducts.map((product) => (
+          <CompactProductCard
             key={product.id}
             product={{
               id: product.id,
@@ -95,9 +142,7 @@ export function ProductsSection({ products, productLines }: Props) {
                 name: product.brand.name,
                 slug: product.brand.slug
               },
-              flavor_tags: product.flavor_tags,
               thumbnail: product.thumbnail,
-              averageRating: product.averageRating,
               trueAverage: product.trueAverage,
               ratingCount: product.ratingCount
             }}

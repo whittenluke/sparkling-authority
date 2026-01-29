@@ -178,7 +178,7 @@ export default async function BrandPage({ params }: Props) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-grow">
-        <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <div className="space-y-8">
             {/* Breadcrumb */}
             <nav className="flex" aria-label="Breadcrumb">
@@ -206,15 +206,10 @@ export default async function BrandPage({ params }: Props) {
             <BrandHeader brand={brand} productCount={productsWithRatings.length} />
 
             {/* Products Section with Line Filter */}
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-foreground">Products</h2>
-              </div>
-              <ProductsSection
-                products={productsWithRatings}
-                productLines={productLines}
-              />
-            </div>
+            <ProductsSection
+              products={productsWithRatings}
+              productLines={productLines}
+            />
           </div>
         </div>
       </main>
