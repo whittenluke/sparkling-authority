@@ -25,8 +25,11 @@ type ProductsContentProps = {
   topRatedProducts: Product[]
 }
 
+type Scope = 'products' | 'brands'
+
 export function ProductsContent({ topRatedProducts }: ProductsContentProps) {
   const [searchQuery, setSearchQuery] = useState('')
+  const [scope, setScope] = useState<Scope>('products')
 
   return (
     <div className="container py-8 space-y-8">
@@ -37,12 +40,15 @@ export function ProductsContent({ topRatedProducts }: ProductsContentProps) {
             Browse our comprehensive collection of sparkling water products.
           </p>
         </div>
-        <SearchSection onSearchChangeAction={setSearchQuery} />
+        <SearchSection 
+          scope={scope}
+          onScopeChange={setScope}
+          onSearchChangeAction={setSearchQuery} 
+        />
       </div>
 
-      {searchQuery && (
-        // Show enhanced search results when query exists
-        <SearchResults searchQuery={searchQuery} />
+      {searchQuery && searchQuery.length >= 2 && (
+        <SearchResults searchQuery={searchQuery} scope={scope} />
       )}
     </div>
   )

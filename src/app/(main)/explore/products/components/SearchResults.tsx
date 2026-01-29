@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClientComponentClient } from '@/lib/supabase/client'
-import { ProductCard } from './ProductCard'
+import { CompactProductCard } from './CompactProductCard'
 import { BrandsGrid } from '@/app/(main)/explore/brands/components/BrandsGrid'
-import { useDebounce } from '@/hooks/useDebounce'
-import categoryTagMap from '@/categoryTagMap.json'
+import { calculateMeanRating, transformProductWithRatings } from '@/lib/product-utils'
+
+type Scope = 'products' | 'brands'
 
 interface SearchResultsProps {
   searchQuery: string
+  scope: Scope
 }
 
 type Brand = {
@@ -27,38 +29,34 @@ type Product = {
   name: string
   slug: string
   brand: Brand
-  flavor_tags: string[]
   thumbnail?: string | null
-  averageRating?: number
+  trueAverage?: number
   ratingCount: number
 }
 
-type FlavorCategory = {
-  category: string
-  categoryDisplayName: string
-  matchingTags: string[]
-  products: Product[]
-}
+const INITIAL_PRODUCTS_COUNT = 16
 
-const PRODUCTS_PER_PAGE = 12
-const INITIAL_PRODUCTS_COUNT = 5
-
-export function SearchResults({ searchQuery }: SearchResultsProps) {
+export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
   const [products, setProducts] = useState<Product[]>([])
   const [brands, setBrands] = useState<Brand[]>([])
-  const [flavorCategories, setFlavorCategories] = useState<FlavorCategory[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [productPage, setProductPage] = useState(1)
-  const [hasMoreProducts, setHasMoreProducts] = useState(true)
   const [showAllProducts, setShowAllProducts] = useState(false)
-  const [loadingMore, setLoadingMore] = useState(false)
-  const loadingRef = useRef(false)
   const supabase = createClientComponentClient()
 
+  // Fetch products with smart search logic
+  const fetchProducts = useCallback(async () => {
+    if (!searchQuery || scope !== 'products') {
+      setProducts([])
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
   // Get mean rating for Bayesian average calculation
-  const getMeanRating = useCallback(async () => {
-    const { data } = await supabase
+      const { data: allProductsData } = await supabase
       .from('products')
       .select(`
         reviews (
@@ -66,23 +64,42 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
         )
       `)
 
-    const allRatings = data?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
-    return allRatings.length > 0
-      ? allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length
-      : 3.5
-  }, [supabase])
+      const allProducts = allProductsData || []
+      const meanRating = calculateMeanRating(allProducts)
 
-  // Fetch products with enhanced search
-  const fetchProducts = useCallback(async (pageNum: number) => {
-    if (loadingRef.current || !searchQuery) return []
+      // Get matching brand IDs
+      const { data: matchingBrands } = await supabase
+        .from('brands')
+        .select('id, name')
+        .ilike('name', `%${searchQuery}%`)
 
-    try {
-      loadingRef.current = true
+      const brandIds = matchingBrands?.map(b => b.id) || []
+      const brandNames = matchingBrands?.map(b => b.name.toLowerCase()) || []
 
-      const start = (pageNum - 1) * PRODUCTS_PER_PAGE
-      const end = start + PRODUCTS_PER_PAGE - 1
+      // Find matching flavor tags (case-insensitive)
+      const searchLower = searchQuery.toLowerCase()
+      const { data: allProductsWithTags } = await supabase
+        .from('products')
+        .select('flavor_tags')
 
-      let query = supabase
+      const allFlavorTags = new Set<string>()
+      allProductsWithTags?.forEach(p => {
+        p.flavor_tags?.forEach((tag: string) => {
+          if (tag.toLowerCase().includes(searchLower)) {
+            allFlavorTags.add(tag)
+          }
+        })
+      })
+      const matchingFlavorTags = Array.from(allFlavorTags)
+
+      // Build queries for different priority levels
+      let priority1Products: any[] = [] // Product name match
+      let priority2Products: any[] = [] // Brand AND Flavor match
+      let priority3Products: any[] = [] // Brand OR Flavor match
+
+      // Priority 1: Product name match
+      if (searchQuery.length >= 2) {
+        const { data: nameMatchData } = await supabase
         .from('products')
         .select(`
           id,
@@ -99,60 +116,126 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
             overall_rating
           )
         `)
-        .range(start, end)
-        .order('name', { ascending: true })
-
-      // Enhanced search: search in product name, brand name, and flavor tags
-      if (searchQuery) {
-        // First, get brand IDs that match the search query
-        const { data: matchingBrands } = await supabase
-          .from('brands')
-          .select('id')
           .ilike('name', `%${searchQuery}%`)
+          .order('name', { ascending: true })
 
-        const brandIds = matchingBrands?.map(b => b.id) || []
-
-        // Build the OR condition properly - prioritize product name first
-        let orConditions = [`name.ilike.%${searchQuery}%`]
-
-        // Add brand ID conditions
-        if (brandIds.length > 0) {
-          orConditions.push(`brand_id.in.(${brandIds.join(',')})`)
+        if (nameMatchData) {
+          priority1Products = nameMatchData
         }
-
-        // Add flavor tag conditions (lower priority)
-        orConditions.push(`flavor_tags.cs.{${searchQuery}}`)
-
-        query = query.or(orConditions.join(','))
       }
 
-      const { data, error } = await query
+      // Priority 2: Brand AND Flavor match
+      if (brandIds.length > 0 && matchingFlavorTags.length > 0) {
+        const { data: brandAndFlavorData } = await supabase
+          .from('products')
+          .select(`
+            id,
+            name,
+            slug,
+            flavor_tags,
+            thumbnail,
+            brand:brand_id (
+              id,
+              name,
+              slug
+            ),
+            reviews (
+              overall_rating
+            )
+          `)
+          .in('brand_id', brandIds)
+          .overlaps('flavor_tags', matchingFlavorTags)
+          .order('name', { ascending: true })
 
-      if (error) {
-        throw error
+        if (brandAndFlavorData) {
+          // Filter out products already in priority 1
+          const priority1Ids = new Set(priority1Products.map(p => p.id))
+          priority2Products = brandAndFlavorData.filter(p => !priority1Ids.has(p.id))
+        }
       }
 
-      const meanRating = await getMeanRating()
-      const transformedProducts = data.map(product => {
-        const ratings = product.reviews?.map(r => r.overall_rating) || []
-        const ratingCount = ratings.length
+      // Priority 3: Brand OR Flavor match (fallback)
+      // Get products matching flavor tags
+      if (matchingFlavorTags.length > 0) {
+        const { data: flavorData } = await supabase
+          .from('products')
+          .select(`
+            id,
+            name,
+            slug,
+            flavor_tags,
+            thumbnail,
+            brand:brand_id (
+              id,
+              name,
+              slug
+            ),
+            reviews (
+              overall_rating
+            )
+          `)
+          .overlaps('flavor_tags', matchingFlavorTags)
+          .order('name', { ascending: true })
 
-        // Calculate Bayesian average (for sorting)
-        const C = 10 // confidence factor
-        const sumOfRatings = ratings.reduce((a: number, b: number) => a + b, 0)
-        const bayesianAverage = ratingCount > 0
-          ? (C * meanRating + sumOfRatings) / (C + ratingCount)
-          : undefined
+        if (flavorData) {
+          const priority1And2Ids = new Set([
+            ...priority1Products.map(p => p.id),
+            ...priority2Products.map(p => p.id)
+          ])
+          const flavorOnlyProducts = flavorData.filter(p => !priority1And2Ids.has(p.id))
+          priority3Products.push(...flavorOnlyProducts)
+        }
+      }
 
-        // Calculate true average (for display)
-        const trueAverage = ratingCount > 0 ? sumOfRatings / ratingCount : undefined
+      // Get products matching brand IDs (but not already in priority 1, 2, or 3)
+      if (brandIds.length > 0) {
+        const { data: brandData } = await supabase
+          .from('products')
+          .select(`
+            id,
+            name,
+            slug,
+            flavor_tags,
+            thumbnail,
+            brand:brand_id (
+              id,
+              name,
+              slug
+            ),
+            reviews (
+              overall_rating
+            )
+          `)
+          .in('brand_id', brandIds)
+          .order('name', { ascending: true })
 
+        if (brandData) {
+          const priority1And2And3Ids = new Set([
+            ...priority1Products.map(p => p.id),
+            ...priority2Products.map(p => p.id),
+            ...priority3Products.map(p => p.id)
+          ])
+          const brandOnlyProducts = brandData.filter(p => !priority1And2And3Ids.has(p.id))
+          priority3Products.push(...brandOnlyProducts)
+        }
+      }
+
+      // Combine all products in priority order
+      const allMatchingProducts = [
+        ...priority1Products,
+        ...priority2Products,
+        ...priority3Products
+      ]
+
+      // Transform products with ratings
+      const transformedProducts = allMatchingProducts.map(product => {
         const brand = Array.isArray(product.brand) ? product.brand[0] : product.brand
+        const productWithRatings = transformProductWithRatings(product, meanRating)
 
         return {
-          id: product.id,
-          name: product.name,
-          slug: product.slug,
+          id: productWithRatings.id,
+          name: productWithRatings.name,
+          slug: productWithRatings.slug,
           brand: {
             id: brand.id,
             name: brand.name,
@@ -163,71 +246,64 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
             productCount: 0,
             isProductLine: false
           },
-          flavor_tags: product.flavor_tags || [],
-          thumbnail: product.thumbnail,
-          averageRating: bayesianAverage,
-          trueAverage,
-          ratingCount
+          thumbnail: productWithRatings.thumbnail,
+          trueAverage: productWithRatings.trueAverage,
+          ratingCount: productWithRatings.ratingCount
         }
       })
 
-      // Sort products by search relevance: exact name matches first, then partial name matches, then brand matches, then flavor tag matches
+      // Sort by relevance within each priority group, then alphabetically
       const sortedProducts = transformedProducts.sort((a, b) => {
         const searchLower = searchQuery.toLowerCase()
+        const aNameLower = a.name.toLowerCase()
+        const bNameLower = b.name.toLowerCase()
 
-        // Check for exact name matches
-        const aExactNameMatch = a.name.toLowerCase() === searchLower
-        const bExactNameMatch = b.name.toLowerCase() === searchLower
+        // Exact name match comes first
+        const aExactMatch = aNameLower === searchLower
+        const bExactMatch = bNameLower === searchLower
+        if (aExactMatch && !bExactMatch) return -1
+        if (!aExactMatch && bExactMatch) return 1
 
-        // Check for partial name matches
-        const aPartialNameMatch = a.name.toLowerCase().includes(searchLower)
-        const bPartialNameMatch = b.name.toLowerCase().includes(searchLower)
+        // Then partial name match
+        const aPartialMatch = aNameLower.includes(searchLower)
+        const bPartialMatch = bNameLower.includes(searchLower)
+        if (aPartialMatch && !bPartialMatch) return -1
+        if (!aPartialMatch && bPartialMatch) return 1
 
-        // Check if brand name matches
-        const aBrandMatch = a.brand.name.toLowerCase().includes(searchLower)
-        const bBrandMatch = b.brand.name.toLowerCase().includes(searchLower)
-
-        // Check if flavor tags match
-        const aFlavorMatch = a.flavor_tags.some((tag: string) => tag.toLowerCase().includes(searchLower))
-        const bFlavorMatch = b.flavor_tags.some((tag: string) => tag.toLowerCase().includes(searchLower))
-
-        // Priority 1: Exact name matches come first
-        if (aExactNameMatch && !bExactNameMatch) return -1
-        if (!aExactNameMatch && bExactNameMatch) return 1
-
-        // Priority 2: Partial name matches come second
-        if (aPartialNameMatch && !bPartialNameMatch) return -1
-        if (!aPartialNameMatch && bPartialNameMatch) return 1
-
-        // Priority 3: Brand matches come third
+        // Check brand match
+        const aBrandMatch = brandNames.some(brandName => 
+          a.brand.name.toLowerCase().includes(brandName)
+        )
+        const bBrandMatch = brandNames.some(brandName => 
+          b.brand.name.toLowerCase().includes(brandName)
+        )
         if (aBrandMatch && !bBrandMatch) return -1
         if (!aBrandMatch && bBrandMatch) return 1
 
-        // Priority 4: Flavor tag matches come last
-        if (aFlavorMatch && !bFlavorMatch) return -1
-        if (!aFlavorMatch && bFlavorMatch) return 1
-
-        // Final tie-breaker: alphabetical by name
+        // Final tie-breaker: alphabetical
         return a.name.localeCompare(b.name)
       })
 
-      setHasMoreProducts(sortedProducts.length === PRODUCTS_PER_PAGE)
-      return sortedProducts
+      setProducts(sortedProducts)
+      setShowAllProducts(false)
     } catch (err) {
       console.error('Error fetching products:', err)
       setError('Error fetching products: ' + (err instanceof Error ? err.message : String(err)))
-      return []
+      setProducts([])
     } finally {
-      loadingRef.current = false
+      setLoading(false)
     }
-  }, [searchQuery, supabase, getMeanRating])
+  }, [searchQuery, scope, supabase])
 
   // Fetch brands
   const fetchBrands = useCallback(async () => {
-    if (!searchQuery) {
+    if (!searchQuery || scope !== 'brands') {
       setBrands([])
       return
     }
+
+    setLoading(true)
+    setError(null)
 
     try {
       const { data, error } = await supabase
@@ -265,266 +341,52 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
     } catch (err) {
       console.error('Error fetching brands:', err)
       setError('Error fetching brands: ' + (err instanceof Error ? err.message : String(err)))
+      setBrands([])
+    } finally {
+      setLoading(false)
     }
-  }, [searchQuery, supabase])
+  }, [searchQuery, scope, supabase])
 
-  // Fetch flavor categories and products
-  const fetchFlavors = useCallback(async () => {
-    if (!searchQuery) {
-      setFlavorCategories([])
-      return
-    }
-
-    try {
-      // Find matching flavor tags
-      const matchingTags: string[] = []
-      const categoriesWithMatches: string[] = []
-
-      Object.entries(categoryTagMap).forEach(([category, tags]) => {
-        const matchingCategoryTags = tags.filter((tag: string) =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        if (matchingCategoryTags.length > 0) {
-          matchingTags.push(...matchingCategoryTags)
-          categoriesWithMatches.push(category)
-        }
-      })
-
-      if (matchingTags.length === 0) {
-        setFlavorCategories([])
-        return
-      }
-
-      // Fetch products that have these flavor tags
-      const { data, error } = await supabase
-        .from('products')
-        .select(`
-          id,
-          name,
-          slug,
-          flavor_tags,
-          thumbnail,
-          brand:brand_id (
-            id,
-            name,
-            slug
-          ),
-          reviews (
-            overall_rating
-          )
-        `)
-        .overlaps('flavor_tags', matchingTags)
-        .order('name', { ascending: true })
-
-      if (error) {
-        throw error
-      }
-
-      const meanRating = await getMeanRating()
-      const transformedProducts = data.map(product => {
-        const ratings = product.reviews?.map(r => r.overall_rating) || []
-        const ratingCount = ratings.length
-
-        // Calculate Bayesian average (for sorting)
-        const C = 10 // confidence factor
-        const sumOfRatings = ratings.reduce((a: number, b: number) => a + b, 0)
-        const bayesianAverage = ratingCount > 0
-          ? (C * meanRating + sumOfRatings) / (C + ratingCount)
-          : undefined
-
-        // Calculate true average (for display)
-        const trueAverage = ratingCount > 0 ? sumOfRatings / ratingCount : undefined
-
-        const brand = Array.isArray(product.brand) ? product.brand[0] : product.brand
-
-        return {
-          id: product.id,
-          name: product.name,
-          slug: product.slug,
-          brand: {
-            id: brand.id,
-            name: brand.name,
-            slug: brand.slug,
-            description: undefined,
-            brand_logo_light: undefined,
-            brand_logo_dark: undefined,
-            productCount: 0,
-            isProductLine: false
-          },
-          flavor_tags: product.flavor_tags || [],
-          thumbnail: product.thumbnail,
-          averageRating: bayesianAverage,
-          trueAverage,
-          ratingCount
-        }
-      })
-
-      // Group products by flavor category
-      const categoryGroups: FlavorCategory[] = categoriesWithMatches.map(category => {
-        const categoryTags = categoryTagMap[category as keyof typeof categoryTagMap] || []
-        const matchingCategoryTags = categoryTags.filter((tag: string) =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-
-        const categoryProducts = transformedProducts.filter(product =>
-          product.flavor_tags.some((tag: string) => categoryTags.includes(tag))
-        )
-
-        return {
-          category,
-          categoryDisplayName: formatCategoryName(category),
-          matchingTags: matchingCategoryTags,
-          products: categoryProducts
-        }
-      }).filter(category => category.products.length > 0)
-
-      setFlavorCategories(categoryGroups)
-    } catch (err) {
-      console.error('Error fetching flavors:', err)
-      setError('Error fetching flavors: ' + (err instanceof Error ? err.message : String(err)))
-    }
-  }, [searchQuery, supabase, getMeanRating])
-
-  // Helper function to format category name for display
-  function formatCategoryName(category: string): string {
-    return category
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ')
-  }
-
-  // Load all search results
-  const loadSearchResults = useCallback(async () => {
-    if (!searchQuery) {
+  // Load search results based on scope
+  useEffect(() => {
+    if (!searchQuery || searchQuery.length < 2) {
       setProducts([])
       setBrands([])
-      setFlavorCategories([])
-      setHasMoreProducts(false)
       setShowAllProducts(false)
-      setLoading(false)
       return
     }
 
-    setLoading(true)
-    setError(null)
-
-    try {
-      // Load initial products
-      const initialProducts = await fetchProducts(1)
-      setProducts(initialProducts)
-      setProductPage(1)
-
-      // Load brands and flavors in parallel
-      await Promise.all([
-        fetchBrands(),
-        fetchFlavors()
-      ])
-    } catch (err) {
-      console.error('Unexpected error in loadSearchResults:', err)
-      setError('An unexpected error occurred: ' + (err instanceof Error ? err.message : String(err)))
-    } finally {
-      setLoading(false)
+    if (scope === 'products') {
+      fetchProducts()
+    } else if (scope === 'brands') {
+      fetchBrands()
     }
-  }, [searchQuery, fetchProducts, fetchBrands, fetchFlavors])
-
-  // Load more products
-  const loadMoreProducts = useCallback(async () => {
-    if (loadingRef.current || !hasMoreProducts || !searchQuery) return
-
-    const nextPage = productPage + 1
-    const newProducts = await fetchProducts(nextPage)
-
-    if (newProducts.length > 0) {
-      setProducts(prev => {
-        const existingIds = new Set(prev.map(p => p.id))
-        const uniqueNewProducts = newProducts.filter(p => !existingIds.has(p.id))
-        return [...prev, ...uniqueNewProducts]
-      })
-      setProductPage(nextPage)
-    } else {
-      setHasMoreProducts(false)
-    }
-  }, [productPage, hasMoreProducts, searchQuery, fetchProducts])
-
-  const debouncedLoadMore = useDebounce(loadMoreProducts, 300)
-
-  // Handle show more products
-  const handleShowMoreProducts = useCallback(async () => {
-    if (loadingMore || !hasMoreProducts || !searchQuery) return
-
-    setLoadingMore(true)
-
-    try {
-      const nextPage = productPage + 1
-      const newProducts = await fetchProducts(nextPage)
-
-      if (newProducts.length > 0) {
-        setProducts(prev => {
-          const existingIds = new Set(prev.map(p => p.id))
-          const uniqueNewProducts = newProducts.filter(p => !existingIds.has(p.id))
-          return [...prev, ...uniqueNewProducts]
-        })
-        setProductPage(nextPage)
-        // Show all products that have been loaded
-        setShowAllProducts(true)
-      } else {
-        setHasMoreProducts(false)
-      }
-    } catch (err) {
-      console.error('Error loading more products:', err)
-      setError('Error loading more products: ' + (err instanceof Error ? err.message : String(err)))
-    } finally {
-      setLoadingMore(false)
-    }
-  }, [productPage, hasMoreProducts, searchQuery, fetchProducts])
-
-  // Initial load and search query changes
-  useEffect(() => {
-    loadSearchResults()
-  }, [loadSearchResults])
-
-  // Infinite scroll for products
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop >=
-        document.documentElement.scrollHeight - 100 &&
-        !loadingRef.current &&
-        hasMoreProducts &&
-        searchQuery &&
-        debouncedLoadMore
-      ) {
-        debouncedLoadMore()
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [debouncedLoadMore, hasMoreProducts, searchQuery])
+  }, [searchQuery, scope, fetchProducts, fetchBrands])
 
   if (error) {
     return (
-      <div className="text-center text-red-500">
+      <div className="text-center text-red-500 py-8">
         {error}
       </div>
     )
   }
 
-  if (loading && !products.length && !brands.length && !flavorCategories.length) {
+  if (loading && products.length === 0 && brands.length === 0) {
     return (
-      <div className="text-center text-muted-foreground">
+      <div className="text-center text-muted-foreground py-8">
         Loading search results...
       </div>
     )
   }
 
   // Check if any results exist
-  const hasAnyResults = products.length > 0 || brands.length > 0 || flavorCategories.length > 0
+  const hasAnyResults = products.length > 0 || brands.length > 0
 
-  if (!hasAnyResults && !loading) {
+  if (!hasAnyResults && !loading && searchQuery.length >= 2) {
+    const scopeText = scope === 'products' ? 'products' : 'brands'
     return (
-      <div className="text-center text-muted-foreground">
-        No results found for "{searchQuery}". Try searching for a product name, brand, or flavor.
+      <div className="text-center text-muted-foreground py-8">
+        No {scopeText} found for "{searchQuery}". Try a different search term.
       </div>
     )
   }
@@ -532,85 +394,36 @@ export function SearchResults({ searchQuery }: SearchResultsProps) {
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       {/* Products Section */}
-      {products.length > 0 && (
+      {scope === 'products' && products.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-primary">
             Products ({products.length})
           </h2>
-          <div className="grid gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {products.slice(0, showAllProducts ? products.length : INITIAL_PRODUCTS_COUNT).map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <CompactProductCard key={product.id} product={product} />
             ))}
           </div>
-          {loading && (
-            <div className="text-center py-4 text-muted-foreground">
-              Loading search results...
-            </div>
-          )}
           {!showAllProducts && products.length > INITIAL_PRODUCTS_COUNT && (
-            <div className="text-center">
+            <div className="text-center pt-4">
               <button
-                onClick={handleShowMoreProducts}
-                disabled={loadingMore}
-                className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => setShowAllProducts(true)}
+                className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
               >
-                {loadingMore ? 'Loading...' : 'Show More Products'}
+                Show All Products ({products.length})
               </button>
-            </div>
-          )}
-          {showAllProducts && !hasMoreProducts && products.length > INITIAL_PRODUCTS_COUNT && (
-            <div className="text-center py-4 text-muted-foreground">
-              No more products to load
             </div>
           )}
         </div>
       )}
 
       {/* Brands Section */}
-      {brands.length > 0 && (
+      {scope === 'brands' && brands.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-primary">
             Brands ({brands.length})
           </h2>
           <BrandsGrid brands={brands} />
-        </div>
-      )}
-
-      {/* Flavors Section */}
-      {flavorCategories.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-primary">
-            Flavors ({flavorCategories.reduce((acc, cat) => acc + cat.matchingTags.length, 0)} matching tags)
-          </h2>
-          <div className="space-y-6">
-            {flavorCategories.map((category) => (
-              <div
-                key={category.category}
-                className="rounded-xl bg-card shadow-sm ring-1 ring-border overflow-hidden"
-              >
-                <button
-                  className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-accent sm:px-6 sm:py-4"
-                >
-                  <span className="text-base font-medium text-foreground sm:text-lg">
-                    {category.categoryDisplayName}
-                  </span>
-                </button>
-
-                <div className="px-4 py-3 border-t border-border sm:px-6 sm:py-4">
-                  <div className="flex flex-wrap gap-2">
-                    {category.matchingTags.map((tag: string) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       )}
     </div>
