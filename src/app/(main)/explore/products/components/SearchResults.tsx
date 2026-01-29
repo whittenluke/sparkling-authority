@@ -34,14 +34,36 @@ type Product = {
   ratingCount: number
 }
 
+type SupabaseBrandData = {
+  id: string
+  name: string
+  slug: string
+}
+
 type SupabaseProductData = {
   id: string
   name: string
   slug: string
   flavor_tags: string[] | null
   thumbnail: string | null
-  brand: Brand | Brand[]
+  brand: SupabaseBrandData | SupabaseBrandData[]
   reviews?: Array<{ overall_rating: number }> | null
+}
+
+// Helper to convert SupabaseProductData to ProductWithReviews format
+function toProductWithReviews(product: SupabaseProductData): {
+  id: string
+  name: string
+  slug: string
+  flavor_tags: string[] | null
+  thumbnail: string | null
+  brand: SupabaseBrandData | SupabaseBrandData[]
+  reviews?: Array<{ overall_rating: number }>
+} {
+  return {
+    ...product,
+    reviews: product.reviews ?? undefined
+  }
 }
 
 const INITIAL_PRODUCTS_COUNT = 16
@@ -238,14 +260,15 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
       ]
 
       // Transform products with ratings
-      const transformedProducts = allMatchingProducts.map(product => {
+      const transformedProducts: Product[] = allMatchingProducts.map(product => {
         const brand = Array.isArray(product.brand) ? product.brand[0] : product.brand
-        const productWithRatings = transformProductWithRatings(product, meanRating)
+        const productWithReviews = toProductWithReviews(product)
+        const productWithRatings = transformProductWithRatings(productWithReviews, meanRating)
 
         return {
-          id: productWithRatings.id,
-          name: productWithRatings.name,
-          slug: productWithRatings.slug,
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
           brand: {
             id: brand.id,
             name: brand.name,
@@ -256,7 +279,7 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
             productCount: 0,
             isProductLine: false
           },
-          thumbnail: productWithRatings.thumbnail,
+          thumbnail: product.thumbnail,
           trueAverage: productWithRatings.trueAverage,
           ratingCount: productWithRatings.ratingCount
         }
