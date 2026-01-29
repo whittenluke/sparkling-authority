@@ -42,6 +42,8 @@ interface Product {
   name: string
   slug: string
   verdict: string | null
+  review_full?: string | null
+  brand_id?: string
   brands: {
     id: string
     name: string
@@ -51,6 +53,7 @@ interface Product {
   flavor_tags: string[] | null
   carbonation_level: number
   is_discontinued: boolean
+  review_status?: string | null
   created_at: string
   reviews?: Array<{ overall_rating: number }>
   trueAverage?: number
@@ -184,6 +187,21 @@ export default function AdminBrandsProducts() {
   const [productFormError, setProductFormError] = useState<string | null>(null)
   const [productSuccessMessage, setProductSuccessMessage] = useState<string | null>(null)
   const [productValidationErrors, setProductValidationErrors] = useState<Record<string, string | undefined>>({})
+
+  // Edit product modal state
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const [showEditProductModal, setShowEditProductModal] = useState(false)
+  const [editProductName, setEditProductName] = useState('')
+  const [editProductBrandId, setEditProductBrandId] = useState('')
+  const [editProductReviewStatus, setEditProductReviewStatus] = useState<string>('needs_review')
+  const [editProductCarbonationLevel, setEditProductCarbonationLevel] = useState<number>(5)
+  const [editProductIsDiscontinued, setEditProductIsDiscontinued] = useState(false)
+  const [editFormError, setEditFormError] = useState<string | null>(null)
+  const [editSuccessMessage, setEditSuccessMessage] = useState<string | null>(null)
+  const [editValidationErrors, setEditValidationErrors] = useState<Record<string, string | undefined>>({})
+  const [isSubmittingEdit, setIsSubmittingEdit] = useState(false)
+  const [editProductVerdict, setEditProductVerdict] = useState('')
+  const [editProductReviewFull, setEditProductReviewFull] = useState('')
 
   // Pagination state
   const [brandsCurrentPage, setBrandsCurrentPage] = useState(1)
@@ -349,10 +367,13 @@ export default function AdminBrandsProducts() {
           name,
           slug,
           verdict,
+          review_full,
+          brand_id,
           flavor_categories,
           flavor_tags,
           carbonation_level,
           is_discontinued,
+          review_status,
           created_at,
           brands (
             id,
@@ -830,6 +851,81 @@ export default function AdminBrandsProducts() {
     }
   }
 
+  const openEditProductModal = (product: Product) => {
+    setEditingProduct(product)
+    setEditProductName(product.name)
+    setEditProductBrandId(product.brand_id ?? product.brands[0]?.id ?? '')
+    setEditProductReviewStatus(product.review_status ?? 'needs_review')
+    setEditProductCarbonationLevel(product.carbonation_level)
+    setEditProductIsDiscontinued(product.is_discontinued)
+    setEditProductVerdict(product.verdict ?? '')
+    setEditProductReviewFull(product.review_full ?? '')
+    setEditFormError(null)
+    setEditSuccessMessage(null)
+    setEditValidationErrors({})
+    setShowEditProductModal(true)
+  }
+
+  const validateEditProductForm = () => {
+    const errors: Record<string, string> = {}
+    if (!editProductName.trim()) errors.editProductName = 'Product name is required.'
+    if (!editProductBrandId) errors.editProductBrandId = 'Brand is required.'
+    if (editProductCarbonationLevel < 1 || editProductCarbonationLevel > 10) {
+      errors.editProductCarbonationLevel = 'Carbonation level must be between 1 and 10.'
+    }
+    setEditValidationErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  const handleUpdateProduct = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setEditFormError(null)
+    setEditSuccessMessage(null)
+    setEditValidationErrors({})
+    if (!editingProduct) return
+    if (!validateEditProductForm()) return
+
+    setIsSubmittingEdit(true)
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .update({
+          name: editProductName.trim(),
+          brand_id: editProductBrandId,
+          verdict: editProductVerdict.trim() || null,
+          review_full: editProductReviewFull.trim() || null,
+          review_status: editProductReviewStatus,
+          carbonation_level: editProductCarbonationLevel,
+          is_discontinued: editProductIsDiscontinued,
+        })
+        .eq('id', editingProduct.id)
+        .select('id')
+        .single()
+
+      if (error) {
+        setEditFormError(error.message ?? 'Failed to update product.')
+        return
+      }
+
+      if (!data) {
+        setEditFormError('Update did not apply; you may not have permission.')
+        return
+      }
+
+      setEditSuccessMessage('Product updated successfully!')
+      await loadProducts()
+      setTimeout(() => {
+        setShowEditProductModal(false)
+        setEditingProduct(null)
+      }, 1500)
+    } catch (err) {
+      console.error('Unexpected error updating product:', err)
+      setEditFormError('An unexpected error occurred.')
+    } finally {
+      setIsSubmittingEdit(false)
+    }
+  }
+
   // Load initial data on mount - load both brands and products so counts are accurate
   useEffect(() => {
     async function loadInitialData() {
@@ -1155,7 +1251,11 @@ export default function AdminBrandsProducts() {
               </thead>
               <tbody className="divide-y divide-border">
                 {products.map((product) => (
-                  <tr key={product.id} className="hover:bg-muted/50">
+                  <tr
+                    key={product.id}
+                    className="hover:bg-muted/50 cursor-pointer"
+                    onClick={() => openEditProductModal(product)}
+                  >
                     <td className="px-3 py-2">
                       <div>
                         <div className="text-sm font-medium text-foreground">{product.name}</div>
@@ -1181,7 +1281,13 @@ export default function AdminBrandsProducts() {
                       )}
                     </td>
                     <td className="px-3 py-2 text-sm text-muted-foreground">
-                      —
+                      {product.review_status === 'review_complete'
+                        ? 'Review complete'
+                        : product.review_status === 'blocked'
+                          ? 'Blocked'
+                          : product.review_status === 'needs_review'
+                            ? 'Needs review'
+                            : '—'}
                     </td>
                     <td className="px-3 py-2 text-sm text-foreground">
                       Level {product.carbonation_level}
@@ -1195,15 +1301,18 @@ export default function AdminBrandsProducts() {
                         {!product.is_discontinued ? 'Available' : 'Discontinued'}
                       </span>
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center space-x-2">
                         <button
+                          type="button"
                           className="text-muted-foreground hover:text-foreground p-1"
                           title="Edit product"
+                          onClick={() => openEditProductModal(product)}
                         >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
+                          type="button"
                           className="text-muted-foreground hover:text-red-600 p-1"
                           title="Delete product"
                         >
@@ -1434,6 +1543,204 @@ export default function AdminBrandsProducts() {
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Creating...' : (editingBrand ? 'Update Brand' : 'Create Brand')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Product Modal */}
+      {showEditProductModal && editingProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md sm:max-w-xl lg:max-w-2xl max-h-[90vh] flex flex-col rounded-lg bg-card shadow-lg overflow-hidden">
+            <div className="flex items-center justify-between shrink-0 p-6 pb-4">
+              <h2 className="text-lg font-semibold text-foreground">Edit Product</h2>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEditProductModal(false)
+                  setEditingProduct(null)
+                }}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <CloseIcon className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form className="flex flex-col flex-1 min-h-0 p-6 pt-0" onSubmit={handleUpdateProduct}>
+              <div className="overflow-y-auto flex-1 min-h-0 space-y-4 pr-3">
+              <div>
+                <label htmlFor="editProductName" className="block text-sm font-medium text-foreground mb-1">
+                  Name *
+                </label>
+                <input
+                  type="text"
+                  id="editProductName"
+                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                  placeholder="Product name"
+                  value={editProductName}
+                  onChange={(e) => setEditProductName(e.target.value)}
+                  required
+                />
+                {editValidationErrors.editProductName && (
+                  <p className="text-sm text-red-500 mt-1">{editValidationErrors.editProductName}</p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="editProductSlug" className="block text-sm font-medium text-foreground mb-1">
+                  Slug
+                </label>
+                <input
+                  type="text"
+                  id="editProductSlug"
+                  readOnly
+                  disabled
+                  className="w-full px-3 py-2 rounded-md border border-input bg-muted text-muted-foreground text-sm cursor-not-allowed"
+                  value={editingProduct.slug}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="editProductVerdict" className="block text-sm font-medium text-foreground mb-1">
+                  Verdict
+                </label>
+                <textarea
+                  id="editProductVerdict"
+                  className="w-full min-h-[100px] resize rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  placeholder="Brief verdict or review snippet"
+                  value={editProductVerdict}
+                  onChange={(e) => setEditProductVerdict(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {editProductVerdict.trim() ? editProductVerdict.trim().split(/\s+/).filter(Boolean).length : 0} words, {editProductVerdict.length} characters
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="editProductReviewFull" className="block text-sm font-medium text-foreground mb-1">
+                  Review full
+                </label>
+                <textarea
+                  id="editProductReviewFull"
+                  className="w-full min-h-[100px] resize rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  placeholder="Full review content; double space for paragraphs"
+                  value={editProductReviewFull}
+                  onChange={(e) => setEditProductReviewFull(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {editProductReviewFull.trim() ? editProductReviewFull.trim().split(/\s+/).filter(Boolean).length : 0} words, {editProductReviewFull.length} characters
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="editProductBrandId" className="block text-sm font-medium text-foreground mb-1">
+                  Brand *
+                </label>
+                <select
+                  id="editProductBrandId"
+                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                  value={editProductBrandId}
+                  onChange={(e) => setEditProductBrandId(e.target.value)}
+                  required
+                >
+                  <option value="">Select a brand</option>
+                  {allBrands.map((brand) => (
+                    <option key={brand.id} value={brand.id}>
+                      {brand.name}
+                    </option>
+                  ))}
+                </select>
+                {editValidationErrors.editProductBrandId && (
+                  <p className="text-sm text-red-500 mt-1">{editValidationErrors.editProductBrandId}</p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="editProductReviewStatus" className="block text-sm font-medium text-foreground mb-1">
+                  Review Status
+                </label>
+                <select
+                  id="editProductReviewStatus"
+                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                  value={editProductReviewStatus}
+                  onChange={(e) => setEditProductReviewStatus(e.target.value)}
+                >
+                  <option value="needs_review">Needs review</option>
+                  <option value="review_complete">Review complete</option>
+                  <option value="blocked">Blocked</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="editProductCarbonationLevel" className="block text-sm font-medium text-foreground mb-1">
+                  Carbonation Level * (1-10)
+                </label>
+                <select
+                  id="editProductCarbonationLevel"
+                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                  value={editProductCarbonationLevel}
+                  onChange={(e) => setEditProductCarbonationLevel(Number(e.target.value))}
+                  required
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+                {editValidationErrors.editProductCarbonationLevel && (
+                  <p className="text-sm text-red-500 mt-1">{editValidationErrors.editProductCarbonationLevel}</p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="editProductStatus" className="block text-sm font-medium text-foreground mb-1">
+                  Status
+                </label>
+                <select
+                  id="editProductStatus"
+                  className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                  value={editProductIsDiscontinued ? 'discontinued' : 'available'}
+                  onChange={(e) => setEditProductIsDiscontinued(e.target.value === 'discontinued')}
+                >
+                  <option value="available">Available</option>
+                  <option value="discontinued">Discontinued</option>
+                </select>
+              </div>
+              </div>
+
+              {editFormError && (
+                <div className="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+                  {editFormError}
+                </div>
+              )}
+
+              {editSuccessMessage && (
+                <div className="rounded-md bg-green-50 p-3 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                  {editSuccessMessage}
+                </div>
+              )}
+
+              <div className="flex justify-end space-x-3 pt-4 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditProductModal(false)
+                    setEditingProduct(null)
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+                  disabled={isSubmittingEdit}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90"
+                  disabled={isSubmittingEdit}
+                >
+                  {isSubmittingEdit ? 'Updating...' : 'Update Product'}
                 </button>
               </div>
             </form>
