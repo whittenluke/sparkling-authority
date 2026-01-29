@@ -30,7 +30,7 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
   return (
     <Link
       href={`/explore/brands/${product.brand.slug}/products/${product.slug}`}
-      className="group block rounded-lg bg-card p-3 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all"
+      className="group block rounded-lg bg-card p-3 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all overflow-hidden"
     >
       {/* Product Image */}
       <div className="aspect-square w-full rounded-md overflow-hidden mb-2 bg-muted flex items-center justify-center">
@@ -50,7 +50,7 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
       </div>
 
       {/* Product Info */}
-      <div className="space-y-1">
+      <div className="space-y-1 min-w-0">
         {/* Brand Name */}
         <p className="text-xs text-muted-foreground truncate">
           {product.brand.name}
@@ -62,22 +62,22 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
         </h3>
 
         {/* Rating */}
-        <div className="flex items-center gap-1.5 pt-1">
+        <div className="flex items-center gap-0.5 pt-1 min-w-0">
           {typeof product.trueAverage === 'number' ? (
             <>
-              <span className="text-xs font-medium text-foreground">
+              <span className="text-xs font-medium text-foreground whitespace-nowrap">
                 {product.trueAverage.toFixed(1)}
               </span>
-              <div className="flex gap-0.5">
+              <div className="flex gap-0.5 flex-shrink-0">
                 {getStarFillPercentages(product.trueAverage).map((percentage, index) => (
                   <PartialStar
                     key={index}
                     fillPercentage={percentage}
-                    size={12}
+                    size={11}
                   />
                 ))}
               </div>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground whitespace-nowrap">
                 ({product.ratingCount})
               </span>
             </>

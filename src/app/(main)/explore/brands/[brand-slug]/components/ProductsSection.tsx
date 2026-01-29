@@ -65,71 +65,74 @@ export function ProductsSection({ products, productLines }: Props) {
   }, [filteredProducts, sortBy])
 
   return (
-    <div>
-      {/* Product Line Filter */}
-      {productLines.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-medium text-foreground mb-3">Product Lines</h2>
-          <div className="flex flex-wrap gap-2">
-            {productLines.length > 1 && (
-              <button
-                onClick={() => setSelectedLineId(null)}
-                className={`
-                  px-3 py-1 rounded-full text-sm font-medium transition-colors
-                  ${selectedLineId === null
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-accent text-accent-foreground hover:bg-accent/80'
-                  }
-                `}
-              >
-                All Products
-              </button>
-            )}
-            {productLines.map((line) => (
-              <button
-                key={line.id}
-                onClick={() => setSelectedLineId(line.id)}
-                className={`
-                  px-3 py-1 rounded-full text-sm font-medium transition-colors
-                  ${selectedLineId === line.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-accent text-accent-foreground hover:bg-accent/80'
-                  }
-                `}
-              >
-                {line.name}
-              </button>
-            ))}
+    <div className="mt-8">
+      {/* Product Line Filter and Header - with padding */}
+      <div className="px-4 sm:px-6 lg:px-8">
+        {/* Product Line Filter */}
+        {productLines.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-medium text-foreground mb-4">Product Lines</h2>
+            <div className="flex flex-wrap gap-2">
+              {productLines.length > 1 && (
+                <button
+                  onClick={() => setSelectedLineId(null)}
+                  className={`
+                    px-3 py-1 rounded-full text-sm font-medium transition-colors
+                    ${selectedLineId === null
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-accent text-accent-foreground hover:bg-accent/80'
+                    }
+                  `}
+                >
+                  All Products
+                </button>
+              )}
+              {productLines.map((line) => (
+                <button
+                  key={line.id}
+                  onClick={() => setSelectedLineId(line.id)}
+                  className={`
+                    px-3 py-1 rounded-full text-sm font-medium transition-colors
+                    ${selectedLineId === line.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-accent text-accent-foreground hover:bg-accent/80'
+                    }
+                  `}
+                >
+                  {line.name}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Products Header with Sort */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-foreground">
-          Products ({sortedProducts.length})
-        </h2>
-        <div className="flex items-center gap-2">
-          <label htmlFor="sort-select" className="text-sm text-muted-foreground">
-            Sort:
-          </label>
-          <div className="relative">
-            <select
-              id="sort-select"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="appearance-none bg-background border border-input rounded-lg px-3 py-1.5 pr-8 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary cursor-pointer"
-            >
-              <option value="rating">Rating</option>
-              <option value="name">Name A-Z</option>
-            </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        {/* Products Header with Sort */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-foreground">
+            Products ({sortedProducts.length})
+          </h2>
+          <div className="flex items-center gap-2">
+            <label htmlFor="sort-select" className="text-sm text-muted-foreground">
+              Sort:
+            </label>
+            <div className="relative">
+              <select
+                id="sort-select"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                className="appearance-none bg-background border border-input rounded-lg px-3 py-1.5 pr-8 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary cursor-pointer"
+              >
+                <option value="rating">Rating</option>
+                <option value="name">Name A-Z</option>
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      {/* Products Grid - full width, edge-to-edge with padding only on cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 px-4 sm:px-6 lg:px-8">
         {sortedProducts.map((product) => (
           <CompactProductCard
             key={product.id}
