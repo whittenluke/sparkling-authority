@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Then get the product using both brand ID and product slug
   const { data: product } = await supabase
     .from('products')
-    .select('name, description')
+    .select('name, verdict')
     .eq('brand_id', brand.id)
     .eq('slug', productSlug)
     .single()
@@ -58,17 +58,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${product.name} by ${brand.name} | Sparkling Authority`,
-    description: product.description || `Discover ${product.name} by ${brand.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
+    description: product.verdict || `Discover ${product.name} by ${brand.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
     openGraph: {
       title: `${product.name} by ${brand.name}`,
-      description: product.description || `Discover ${product.name} by ${brand.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
+      description: product.verdict || `Discover ${product.name} by ${brand.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
       type: 'website',
       url: `https://sparklingauthority.com/explore/brands/${brandSlug}/products/${productSlug}`,
     },
     twitter: {
       card: 'summary_large_image',
       title: `${product.name} by ${brand.name}`,
-      description: product.description || `Discover ${product.name} by ${brand.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
+      description: product.verdict || `Discover ${product.name} by ${brand.name} on Sparkling Authority. Read reviews, ratings, and detailed information about this sparkling water product.`,
     }
   }
 }
@@ -336,14 +336,14 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
               </div>
 
               {/* Sparkling Authority Review Header */}
-              {product.description && (
+              {product.verdict && (
                 <h2 className="mt-6 text-xl font-semibold text-foreground">Sparkling Authority Review</h2>
               )}
 
-              {/* Description */}
-              {product.description && (
+              {/* Verdict */}
+              {product.verdict && (
                 <p className="mt-4 text-muted-foreground">
-                  {product.description}
+                  {product.verdict}
                 </p>
               )}
 

@@ -38,7 +38,7 @@ interface Product {
   id: string
   name: string
   slug: string
-  description: string | null
+  verdict: string | null
   brands: {
     id: string
     name: string
@@ -68,7 +68,7 @@ type ProductInsertPayload = {
   brand_id: string
   name: string
   slug: string
-  description: string | null
+  verdict: string | null
   flavor_categories: string[] | null
   flavor_tags: string[] | null
   carbonation_level: number
@@ -157,7 +157,7 @@ export default function AdminBrandsProducts() {
   const [productName, setProductName] = useState('')
   const [productSlug, setProductSlug] = useState('')
   const [productLineId, setProductLineId] = useState<string | null>(null)
-  const [productDescription, setProductDescription] = useState('')
+  const [productVerdict, setProductVerdict] = useState('')
   const [flavorCategories, setFlavorCategories] = useState<string[]>([])
   const [flavorTags, setFlavorTags] = useState<string[]>([])
   const [carbonationLevel, setCarbonationLevel] = useState<number | ''>('')
@@ -240,7 +240,7 @@ export default function AdminBrandsProducts() {
     if (!selectedBrandId) errors.selectedBrandId = 'Brand is required.'
     if (!productName.trim()) errors.productName = 'Product Name is required.'
     if (!productSlug.trim()) errors.productSlug = 'Slug is required.'
-    if (!productDescription.trim()) errors.productDescription = 'Description is required.'
+    if (!productVerdict.trim()) errors.productVerdict = 'Verdict is required.'
     if (!carbonationLevel || isNaN(Number(carbonationLevel)) || Number(carbonationLevel) < 1 || Number(carbonationLevel) > 10) {
       errors.carbonationLevel = 'Carbonation Level is required and must be between 1 and 10.'
     }
@@ -342,7 +342,7 @@ export default function AdminBrandsProducts() {
           id,
           name,
           slug,
-          description,
+          verdict,
           flavor_categories,
           flavor_tags,
           carbonation_level,
@@ -359,7 +359,7 @@ export default function AdminBrandsProducts() {
 
       // Apply search filter if present
       if (searchTerm) {
-        query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
+        query = query.or(`name.ilike.%${searchTerm}%,verdict.ilike.%${searchTerm}%`)
       }
 
       const { data: productsData, error: productsError, count } = await query
@@ -586,7 +586,7 @@ export default function AdminBrandsProducts() {
         brand_id: selectedBrandId,
         name: productName.trim(),
         slug: uniqueSlug,
-        description: productDescription.trim() || null,
+        verdict: productVerdict.trim() || null,
         flavor_categories: flavorCategories.length > 0 ? flavorCategories : null,
         flavor_tags: flavorTags.length > 0 ? flavorTags : null,
         carbonation_level: Number(carbonationLevel),
@@ -635,7 +635,7 @@ export default function AdminBrandsProducts() {
       setProductName('')
       setProductSlug('')
       setProductLineId(null)
-      setProductDescription('')
+      setProductVerdict('')
       setFlavorCategories([])
       setFlavorTags([])
       setCarbonationLevel('')
@@ -698,7 +698,7 @@ export default function AdminBrandsProducts() {
         })
 
         // Validate required fields
-        if (!row.brand_id || !row.name || !row.slug || !row.description || !row.carbonation_level) {
+        if (!row.brand_id || !row.name || !row.slug || !row.verdict || !row.carbonation_level) {
           errors.push(`Row ${i + 1}: Missing required fields`)
           return
         }
@@ -769,7 +769,7 @@ export default function AdminBrandsProducts() {
               name: row.name.trim(),
               slug: uniqueSlug,
               product_line_id: row.product_line_id || null,
-              description: row.description.trim(),
+              verdict: row.verdict.trim(),
               flavor_categories: flavorCategories && flavorCategories.length > 0 ? flavorCategories : null,
               flavor_tags: flavorTags && flavorTags.length > 0 ? flavorTags : null,
               carbonation_level: Number(row.carbonation_level),
@@ -906,7 +906,7 @@ export default function AdminBrandsProducts() {
                 setProductName('')
                 setProductSlug('')
                 setProductLineId(null)
-                setProductDescription('')
+                setProductVerdict('')
                 setFlavorCategories([])
                 setFlavorTags([])
                 setCarbonationLevel('')
@@ -1434,7 +1434,7 @@ export default function AdminBrandsProducts() {
                     setProductName('')
                     setProductSlug('')
                     setProductLineId(null)
-                    setProductDescription('')
+                    setProductVerdict('')
                     setFlavorCategories([])
                     setFlavorTags([])
                     setCarbonationLevel('')
@@ -1550,22 +1550,22 @@ export default function AdminBrandsProducts() {
                   </div>
                 )}
 
-                {/* Description */}
+                {/* Verdict */}
                 <div>
-                  <label htmlFor="productDescription" className="block text-sm font-medium text-foreground mb-1">
-                    Description *
+                  <label htmlFor="productVerdict" className="block text-sm font-medium text-foreground mb-1">
+                    Verdict *
                   </label>
                   <textarea
-                    id="productDescription"
+                    id="productVerdict"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
                     rows={3}
-                    placeholder="Brief description of the product"
-                    value={productDescription}
-                    onChange={(e) => setProductDescription(e.target.value)}
+                    placeholder="Brief verdict/review of the product"
+                    value={productVerdict}
+                    onChange={(e) => setProductVerdict(e.target.value)}
                     required
                   />
-                  {productValidationErrors.productDescription && (
-                    <p className="text-sm text-red-500 mt-1">{productValidationErrors.productDescription}</p>
+                  {productValidationErrors.productVerdict && (
+                    <p className="text-sm text-red-500 mt-1">{productValidationErrors.productVerdict}</p>
                   )}
                 </div>
 
@@ -1869,7 +1869,7 @@ export default function AdminBrandsProducts() {
                     <div>
                       <p className="font-medium mb-1">All columns (copy this as first row for full import):</p>
                       <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded text-xs font-mono break-all">
-                        brand_id,name,slug,description,carbonation_level,product_line_id,flavor_categories,flavor_tags,serving_size,calories,total_fat,sodium,total_carbohydrates,total_sugars,protein,ingredients,amazon_link,walmart_link,instacart_link,product_website_link
+                        brand_id,name,slug,verdict,carbonation_level,product_line_id,flavor_categories,flavor_tags,serving_size,calories,total_fat,sodium,total_carbohydrates,total_sugars,protein,ingredients,amazon_link,walmart_link,instacart_link,product_website_link
                       </code>
                     </div>
                     <div className="text-xs space-y-1">

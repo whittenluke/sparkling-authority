@@ -87,7 +87,8 @@ export interface Database {
           id: string
           brand_id: string
           name: string
-          description: string | null
+          verdict: string | null
+          review_full: string | null
           flavor_tags: string[] | null
           flavor_categories: string[] | null
           thumbnail: string | null
@@ -103,7 +104,8 @@ export interface Database {
           id?: string
           brand_id: string
           name: string
-          description?: string | null
+          verdict?: string | null
+          review_full?: string | null
           flavor_tags?: string[] | null
           flavor_categories?: string[] | null
           thumbnail?: string | null
@@ -119,7 +121,8 @@ export interface Database {
           id?: string
           brand_id?: string
           name?: string
-          description?: string | null
+          verdict?: string | null
+          review_full?: string | null
           flavor_tags?: string[] | null
           flavor_categories?: string[] | null
           thumbnail?: string | null
