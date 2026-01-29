@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Crown, Cherry, Grid3x3 } from 'lucide-react'
+import { Crown, Cherry, Grid3x3, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { PostgrestError } from '@supabase/supabase-js'
 import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
@@ -327,32 +327,47 @@ export default async function Home() {
     return (
       <>
         {/* Exploration Section */}
-        <div className="">
-          <h2 className="text-center font-clash-display text-3xl font-medium text-primary mb-8">
+        <div className="py-16">
+          <h2 className="text-center font-clash-display text-3xl font-medium text-primary mb-12">
             Explore sparkling waters by
           </h2>
 
           {/* Main Exploration Cards */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <Link href="/explore/brands" className="group relative block rounded-2xl bg-card p-6 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3 mx-auto">
-                <Crown className="h-6 w-6" />
+            <Link href="/explore/brands" className="group relative flex flex-col items-center text-center rounded-2xl bg-card p-10 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all min-h-[280px]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 text-primary mb-6">
+                <Crown className="h-12 w-12" />
               </div>
-              <h3 className="text-lg font-clash-display font-medium text-primary text-center">Brand</h3>
+              <h3 className="text-2xl font-clash-display font-semibold text-primary mb-2">Brand</h3>
+              <p className="text-base font-normal text-muted-foreground mb-6">Browse by maker</p>
+              <div className="mt-auto inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
+                <span>Explore</span>
+                <ArrowRight className="h-5 w-5" />
+              </div>
             </Link>
 
-            <Link href="/explore/flavors" className="group relative block rounded-2xl bg-card p-6 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3 mx-auto">
-                <Cherry className="h-6 w-6" />
+            <Link href="/explore/flavors" className="group relative flex flex-col items-center text-center rounded-2xl bg-card p-10 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all min-h-[280px]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 text-primary mb-6">
+                <Cherry className="h-12 w-12" />
               </div>
-              <h3 className="text-lg font-clash-display font-medium text-primary text-center">Flavor</h3>
+              <h3 className="text-2xl font-clash-display font-semibold text-primary mb-2">Flavor</h3>
+              <p className="text-base font-normal text-muted-foreground mb-6">Discover by taste</p>
+              <div className="mt-auto inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
+                <span>Explore</span>
+                <ArrowRight className="h-5 w-5" />
+              </div>
             </Link>
 
-            <Link href="/explore/products" className="group relative block rounded-2xl bg-card p-6 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary mb-3 mx-auto">
-                <Grid3x3 className="h-6 w-6" />
+            <Link href="/explore/products" className="group relative flex flex-col items-center text-center rounded-2xl bg-card p-10 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all min-h-[280px]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 text-primary mb-6">
+                <Grid3x3 className="h-12 w-12" />
               </div>
-              <h3 className="text-lg font-clash-display font-medium text-primary text-center">All Products</h3>
+              <h3 className="text-2xl font-clash-display font-semibold text-primary mb-2">Catalog</h3>
+              <p className="text-base font-normal text-muted-foreground mb-6">Search all products</p>
+              <div className="mt-auto inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
+                <span>Explore</span>
+                <ArrowRight className="h-5 w-5" />
+              </div>
             </Link>
           </div>
         </div>
