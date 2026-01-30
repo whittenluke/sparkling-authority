@@ -35,7 +35,7 @@ export function AuthorityReviewSection({ verdict, reviewFull }: AuthorityReviewS
           {expanded && (() => {
             const [taste, carbonation, value] = parseReviewFullSections(reviewFull)
             return (
-              <div className="mt-4 rounded-lg border border-border bg-muted shadow-sm px-4 py-3">
+              <div className="mt-4 rounded-lg border border-border bg-sky-50/90 dark:bg-sky-950/20 shadow-sm px-4 py-3">
                 {taste && (
                   <>
                     <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Taste & Flavor</h3>
