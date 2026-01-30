@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Star } from 'lucide-react'
 import { PartialStar } from '@/components/ui/PartialStar'
 import { getStarFillPercentages } from '@/lib/star-utils'
 
@@ -33,38 +34,47 @@ export function ProductReviewsSection({ reviews, sessionUserId }: ProductReviews
       <h2 className="text-lg font-medium text-foreground">Reviews</h2>
 
       {reviews.length > 0 && (
-        <div className="mt-3 inline-flex rounded-lg border border-border overflow-hidden">
+        <div className="mt-3 w-fit flex flex-col gap-0.5">
           <button
             type="button"
             onClick={() => setRatingFilter(null)}
-            className={`flex flex-1 min-w-0 flex-col items-center justify-center gap-0.5 border-r border-border py-2.5 px-2 text-sm font-medium transition-colors first:rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset ${
+            className={`flex w-fit items-center gap-2 rounded py-1.5 pr-1 text-left text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset ${
               ratingFilter === null
                 ? 'bg-primary/10 text-primary'
                 : 'bg-transparent text-foreground hover:bg-muted'
             }`}
           >
-            <span>All</span>
-            <span className="text-xs text-muted-foreground tabular-nums">{reviews.length}</span>
+            <span className="w-[5.5rem]">All</span>
+            <span className="w-6 text-right text-xs text-muted-foreground tabular-nums">
+              {reviews.length}
+            </span>
           </button>
-          {RATING_OPTIONS.map((rating, index) => {
+          {RATING_OPTIONS.map((rating) => {
             const count = countForRating(rating)
             const isActive = ratingFilter === rating
-            const isLast = index === RATING_OPTIONS.length - 1
             return (
               <button
                 key={rating}
                 type="button"
                 onClick={() => setRatingFilter(rating)}
-                className={`flex flex-1 min-w-0 flex-col items-center justify-center gap-0.5 py-2.5 px-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset ${
-                  !isLast ? 'border-r border-border' : ''
-                } ${isLast ? 'rounded-r-lg' : ''} ${
+                className={`flex w-fit items-center gap-2 rounded py-1.5 pr-1 text-left text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset ${
                   isActive
                     ? 'bg-primary/10 text-primary'
                     : 'bg-transparent text-foreground hover:bg-muted'
                 }`}
               >
-                <span>{rating}★</span>
-                <span className="text-xs text-muted-foreground tabular-nums">{count}</span>
+                <span className="flex w-[5.5rem] gap-0.5" aria-hidden>
+                  {Array.from({ length: rating }, (_, i) => (
+                    <Star
+                      key={i}
+                      size={16}
+                      className="shrink-0 fill-yellow-400 text-yellow-400"
+                    />
+                  ))}
+                </span>
+                <span className="w-6 text-right text-xs text-muted-foreground tabular-nums">
+                  {count}
+                </span>
               </button>
             )
           })}
@@ -83,10 +93,10 @@ export function ProductReviewsSection({ reviews, sessionUserId }: ProductReviews
               className="rounded-lg bg-card p-4 shadow-sm ring-1 ring-border"
             >
               <div className="flex items-center gap-2">
-                <span className="font-medium text-foreground">
+                <span className="text-sm font-medium text-foreground">
                   {review.profiles?.display_name || 'Anonymous'}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   • {new Date(review.created_at).toLocaleDateString()}
                 </span>
                 {sessionUserId === review.user_id && !review.is_approved && (
@@ -105,7 +115,7 @@ export function ProductReviewsSection({ reviews, sessionUserId }: ProductReviews
                 ))}
               </div>
               {review.review_text && (
-                <p className="mt-3 text-foreground">
+                <p className="mt-3 text-sm text-foreground">
                   {review.review_text}
                 </p>
               )}

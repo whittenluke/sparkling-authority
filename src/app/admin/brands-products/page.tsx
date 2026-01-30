@@ -24,6 +24,7 @@ import Link from 'next/link'
 import { PartialStar } from '@/components/ui/PartialStar'
 import { getStarFillPercentages } from '@/lib/star-utils'
 import { calculateMeanRating, calculateProductRatings } from '@/lib/product-utils'
+import { parseReviewFullSections, joinReviewFullSections } from '@/lib/review-full-utils'
 
 interface Brand {
   id: string
@@ -225,7 +226,9 @@ export default function AdminBrandsProducts() {
   const [editValidationErrors, setEditValidationErrors] = useState<Record<string, string | undefined>>({})
   const [isSubmittingEdit, setIsSubmittingEdit] = useState(false)
   const [editProductVerdict, setEditProductVerdict] = useState('')
-  const [editProductReviewFull, setEditProductReviewFull] = useState('')
+  const [editProductReviewTaste, setEditProductReviewTaste] = useState('')
+  const [editProductReviewCarbonation, setEditProductReviewCarbonation] = useState('')
+  const [editProductReviewValue, setEditProductReviewValue] = useState('')
 
   // Pagination state
   const [brandsCurrentPage, setBrandsCurrentPage] = useState(1)
@@ -1012,7 +1015,10 @@ export default function AdminBrandsProducts() {
     setEditProductCarbonationLevel(product.carbonation_level)
     setEditProductIsDiscontinued(product.is_discontinued)
     setEditProductVerdict(product.verdict ?? '')
-    setEditProductReviewFull(product.review_full ?? '')
+    const [taste, carbonation, value] = parseReviewFullSections(product.review_full ?? null)
+    setEditProductReviewTaste(taste)
+    setEditProductReviewCarbonation(carbonation)
+    setEditProductReviewValue(value)
     setEditFormError(null)
     setEditSuccessMessage(null)
     setEditValidationErrors({})
@@ -1060,7 +1066,10 @@ export default function AdminBrandsProducts() {
           name: editProductName.trim(),
           brand_id: editProductBrandId,
           verdict: editProductVerdict.trim() || null,
-          review_full: editProductReviewFull.trim() || null,
+          review_full: (() => {
+            const joined = joinReviewFullSections(editProductReviewTaste, editProductReviewCarbonation, editProductReviewValue)
+            return joined || null
+          })(),
           review_status: editProductReviewStatus,
           carbonation_level: editProductCarbonationLevel,
           is_discontinued: editProductIsDiscontinued,
@@ -2006,18 +2015,48 @@ export default function AdminBrandsProducts() {
                 </div>
 
                 <div>
-                  <label htmlFor="editProductReviewFull" className="block text-sm font-medium text-foreground mb-1">
-                    Review full
+                  <label htmlFor="editProductReviewTaste" className="block text-sm font-medium text-foreground mb-1">
+                    Taste & Flavor
                   </label>
                   <textarea
-                    id="editProductReviewFull"
-                    className="w-full min-h-[100px] resize rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    placeholder="Full review content; double space for paragraphs"
-                    value={editProductReviewFull}
-                    onChange={(e) => setEditProductReviewFull(e.target.value)}
+                    id="editProductReviewTaste"
+                    className="w-full min-h-[80px] resize rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    placeholder="Full review section: taste and flavor"
+                    value={editProductReviewTaste}
+                    onChange={(e) => setEditProductReviewTaste(e.target.value)}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    {editProductReviewFull.trim() ? editProductReviewFull.trim().split(/\s+/).filter(Boolean).length : 0} words, {editProductReviewFull.length} characters
+                    {editProductReviewTaste.trim() ? editProductReviewTaste.trim().split(/\s+/).filter(Boolean).length : 0} words
+                  </p>
+                </div>
+                <div>
+                  <label htmlFor="editProductReviewCarbonation" className="block text-sm font-medium text-foreground mb-1">
+                    Carbonation & Mouthfeel
+                  </label>
+                  <textarea
+                    id="editProductReviewCarbonation"
+                    className="w-full min-h-[80px] resize rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    placeholder="Full review section: carbonation and mouthfeel"
+                    value={editProductReviewCarbonation}
+                    onChange={(e) => setEditProductReviewCarbonation(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {editProductReviewCarbonation.trim() ? editProductReviewCarbonation.trim().split(/\s+/).filter(Boolean).length : 0} words
+                  </p>
+                </div>
+                <div>
+                  <label htmlFor="editProductReviewValue" className="block text-sm font-medium text-foreground mb-1">
+                    Value & Use Cases
+                  </label>
+                  <textarea
+                    id="editProductReviewValue"
+                    className="w-full min-h-[80px] resize rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    placeholder="Full review section: value and use cases"
+                    value={editProductReviewValue}
+                    onChange={(e) => setEditProductReviewValue(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {editProductReviewValue.trim() ? editProductReviewValue.trim().split(/\s+/).filter(Boolean).length : 0} words
                   </p>
                 </div>
 

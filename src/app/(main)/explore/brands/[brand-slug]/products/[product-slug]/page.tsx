@@ -325,6 +325,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                     averageRating={averageRating}
                     totalRatings={ratings.length}
                     totalReviews={reviewCount}
+                    scrollToReviewsId="reviews"
                   />
                 </div>
               </div>
@@ -391,10 +392,12 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
             </div>
 
             {/* Reviews Section */}
-            <ProductReviewsSection
-              reviews={filteredReviews}
-              sessionUserId={session?.user?.id}
-            />
+            <section id="reviews" aria-label="Reviews">
+              <ProductReviewsSection
+                reviews={filteredReviews}
+                sessionUserId={session?.user?.id}
+              />
+            </section>
           </div>
         </div>
       </main>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { parseReviewFullSections } from '@/lib/review-full-utils'
 
 type AuthorityReviewSectionProps = {
   verdict: string | null
@@ -18,7 +19,7 @@ export function AuthorityReviewSection({ verdict, reviewFull }: AuthorityReviewS
   return (
     <div>
       {hasVerdict && (
-        <p className="mt-4 text-muted-foreground">
+        <p className="mt-4 text-sm text-muted-foreground">
           {verdict}
         </p>
       )}
@@ -31,13 +32,31 @@ export function AuthorityReviewSection({ verdict, reviewFull }: AuthorityReviewS
           >
             {expanded ? 'Hide full review' : 'Read full review'}
           </button>
-          {expanded && (
-            <div className="mt-4 rounded-lg border border-border bg-card shadow-sm px-4 py-3">
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                {reviewFull}
-              </p>
-            </div>
-          )}
+          {expanded && (() => {
+            const [taste, carbonation, value] = parseReviewFullSections(reviewFull)
+            return (
+              <div className="mt-4 rounded-lg border border-border bg-muted shadow-sm px-4 py-3">
+                {taste && (
+                  <>
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Taste & Flavor</h3>
+                    <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{taste}</p>
+                  </>
+                )}
+                {carbonation && (
+                  <div className={taste ? 'mt-3' : ''}>
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Carbonation & Mouthfeel</h3>
+                    <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{carbonation}</p>
+                  </div>
+                )}
+                {value && (
+                  <div className={taste || carbonation ? 'mt-3' : ''}>
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Value & Use Cases</h3>
+                    <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{value}</p>
+                  </div>
+                )}
+              </div>
+            )
+          })()}
         </>
       )}
     </div>
