@@ -49,7 +49,11 @@ interface Product {
     id: string
     name: string
     slug: string
-  } | null
+  } | {
+    id: string
+    name: string
+    slug: string
+  }[] | null
   flavor_categories: string[] | null
   flavor_tags: string[] | null
   carbonation_level: number
@@ -59,6 +63,13 @@ interface Product {
   reviews?: Array<{ overall_rating: number }>
   trueAverage?: number
   ratingCount: number
+}
+
+function getProductBrand(product: Product): { id: string; name: string; slug: string } | null {
+  const brands = product.brands
+  if (!brands) return null
+  if (Array.isArray(brands)) return brands[0] ?? null
+  return brands
 }
 
 type TabType = 'brands' | 'products'
@@ -445,8 +456,8 @@ export default function AdminBrandsProducts() {
         })
         if (sortBy === 'brand') {
           fullSorted = fullSorted.sort((a, b) => {
-            const nameA = (a.brands?.name ?? '').toLowerCase()
-            const nameB = (b.brands?.name ?? '').toLowerCase()
+            const nameA = (getProductBrand(a)?.name ?? '').toLowerCase()
+            const nameB = (getProductBrand(b)?.name ?? '').toLowerCase()
             const cmp = nameA.localeCompare(nameB)
             return sortDir === 'asc' ? cmp : -cmp
           })
@@ -996,7 +1007,7 @@ export default function AdminBrandsProducts() {
   const openEditProductModal = (product: Product) => {
     setEditingProduct(product)
     setEditProductName(product.name)
-    setEditProductBrandId(product.brand_id ?? product.brands?.id ?? '')
+    setEditProductBrandId(product.brand_id ?? getProductBrand(product)?.id ?? '')
     setEditProductReviewStatus(product.review_status ?? 'needs_review')
     setEditProductCarbonationLevel(product.carbonation_level)
     setEditProductIsDiscontinued(product.is_discontinued)
@@ -1467,7 +1478,7 @@ export default function AdminBrandsProducts() {
                     </div>
                   </td>
                   <td className="px-3 py-2 text-sm text-foreground">
-                    {product.brands?.name ?? '—'}
+                    {getProductBrand(product)?.name ?? '—'}
                   </td>
                   <td className="px-3 py-2">
                     {product.trueAverage !== undefined ? (
@@ -1522,15 +1533,18 @@ export default function AdminBrandsProducts() {
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
-                      {product.brands?.slug && (
-                        <Link
-                          href={`/explore/brands/${product.brands.slug}/products/${product.slug}`}
-                          className="text-muted-foreground hover:text-foreground p-1"
-                          title="View product"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Link>
-                      )}
+                      {(() => {
+                        const brand = getProductBrand(product)
+                        return brand?.slug ? (
+                          <Link
+                            href={`/explore/brands/${brand.slug}/products/${product.slug}`}
+                            className="text-muted-foreground hover:text-foreground p-1"
+                            title="View product"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        ) : null
+                      })()}
                     </div>
                   </td>
                 </tr>

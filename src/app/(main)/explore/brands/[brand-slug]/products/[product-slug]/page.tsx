@@ -5,14 +5,14 @@ import { WhereToBuy } from '@/components/products/WhereToBuy'
 import { AffiliateDisclosure } from '@/components/products/AffiliateDisclosure'
 import { NutritionDropdown } from '@/components/products/NutritionDropdown'
 import { IngredientsDropdown } from '@/components/products/IngredientsDropdown'
+import { AuthorityReviewSection } from '@/components/products/AuthorityReviewSection'
+import { ProductReviewsSection } from '@/components/products/ProductReviewsSection'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { Star, ChevronDown, ChevronUp } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import { PartialStar } from '@/components/ui/PartialStar'
 import discontinuedBadge from '@/components/badges/discontinued-badge.png'
-import { getStarFillPercentages } from '@/lib/star-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -210,6 +210,13 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
   const userRating = userReview?.overall_rating
   const userReviewText = userReview?.review_text || undefined
 
+  const filteredReviews =
+    ratingData?.filter(
+      r =>
+        r.review_text?.trim() &&
+        (r.is_approved || r.user_id === session?.user?.id)
+    ) ?? []
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-grow">
@@ -365,17 +372,11 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                 />
               </div>
 
-              {/* Sparkling Authority Review Header */}
-              {product.verdict && (
+              {/* Sparkling Authority Review */}
+              {(product.verdict || product.review_full) && (
                 <h2 className="mt-6 text-xl font-semibold text-foreground">Sparkling Authority Review</h2>
               )}
-
-              {/* Verdict */}
-              {product.verdict && (
-                <p className="mt-4 text-muted-foreground">
-                  {product.verdict}
-                </p>
-              )}
+              <AuthorityReviewSection verdict={product.verdict ?? null} reviewFull={product.review_full ?? null} />
 
               {/* Nutrition Facts Dropdown */}
               <NutritionDropdown nutrition={nutrition} />
@@ -390,49 +391,10 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
             </div>
 
             {/* Reviews Section */}
-            <div className="mt-8">
-              <h2 className="text-lg font-medium text-foreground">Reviews</h2>
-              <div className="mt-4 space-y-6">
-                {ratingData
-                  ?.filter(r =>
-                    // Must have review text
-                    r.review_text?.trim() &&
-                    // And must be either approved or be the user's own review
-                    (r.is_approved || r.user_id === session?.user?.id)
-                  )
-                  .map((review) => (
-                    <div key={review.user_id} className="rounded-lg bg-card p-4 shadow-sm ring-1 ring-border">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-foreground">
-                          {review.profiles?.display_name || 'Anonymous'}
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          • {new Date(review.created_at).toLocaleDateString()}
-                        </span>
-                        {session?.user?.id === review.user_id && !review.is_approved && (
-                          <span className="inline-flex items-center rounded-full bg-yellow-400/10 px-2 py-0.5 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-400/20">
-                            Pending Review
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-2 flex gap-0.5">
-                        {getStarFillPercentages(review.overall_rating).map((percentage, index) => (
-                          <PartialStar
-                            key={index}
-                            fillPercentage={percentage}
-                            size={16}
-                          />
-                        ))}
-                      </div>
-                      {review.review_text && (
-                        <p className="mt-3 text-foreground">
-                          {review.review_text}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-              </div>
-            </div>
+            <ProductReviewsSection
+              reviews={filteredReviews}
+              sessionUserId={session?.user?.id}
+            />
           </div>
         </div>
       </main>
