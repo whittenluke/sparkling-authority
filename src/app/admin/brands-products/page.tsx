@@ -2046,7 +2046,7 @@ export default function AdminBrandsProducts() {
                 </div>
                 <div>
                   <label htmlFor="editProductReviewValue" className="block text-sm font-medium text-foreground mb-1">
-                    Value & Use Cases
+                    Value & Context
                   </label>
                   <textarea
                     id="editProductReviewValue"

@@ -54,7 +54,7 @@ export function AuthorityReviewSection({ verdict, reviewFull }: AuthorityReviewS
               )}
               {value && (
                 <div className={taste || carbonation ? 'mt-3' : ''}>
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Value & Use Cases</h3>
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Value & Context</h3>
                   <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{value}</p>
                 </div>
               )}

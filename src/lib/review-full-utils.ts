@@ -5,7 +5,7 @@
 export const REVIEW_FULL_DELIMITER = '\n\n=====\n\n'
 
 /**
- * Parse review_full into three sections: Taste & Flavor, Carbonation & Mouthfeel, Value & Use Cases.
+ * Parse review_full into three sections: Taste & Flavor, Carbonation & Mouthfeel, Value & Context.
  * Legacy content (no delimiter) is returned entirely in the first section.
  */
 export function parseReviewFullSections(reviewFull: string | null): [string, string, string] {
