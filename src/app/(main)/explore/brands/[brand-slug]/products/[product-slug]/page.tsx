@@ -11,6 +11,7 @@ import { Star, ChevronDown, ChevronUp } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { PartialStar } from '@/components/ui/PartialStar'
+import discontinuedBadge from '@/components/badges/discontinued-badge.png'
 import { getStarFillPercentages } from '@/lib/star-utils'
 
 export const dynamic = 'force-dynamic'
@@ -254,7 +255,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
               {/* Left Column: Product Image */}
               <div className="lg:w-1/3 lg:shrink-0">
                 {product.thumbnail ? (
-                  <div className="w-full aspect-square max-w-md mx-auto lg:max-w-none rounded-xl overflow-hidden flex items-center justify-center">
+                  <div className="relative w-full aspect-square max-w-md mx-auto lg:max-w-none rounded-xl overflow-hidden flex items-center justify-center">
                     <Image
                       src={product.thumbnail}
                       alt={product.name}
@@ -262,17 +263,46 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                       height={400}
                       className="w-full h-full object-contain"
                     />
+                    {product.is_discontinued && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <Image
+                          src={discontinuedBadge}
+                          alt=""
+                          width={280}
+                          height={280}
+                          className="w-3/4 h-3/4 object-contain opacity-50"
+                        />
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="w-full aspect-square max-w-md mx-auto lg:max-w-none rounded-xl bg-muted flex items-center justify-center text-foreground text-8xl font-medium">
+                  <div className="relative w-full aspect-square max-w-md mx-auto lg:max-w-none rounded-xl bg-muted flex items-center justify-center text-foreground text-8xl font-medium">
                     {product.name.charAt(0)}
+                    {product.is_discontinued && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <Image
+                          src={discontinuedBadge}
+                          alt=""
+                          width={280}
+                          height={280}
+                          className="w-3/4 h-3/4 object-contain opacity-50"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
                 
               {/* Right Column: Product Details */}
               <div className="flex-1 min-w-0">
-                <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
+                  {product.is_discontinued && (
+                    <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground ring-1 ring-border">
+                      Discontinued
+                    </span>
+                  )}
+                </div>
                 <p className="mt-2 text-lg text-muted-foreground">
                   by {product.brands.name}
                 </p>

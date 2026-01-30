@@ -18,7 +18,7 @@ type BrandHeaderProps = {
 
 export function BrandHeader({ brand, productCount }: BrandHeaderProps) {
   const { theme } = useTheme()
-  
+
   const logoUrl = theme === 'dark' ? brand.brand_logo_dark : brand.brand_logo_light
   const hasLogo = logoUrl !== undefined && logoUrl !== null
 
@@ -27,17 +27,18 @@ export function BrandHeader({ brand, productCount }: BrandHeaderProps) {
       <div className="flex items-start gap-6">
         {/* Brand Logo/Letter */}
         {hasLogo ? (
-          <div className="h-20 w-20 flex-shrink-0 rounded-xl overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800">
+          <div className="h-28 w-28 flex-shrink-0 rounded-xl overflow-hidden flex items-center justify-center bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-800">
             <Image
               src={logoUrl}
               alt={brand.name}
-              width={80}
-              height={80}
-              className="object-contain"
+              width={112}
+              height={112}
+              className="object-contain w-full h-full"
+              sizes="112px"
             />
           </div>
         ) : (
-          <div className="h-20 w-20 flex-shrink-0 rounded-xl bg-muted flex items-center justify-center text-foreground text-3xl font-medium">
+          <div className="h-28 w-28 flex-shrink-0 rounded-xl bg-muted flex items-center justify-center text-foreground text-3xl font-medium border-4 border-white dark:border-gray-800">
             {brand.name.charAt(0)}
           </div>
         )}

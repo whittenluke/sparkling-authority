@@ -17,6 +17,7 @@ import {
   X as CloseIcon,
   ExternalLink,
   ChevronDown,
+  ChevronUp,
   Upload
 } from 'lucide-react'
 import Link from 'next/link'
@@ -48,7 +49,7 @@ interface Product {
     id: string
     name: string
     slug: string
-  }[]
+  } | null
   flavor_categories: string[] | null
   flavor_tags: string[] | null
   carbonation_level: number
@@ -220,6 +221,8 @@ export default function AdminBrandsProducts() {
   const [brandsTotalCount, setBrandsTotalCount] = useState(0)
   const [productsCurrentPage, setProductsCurrentPage] = useState(1)
   const [productsTotalCount, setProductsTotalCount] = useState(0)
+  const [productsSortBy, setProductsSortBy] = useState<'product' | 'brand' | 'rating' | 'review_status'>('product')
+  const [productsSortDir, setProductsSortDir] = useState<'asc' | 'desc'>('asc')
   const BRANDS_PER_PAGE = 20
   const PRODUCTS_PER_PAGE = 50
 
@@ -376,9 +379,15 @@ export default function AdminBrandsProducts() {
   }, [supabase, searchTerm, brandsCurrentPage])
 
   // Load products with brand info
-  const loadProducts = useCallback(async (page: number = productsCurrentPage) => {
+  const loadProducts = useCallback(async (
+    page: number = productsCurrentPage,
+    sortByOverride?: 'product' | 'brand' | 'rating' | 'review_status',
+    sortDirOverride?: 'asc' | 'desc'
+  ) => {
     try {
       setError(null)
+      const sortBy = sortByOverride ?? productsSortBy
+      const sortDir = sortDirOverride ?? productsSortDir
 
       // Calculate offset for pagination
       const offset = (page - 1) * PRODUCTS_PER_PAGE
@@ -407,13 +416,54 @@ export default function AdminBrandsProducts() {
             overall_rating
           )
         `, { count: 'exact' })
-        .order('name')
-        .range(offset, offset + PRODUCTS_PER_PAGE - 1)
 
       // Apply search filter if present
       if (searchTerm) {
         query = query.or(`name.ilike.%${searchTerm}%,verdict.ilike.%${searchTerm}%`)
       }
+
+      // Product and review_status: sort in DB. Brand and rating: sort column isn't on products (brand is on brands, rating is computed), so fetch all, sort in JS, then slice.
+      if (sortBy === 'product') {
+        query = query.order('name', { ascending: sortDir === 'asc' })
+      } else if (sortBy === 'review_status') {
+        query = query.order('review_status', { ascending: sortDir === 'asc', nullsFirst: false })
+      } else {
+        query = query.order('name', { ascending: true })
+      }
+
+      if (sortBy === 'brand' || sortBy === 'rating') {
+        const { data: allData, error: allError } = await query.limit(50000)
+        if (allError) {
+          console.error('Error loading products:', allError)
+          setError('Failed to load products')
+          return
+        }
+        const meanRating = calculateMeanRating(allData || [])
+        let fullSorted = (allData || []).map(product => {
+          const ratings = calculateProductRatings(product, meanRating)
+          return { ...product, trueAverage: ratings.trueAverage, ratingCount: ratings.ratingCount }
+        })
+        if (sortBy === 'brand') {
+          fullSorted = fullSorted.sort((a, b) => {
+            const nameA = (a.brands?.name ?? '').toLowerCase()
+            const nameB = (b.brands?.name ?? '').toLowerCase()
+            const cmp = nameA.localeCompare(nameB)
+            return sortDir === 'asc' ? cmp : -cmp
+          })
+        } else {
+          fullSorted = fullSorted.sort((a, b) => {
+            const ratingA = a.trueAverage ?? -1
+            const ratingB = b.trueAverage ?? -1
+            const cmp = ratingA - ratingB
+            return sortDir === 'asc' ? cmp : -cmp
+          })
+        }
+        setProductsTotalCount(fullSorted.length)
+        setProducts(fullSorted.slice(offset, offset + PRODUCTS_PER_PAGE))
+        return
+      }
+
+      query = query.range(offset, offset + PRODUCTS_PER_PAGE - 1)
 
       const { data: productsData, error: productsError, count } = await query
 
@@ -442,7 +492,7 @@ export default function AdminBrandsProducts() {
       console.error('Unexpected error loading products:', err)
       setError('An unexpected error occurred')
     }
-  }, [supabase, searchTerm, productsCurrentPage])
+  }, [supabase, searchTerm, productsCurrentPage, productsSortBy, productsSortDir])
 
   // Fetch all brands for product form dropdown
   const fetchAllBrands = useCallback(async () => {
@@ -946,7 +996,7 @@ export default function AdminBrandsProducts() {
   const openEditProductModal = (product: Product) => {
     setEditingProduct(product)
     setEditProductName(product.name)
-    setEditProductBrandId(product.brand_id ?? product.brands[0]?.id ?? '')
+    setEditProductBrandId(product.brand_id ?? product.brands?.id ?? '')
     setEditProductReviewStatus(product.review_status ?? 'needs_review')
     setEditProductCarbonationLevel(product.carbonation_level)
     setEditProductIsDiscontinued(product.is_discontinued)
@@ -1067,6 +1117,17 @@ export default function AdminBrandsProducts() {
     loadTabData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]) // Only depend on activeTab, not the callback functions
+
+  const handleProductsSort = (column: 'product' | 'brand' | 'rating' | 'review_status') => {
+    const newSortBy = column
+    const newSortDir = productsSortBy === column
+      ? (productsSortDir === 'asc' ? 'desc' : 'asc')
+      : 'asc'
+    setProductsSortBy(newSortBy)
+    setProductsSortDir(newSortDir)
+    setProductsCurrentPage(1)
+    loadProducts(1, newSortBy, newSortDir)
+  }
 
   // Tabs with counts - show total counts regardless of pagination
   const tabs = [
@@ -1342,16 +1403,44 @@ export default function AdminBrandsProducts() {
             <thead className="border-b border-border">
               <tr className="text-left">
                 <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Product
+                  <button
+                    type="button"
+                    onClick={() => handleProductsSort('product')}
+                    className="inline-flex items-center gap-1 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                  >
+                    Product
+                    {productsSortBy === 'product' && (productsSortDir === 'asc' ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />)}
+                  </button>
                 </th>
                 <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Brand
+                  <button
+                    type="button"
+                    onClick={() => handleProductsSort('brand')}
+                    className="inline-flex items-center gap-1 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                  >
+                    Brand
+                    {productsSortBy === 'brand' && (productsSortDir === 'asc' ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />)}
+                  </button>
                 </th>
                 <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Rating
+                  <button
+                    type="button"
+                    onClick={() => handleProductsSort('rating')}
+                    className="inline-flex items-center gap-1 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                  >
+                    Rating
+                    {productsSortBy === 'rating' && (productsSortDir === 'asc' ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />)}
+                  </button>
                 </th>
                 <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Review Status
+                  <button
+                    type="button"
+                    onClick={() => handleProductsSort('review_status')}
+                    className="inline-flex items-center gap-1 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                  >
+                    Review Status
+                    {productsSortBy === 'review_status' && (productsSortDir === 'asc' ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />)}
+                  </button>
                 </th>
                 <th className="sticky top-0 z-10 bg-card px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Carbonation
@@ -1378,7 +1467,7 @@ export default function AdminBrandsProducts() {
                     </div>
                   </td>
                   <td className="px-3 py-2 text-sm text-foreground">
-                    {product.brands[0]?.name || '—'}
+                    {product.brands?.name ?? '—'}
                   </td>
                   <td className="px-3 py-2">
                     {product.trueAverage !== undefined ? (
@@ -1433,9 +1522,9 @@ export default function AdminBrandsProducts() {
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
-                      {product.brands[0]?.slug && (
+                      {product.brands?.slug && (
                         <Link
-                          href={`/explore/brands/${product.brands[0].slug}/products/${product.slug}`}
+                          href={`/explore/brands/${product.brands.slug}/products/${product.slug}`}
                           className="text-muted-foreground hover:text-foreground p-1"
                           title="View product"
                         >
