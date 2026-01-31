@@ -383,8 +383,9 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
               </div>
               <div className="flex items-center gap-3">
                 {productCount > 0 && (
-                  <span className="text-sm text-muted-foreground">
-                    ({productCount} {productCount === 1 ? 'product' : 'products'})
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary tabular-nums">
+                    <span className="font-semibold">{productCount}</span>
+                    <span className="opacity-90">{productCount === 1 ? 'product' : 'products'}</span>
                   </span>
                 )}
                 {isExpanded ? (
