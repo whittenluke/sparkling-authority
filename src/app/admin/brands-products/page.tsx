@@ -202,6 +202,8 @@ export default function AdminBrandsProducts() {
   const [flavorCategories, setFlavorCategories] = useState<string[]>([])
   const [flavorTags, setFlavorTags] = useState<string[]>([])
   const [carbonationLevel, setCarbonationLevel] = useState<number | ''>('')
+  const [bubbleSize, setBubbleSize] = useState<string>('')
+  const [persistence, setPersistence] = useState<string>('')
   const [servingSize, setServingSize] = useState('')
   const [calories, setCalories] = useState<number | ''>('')
   const [totalFat, setTotalFat] = useState<number | ''>('')
