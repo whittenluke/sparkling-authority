@@ -18,7 +18,8 @@ type Product = {
   brand: Brand
   reviews?: Array<{
     overall_rating: number
-    is_approved: boolean
+    moderation_status: string | null
+    review_text: string | null
   }>
   averageRating?: number // Bayesian average (for sorting)
   trueAverage?: number // True average (for display)
@@ -29,7 +30,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function BestOverallPage() {
   const supabase = createClient()
-  
+
   // Get products with their reviews
   const { data: products, error } = await supabase
     .from('products')
@@ -46,7 +47,8 @@ export default async function BestOverallPage() {
       ),
       reviews (
         overall_rating,
-        is_approved
+        moderation_status,
+        review_text
       )
     `) as { data: Product[] | null, error: PostgrestError | null }
 
@@ -64,18 +66,21 @@ export default async function BestOverallPage() {
     )
   }
 
-  // Calculate the mean rating across all products
-  const allRatings = products?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
-  const meanRating = allRatings.length > 0 
-    ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length 
+  const reviewsThatCount = (reviews: Product['reviews']) =>
+    (reviews ?? []).filter(r => !r.review_text?.trim() || r.moderation_status === 'approved')
+
+  // Calculate the mean rating across all products (only counting reviews)
+  const allRatings = products?.flatMap(p => reviewsThatCount(p.reviews).map(r => r.overall_rating)) ?? []
+  const meanRating = allRatings.length > 0
+    ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length
     : 3.5 // Fallback to 3.5 if no ratings exist
 
   // Calculate average ratings and sort
   const productsWithRatings = products?.map(product => {
-    // Use ALL ratings regardless of approval status - approval only matters for review text
-    const ratings = product.reviews?.map(r => r.overall_rating) || []
+    const counting = reviewsThatCount(product.reviews)
+    const ratings = counting.map(r => r.overall_rating)
     const ratingCount = ratings.length
-    
+
     // Skip products with less than 5 reviews
     if (ratingCount < 5) {
       return {
@@ -136,8 +141,8 @@ export default async function BestOverallPage() {
           <p className="font-plus-jakarta text-lg text-muted-foreground mb-4">
             No ratings available yet.
           </p>
-          <Link 
-            href="/explore/products" 
+          <Link
+            href="/explore/products"
             className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-base font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
           >
             Rate your favorite products!

@@ -95,7 +95,7 @@ type ReviewData = {
   created_at: string
   overall_rating: number
   review_text: string | null
-  is_approved: boolean
+  moderation_status: string | null
   profiles: {
     display_name: string | null
   } | null
@@ -167,7 +167,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
       created_at,
       overall_rating,
       review_text,
-      is_approved,
+      moderation_status,
       profiles (
         display_name
       )
@@ -175,32 +175,40 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
     .eq('product_id', product.id)
     .order('created_at', { ascending: false }) as { data: ReviewData[] | null }
 
-  // Calculate average rating
-  const ratings = ratingData?.map(r => r.overall_rating) || []
+  // Ratings that count: rating-only (no text) or moderation_status === 'approved'
+  const reviewsThatCount = ratingData?.filter(
+    r => !r.review_text?.trim() || r.moderation_status === 'approved'
+  ) ?? []
+  const ratings = reviewsThatCount.map(r => r.overall_rating)
   const ratingCount = ratings.length
+  const sumOfRatings = ratings.reduce((a, b) => a + b, 0)
+  const averageRating = ratingCount > 0 ? sumOfRatings / ratingCount : undefined
 
-  // Get mean rating across all products for Bayesian average
+  // Get mean rating across all products for Bayesian average (only counting reviews)
   const { data: allProducts } = await supabase
     .from('products')
     .select(`
       reviews (
-        overall_rating
+        overall_rating,
+        review_text,
+        moderation_status
       )
     `)
 
-  const allRatings = allProducts?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+  const allRatings = allProducts?.flatMap(p =>
+    (p.reviews ?? []).filter(
+      (r: { overall_rating: number; review_text?: string | null; moderation_status?: string | null }) =>
+        !r.review_text?.trim() || r.moderation_status === 'approved'
+    ).map((r: { overall_rating: number }) => r.overall_rating)
+  ) ?? []
   const meanRating = allRatings.length > 0
     ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length
     : 3.5 // Fallback to 3.5 if no ratings exist
 
-  // Calculate true average (display rating) - Bayesian average is only for sorting
-  const sumOfRatings = ratings.reduce((a, b) => a + b, 0)
-  const averageRating = ratingCount > 0
-    ? sumOfRatings / ratingCount
-    : undefined
-
-  // Count reviews (rows with review_text)
-  const reviewCount = ratingData?.filter(r => r.review_text?.trim()).length || 0
+  // Count reviews (rows with non-empty text and approved)
+  const reviewCount = ratingData?.filter(
+    r => r.review_text?.trim() && r.moderation_status === 'approved'
+  ).length ?? 0
 
   // Get user's rating from the fetched data
   const userReview = session?.user
@@ -210,11 +218,12 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
   const userRating = userReview?.overall_rating
   const userReviewText = userReview?.review_text || undefined
 
+  // Review cards: non-empty text and (approved or own review)
   const filteredReviews =
     ratingData?.filter(
       r =>
         r.review_text?.trim() &&
-        (r.is_approved || r.user_id === session?.user?.id)
+        (r.moderation_status === 'approved' || r.user_id === session?.user?.id)
     ) ?? []
 
   return (
@@ -299,7 +308,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                   </div>
                 )}
               </div>
-                
+
               {/* Right Column: Product Details */}
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
@@ -349,7 +358,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                   </div>
                 </div>
               )}
-              
+
               {/* Carbonation Section */}
               {product.carbonation_level && (
                 <div className="rounded-lg bg-card p-3 shadow-sm ring-1 ring-border">

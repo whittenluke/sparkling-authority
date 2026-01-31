@@ -25,7 +25,8 @@ type Product = {
   carbonation_level?: number
   reviews?: Array<{
     overall_rating: number
-    is_approved: boolean
+    moderation_status: string | null
+    review_text: string | null
   }>
   averageRating?: number // Bayesian average (for sorting)
   trueAverage?: number // True average (for display)
@@ -56,7 +57,8 @@ export default async function Home() {
         ),
         reviews (
           overall_rating,
-          is_approved
+          moderation_status,
+          review_text
         )
       `) as { data: Product[] | null, error: PostgrestError | null }
 
@@ -67,16 +69,20 @@ export default async function Home() {
 
     console.log(`🏠 Homepage: Fetched ${products?.length || 0} products`)
 
-    // Calculate the mean rating across all products
-    const allRatings = products?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+    // Helper: reviews that count (rating-only or approved)
+    const reviewsThatCount = (reviews: Product['reviews']) =>
+      (reviews ?? []).filter(r => !r.review_text?.trim() || r.moderation_status === 'approved')
+
+    // Calculate the mean rating across all products (only counting reviews)
+    const allRatings = products?.flatMap(p => reviewsThatCount(p.reviews).map(r => r.overall_rating)) ?? []
     const meanRating = allRatings.length > 0
       ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length
       : 3.5 // Fallback to 3.5 if no ratings exist
 
     // Calculate average ratings and sort
     const topProducts = products ? products.map(product => {
-      // Use ALL ratings regardless of approval status - approval only matters for review text
-      const ratings = product.reviews?.map(r => r.overall_rating) || []
+      const counting = reviewsThatCount(product.reviews)
+      const ratings = counting.map(r => r.overall_rating)
       const ratingCount = ratings.length
 
       // Skip products with less than 5 reviews
@@ -189,14 +195,17 @@ export default async function Home() {
           slug
         ),
         reviews (
-          overall_rating
+          overall_rating,
+          moderation_status,
+          review_text
         )
       `)
       .contains('flavor_categories', ['citrus'])
       .eq('is_discontinued', false)
 
     const citrusProducts = citrusProductsData ? citrusProductsData.map(product => {
-      const ratings = product.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
+      const counting = (product.reviews ?? []).filter((r: { overall_rating: number; review_text?: string | null; moderation_status?: string | null }) => !r.review_text?.trim() || r.moderation_status === 'approved')
+      const ratings = counting.map((r: { overall_rating: number }) => r.overall_rating)
       const ratingCount = ratings.length
 
       // Skip products with less than 5 reviews
@@ -259,7 +268,8 @@ export default async function Home() {
         ),
         reviews (
           overall_rating,
-          is_approved
+          moderation_status,
+          review_text
         )
       `)
       .gte('carbonation_level', 8)
@@ -267,8 +277,8 @@ export default async function Home() {
       .eq('is_discontinued', false) as { data: Product[] | null, error: PostgrestError | null }
 
     const strongestCarbonationProducts = strongestCarbonationData ? strongestCarbonationData.map(product => {
-      // Use ALL ratings regardless of approval status - approval only matters for review text
-      const ratings = product.reviews?.map(r => r.overall_rating) || []
+      const counting = reviewsThatCount(product.reviews)
+      const ratings = counting.map(r => r.overall_rating)
       const ratingCount = ratings.length
 
       // Skip products with less than 5 reviews
@@ -311,17 +321,17 @@ export default async function Home() {
       .slice(0, 8) : [] // Show top 8 products for horizontal scroll
 
     // Calculate total count of products that would appear on citrus page
-    // (same filtering logic: citrus category, not discontinued, 5+ reviews)
+    // (same filtering logic: citrus category, not discontinued, 5+ counting reviews)
     const citrusTotalCount = citrusProductsData ? citrusProductsData.filter(product => {
-      const ratings = product.reviews?.map(r => r.overall_rating) || []
-      return ratings.length >= 5
+      const counting = (product.reviews ?? []).filter((r: { review_text?: string | null; moderation_status?: string | null }) => !r.review_text?.trim() || r.moderation_status === 'approved')
+      return counting.length >= 5
     }).length : 0
 
     // Calculate total count of products that would appear on strongest-carbonation page
-    // (same filtering logic: carbonation 8-10, not discontinued, 5+ reviews)
+    // (same filtering logic: carbonation 8-10, not discontinued, 5+ counting reviews)
     const strongestCarbonationTotalCount = strongestCarbonationData ? strongestCarbonationData.filter(product => {
-      const ratings = product.reviews?.map(r => r.overall_rating) || []
-      return ratings.length >= 5
+      const counting = reviewsThatCount(product.reviews)
+      return counting.length >= 5
     }).length : 0
 
     return (

@@ -68,13 +68,14 @@ export function ReviewModal({
         // Update existing review
         await supabase
           .from('reviews')
-          .update({ 
+          .update({
             overall_rating: rating,
             review_text: review,
+            moderation_status: review.trim() ? 'pending' : 'approved',
             updated_at: new Date().toISOString()
           })
           .eq('id', existingReview.id)
-        
+
         router.refresh()
         onClose()
       } else {
@@ -86,7 +87,7 @@ export function ReviewModal({
             user_id: user.id,
             overall_rating: rating,
             review_text: review,
-            is_approved: false,
+            moderation_status: review.trim() ? 'pending' : 'approved',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           })
@@ -129,7 +130,7 @@ export function ReviewModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-background/80 backdrop-blur-sm"
         onClick={onClose}
       />
@@ -173,11 +174,10 @@ export function ReviewModal({
                     className="focus:outline-none"
                   >
                     <Star
-                      className={`w-8 h-8 transition-colors ${
-                        (hover || rating) >= star
+                      className={`w-8 h-8 transition-colors ${(hover || rating) >= star
                           ? 'fill-yellow-400 text-yellow-400'
                           : 'fill-transparent text-yellow-400/25'
-                      }`}
+                        }`}
                     />
                   </button>
                 ))}

@@ -19,7 +19,8 @@ type Product = {
   carbonation_level: number
   reviews?: Array<{
     overall_rating: number
-    is_approved: boolean
+    moderation_status: string | null
+    review_text: string | null
   }>
   averageRating?: number // Bayesian average (for sorting)
   trueAverage?: number // True average (for display)
@@ -48,7 +49,8 @@ export default async function StrongestCarbonationPage() {
       ),
       reviews (
         overall_rating,
-        is_approved
+        moderation_status,
+        review_text
       )
     `)
     .gte('carbonation_level', 8)
@@ -69,8 +71,11 @@ export default async function StrongestCarbonationPage() {
     )
   }
 
-  // Calculate the mean rating across all products
-  const allRatings = products?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+  const reviewsThatCount = (reviews: Product['reviews']) =>
+    (reviews ?? []).filter(r => !r.review_text?.trim() || r.moderation_status === 'approved')
+
+  // Calculate the mean rating across all products (only counting reviews)
+  const allRatings = products?.flatMap(p => reviewsThatCount(p.reviews).map(r => r.overall_rating)) ?? []
   const meanRating = allRatings.length > 0
     ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length
     : 3.5 // Fallback to 3.5 if no ratings exist
@@ -80,8 +85,8 @@ export default async function StrongestCarbonationPage() {
     const levelProducts = products?.filter(p => p.carbonation_level === level) || []
 
     const productsWithRatings = levelProducts.map(product => {
-      // Use ALL ratings regardless of approval status - approval only matters for review text
-      const ratings = product.reviews?.map(r => r.overall_rating) || []
+      const counting = reviewsThatCount(product.reviews)
+      const ratings = counting.map(r => r.overall_rating)
       const ratingCount = ratings.length
 
       // Skip products with less than 5 reviews

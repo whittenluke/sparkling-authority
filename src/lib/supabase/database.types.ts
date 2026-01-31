@@ -145,8 +145,7 @@ export interface Database {
           carbonation_rating: number | null
           aftertaste_rating: number | null
           review_text: string
-          is_approved: boolean
-          moderation_status: string
+          moderation_status: string | null
           created_at: string
           updated_at: string
         }
@@ -159,8 +158,7 @@ export interface Database {
           carbonation_rating?: number | null
           aftertaste_rating?: number | null
           review_text: string
-          is_approved?: boolean
-          moderation_status?: string
+          moderation_status?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -173,8 +171,7 @@ export interface Database {
           carbonation_rating?: number | null
           aftertaste_rating?: number | null
           review_text?: string
-          is_approved?: boolean
-          moderation_status?: string
+          moderation_status?: string | null
           created_at?: string
           updated_at?: string
         }

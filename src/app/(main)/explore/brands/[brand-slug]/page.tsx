@@ -44,9 +44,11 @@ type BrandProduct = {
     name: string
     slug: string
   }
-  reviews: {
+  reviews: Array<{
     overall_rating: number
-  }[]
+    moderation_status?: string | null
+    review_text?: string | null
+  }>
   averageRating?: number // Bayesian average (for sorting)
   trueAverage?: number // True average (for display)
   ratingCount?: number
@@ -113,7 +115,9 @@ export default async function BrandPage({ params }: Props) {
           slug
         ),
         reviews (
-          overall_rating
+          overall_rating,
+          moderation_status,
+          review_text
         )
       )
     `)
@@ -124,24 +128,29 @@ export default async function BrandPage({ params }: Props) {
     notFound()
   }
 
-  // Get mean rating across all products for Bayesian average
+  const reviewsThatCount = (reviews: BrandProduct['reviews']) =>
+    (reviews ?? []).filter((r: { overall_rating: number; review_text?: string | null; moderation_status?: string | null }) => !r.review_text?.trim() || r.moderation_status === 'approved')
+
+  // Get mean rating across all products for Bayesian average (only counting reviews)
   const { data: allProducts } = await supabase
     .from('products')
     .select(`
       reviews (
-        overall_rating
+        overall_rating,
+        moderation_status,
+        review_text
       )
     `)
 
-  // Calculate the mean rating across ALL products
-  const allRatings = allProducts?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+  const allRatings = allProducts?.flatMap(p => reviewsThatCount(p.reviews).map((r: { overall_rating: number }) => r.overall_rating)) ?? []
   const meanRating = allRatings.length > 0 
     ? allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length 
     : 3.5 // Fallback to 3.5 if no ratings exist
 
   // Calculate average ratings for products
   const productsWithRatings = brand.products.map((product: BrandProduct) => {
-    const ratings = product.reviews?.map(r => r.overall_rating) || []
+    const counting = reviewsThatCount(product.reviews)
+    const ratings = counting.map((r: { overall_rating: number }) => r.overall_rating)
     const ratingCount = ratings.length
     
     // Calculate Bayesian average (for sorting)

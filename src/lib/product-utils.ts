@@ -4,7 +4,8 @@
 
 type Review = {
   overall_rating: number
-  is_approved?: boolean
+  moderation_status?: string | null
+  review_text?: string | null
 }
 
 type ProductWithReviews = {
@@ -44,7 +45,7 @@ export function calculateProductRatings(
   trueAverage: number | undefined
   ratingCount: number
 } {
-  // Use ALL ratings regardless of approval status - approval only matters for review text
+  // Callers pass only "counting" reviews (rating-only or approved); no filter here
   const ratings = product.reviews?.map(r => r.overall_rating) || []
   const ratingCount = ratings.length
 

@@ -40,6 +40,12 @@ type SupabaseBrandData = {
   slug: string
 }
 
+type ReviewRow = {
+  overall_rating: number
+  moderation_status?: string | null
+  review_text?: string | null
+}
+
 type SupabaseProductData = {
   id: string
   name: string
@@ -47,10 +53,14 @@ type SupabaseProductData = {
   flavor_tags: string[] | null
   thumbnail: string | null
   brand: SupabaseBrandData | SupabaseBrandData[]
-  reviews?: Array<{ overall_rating: number }> | null
+  reviews?: Array<ReviewRow> | null
 }
 
-// Helper to convert SupabaseProductData to ProductWithReviews format
+function reviewsThatCount(reviews: Array<ReviewRow> | null | undefined): Array<{ overall_rating: number }> {
+  return (reviews ?? []).filter(r => !r.review_text?.trim() || r.moderation_status === 'approved')
+}
+
+// Helper to convert SupabaseProductData to ProductWithReviews format (only counting reviews)
 function toProductWithReviews(product: SupabaseProductData): {
   id: string
   name: string
@@ -62,7 +72,7 @@ function toProductWithReviews(product: SupabaseProductData): {
 } {
   return {
     ...product,
-    reviews: product.reviews ?? undefined
+    reviews: reviewsThatCount(product.reviews)
   }
 }
 
@@ -145,7 +155,9 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
             slug
           ),
           reviews (
-            overall_rating
+            overall_rating,
+            moderation_status,
+            review_text
           )
         `)
           .ilike('name', `%${searchQuery}%`)
@@ -172,7 +184,9 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
               slug
             ),
             reviews (
-              overall_rating
+              overall_rating,
+              moderation_status,
+              review_text
             )
           `)
           .in('brand_id', brandIds)
@@ -203,7 +217,9 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
               slug
             ),
             reviews (
-              overall_rating
+              overall_rating,
+              moderation_status,
+              review_text
             )
           `)
           .overlaps('flavor_tags', matchingFlavorTags)
@@ -235,7 +251,9 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
               slug
             ),
             reviews (
-              overall_rating
+              overall_rating,
+              moderation_status,
+              review_text
             )
           `)
           .in('brand_id', brandIds)

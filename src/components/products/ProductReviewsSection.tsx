@@ -10,7 +10,7 @@ export type ProductReview = {
   created_at: string
   overall_rating: number
   review_text: string | null
-  is_approved: boolean
+  moderation_status: string | null
   profiles: { display_name: string | null } | null
 }
 
@@ -38,11 +38,10 @@ export function ProductReviewsSection({ reviews, sessionUserId }: ProductReviews
           <button
             type="button"
             onClick={() => setRatingFilter(null)}
-            className={`flex w-fit items-center gap-2 rounded py-1.5 pr-1 text-left text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset ${
-              ratingFilter === null
+            className={`flex w-fit items-center gap-2 rounded py-1.5 pr-1 text-left text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset ${ratingFilter === null
                 ? 'bg-primary/10 text-primary'
                 : 'bg-transparent text-foreground hover:bg-muted'
-            }`}
+              }`}
           >
             <span className="w-[5.5rem]">All</span>
             <span className="w-6 text-right text-xs text-muted-foreground tabular-nums">
@@ -57,11 +56,10 @@ export function ProductReviewsSection({ reviews, sessionUserId }: ProductReviews
                 key={rating}
                 type="button"
                 onClick={() => setRatingFilter(rating)}
-                className={`flex w-fit items-center gap-2 rounded py-1.5 pr-1 text-left text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset ${
-                  isActive
+                className={`flex w-fit items-center gap-2 rounded py-1.5 pr-1 text-left text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset ${isActive
                     ? 'bg-primary/10 text-primary'
                     : 'bg-transparent text-foreground hover:bg-muted'
-                }`}
+                  }`}
               >
                 <span className="flex w-[5.5rem] gap-0.5" aria-hidden>
                   {Array.from({ length: rating }, (_, i) => (
@@ -99,7 +97,7 @@ export function ProductReviewsSection({ reviews, sessionUserId }: ProductReviews
                 <span className="text-xs text-muted-foreground">
                   • {new Date(review.created_at).toLocaleDateString()}
                 </span>
-                {sessionUserId === review.user_id && !review.is_approved && (
+                {sessionUserId === review.user_id && review.moderation_status !== 'approved' && (
                   <span className="inline-flex items-center rounded-full bg-yellow-400/10 px-2 py-0.5 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-400/20">
                     Pending Review
                   </span>

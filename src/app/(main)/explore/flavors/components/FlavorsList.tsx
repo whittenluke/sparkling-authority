@@ -78,16 +78,21 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
     // Get the tags that belong to this category from the mapping
     const categoryTags = categoryTagMap[category as keyof typeof categoryTagMap] || []
 
-    // Get mean rating across ALL products for Bayesian average
+    // Get mean rating across ALL products for Bayesian average (only counting reviews)
     const { data: allProductsData } = await supabase
       .from('products')
       .select(`
         reviews (
-          overall_rating
+          overall_rating,
+          moderation_status,
+          review_text
         )
       `)
 
-    const allRatings = allProductsData?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+    const reviewsThatCount = (reviews: Array<{ overall_rating: number; review_text?: string | null; moderation_status?: string | null }> | null | undefined) =>
+      (reviews ?? []).filter(r => !r.review_text?.trim() || r.moderation_status === 'approved')
+
+    const allRatings = allProductsData?.flatMap(p => reviewsThatCount(p.reviews).map(r => r.overall_rating)) ?? []
     const meanRating = allRatings.length > 0
       ? allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length
       : 3.5 // Fallback to 3.5 if no ratings exist
@@ -107,7 +112,9 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
           slug
         ),
         reviews (
-          overall_rating
+          overall_rating,
+          moderation_status,
+          review_text
         )
       `)
       .overlaps('flavor_tags', categoryTags)
@@ -119,7 +126,8 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
       setFlavorTags([])
     } else {
       const processedProducts = data.map(p => {
-        const ratings = p.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
+        const counting = reviewsThatCount(p.reviews)
+        const ratings = counting.map(r => r.overall_rating)
         const ratingCount = ratings.length
 
         // Calculate Bayesian average (for sorting) - consistent with other pages
@@ -191,16 +199,21 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
         // Get the tags that belong to this category from the mapping
         const categoryTags = categoryTagMap[initialExpandedCategory as keyof typeof categoryTagMap] || []
 
-        // Get mean rating across ALL products for Bayesian average
+        // Get mean rating across ALL products for Bayesian average (only counting reviews)
         const { data: allProductsData } = await supabase
           .from('products')
           .select(`
             reviews (
-              overall_rating
+              overall_rating,
+              moderation_status,
+              review_text
             )
           `)
 
-        const allRatings = allProductsData?.flatMap(p => p.reviews?.map(r => r.overall_rating) || []) || []
+        const reviewsThatCount = (reviews: Array<{ overall_rating: number; review_text?: string | null; moderation_status?: string | null }> | null | undefined) =>
+          (reviews ?? []).filter(r => !r.review_text?.trim() || r.moderation_status === 'approved')
+
+        const allRatings = allProductsData?.flatMap(p => reviewsThatCount(p.reviews).map(r => r.overall_rating)) ?? []
         const meanRating = allRatings.length > 0
           ? allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length
           : 3.5 // Fallback to 3.5 if no ratings exist
@@ -220,7 +233,9 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
               slug
             ),
             reviews (
-              overall_rating
+              overall_rating,
+              moderation_status,
+              review_text
             )
           `)
           .overlaps('flavor_tags', categoryTags)
@@ -232,7 +247,8 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
           setFlavorTags([])
         } else {
           const processedProducts = data.map(p => {
-            const ratings = p.reviews?.map((r: { overall_rating: number }) => r.overall_rating) || []
+            const counting = reviewsThatCount(p.reviews)
+            const ratings = counting.map(r => r.overall_rating)
             const ratingCount = ratings.length
 
             // Calculate Bayesian average (for sorting) - consistent with other pages
