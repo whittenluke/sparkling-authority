@@ -14,7 +14,7 @@ export function IngredientsDropdown({ ingredients }: IngredientsDropdownProps) {
     <div className="mt-4 rounded-lg bg-card shadow-sm ring-1 ring-border overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-accent transition-colors sm:px-6 sm:py-4"
+        className="w-full px-4 py-2 flex items-center justify-between text-left hover:bg-accent transition-colors sm:px-6 sm:py-2.5"
       >
         <h3 className="text-base font-medium text-foreground sm:text-lg">Ingredients</h3>
         {isOpen ? (
@@ -25,7 +25,7 @@ export function IngredientsDropdown({ ingredients }: IngredientsDropdownProps) {
       </button>
 
       {isOpen && (
-        <div className="border-t border-border px-4 py-3 sm:px-6 sm:py-4">
+        <div className="border-t border-border px-4 py-2 sm:px-6 sm:py-2.5">
           <p className="text-sm text-muted-foreground">
             {ingredients}
           </p>

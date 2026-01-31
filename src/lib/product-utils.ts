@@ -96,3 +96,15 @@ export function transformProductsWithRatings(
 ): ProductWithRatings[] {
   return products.map(product => transformProductWithRatings(product, meanRating))
 }
+
+/**
+ * Map carbonation_level (1-10) to Intensity label for display.
+ * Per CarbonationStructure.md: 1-2 Low, 3-4 Medium-Low, 5 Medium, 6-7 Medium-High, 8-10 High.
+ */
+export function getCarbonationIntensityLabel(level: number): string {
+  if (level <= 2) return 'Low'
+  if (level <= 4) return 'Medium-Low'
+  if (level <= 5) return 'Medium'
+  if (level <= 7) return 'Medium-High'
+  return 'High'
+}

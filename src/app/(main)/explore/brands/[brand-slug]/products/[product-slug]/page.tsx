@@ -13,6 +13,7 @@ import { Star, ChevronDown, ChevronUp } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import discontinuedBadge from '@/components/badges/discontinued-badge.png'
+import { CarbonationProfileDropdown } from '@/components/products/CarbonationProfileDropdown'
 
 export const dynamic = 'force-dynamic'
 
@@ -342,15 +343,15 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
 
             {/* Profile Section: Flavor + Carbonation - Full Width */}
             <div className="mt-6 flex flex-col sm:flex-row gap-6 sm:gap-8">
-              {/* Flavor Section */}
+              {/* Flavor Section - vertical stack to free horizontal space for Carbonation */}
               {product.flavor_tags && product.flavor_tags.length > 0 && (
-                <div className="rounded-lg bg-card p-3 shadow-sm ring-1 ring-border">
-                  <span className="text-sm font-medium text-muted-foreground block mb-2">Flavors</span>
-                  <div className="flex flex-wrap gap-2">
+                <div className="rounded-lg bg-card px-3 py-2 shadow-sm ring-1 ring-border sm:w-[16.25rem] shrink-0">
+                  <h3 className="text-base font-semibold text-foreground mb-2">Flavors</h3>
+                  <div className="flex flex-wrap gap-1.5">
                     {product.flavor_tags.map((flavor: string) => (
                       <span
                         key={flavor}
-                        className="inline-flex items-center rounded-full bg-accent px-3 py-1 text-sm font-medium text-accent-foreground"
+                        className="inline-flex items-center rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground w-fit"
                       >
                         {flavor}
                       </span>
@@ -359,11 +360,11 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                 </div>
               )}
 
-              {/* Carbonation Section */}
-              {product.carbonation_level && (
-                <div className="rounded-lg bg-card p-3 shadow-sm ring-1 ring-border">
-                  <span className="text-sm font-medium text-muted-foreground block mb-2">Carbonation Level</span>
-                  <span className="text-xl font-semibold text-foreground">{product.carbonation_level}</span>
+              {/* Carbonation Section: header + number (1-10), width fits content */}
+              {product.carbonation_level != null && (
+                <div className="rounded-lg bg-card px-3 py-2 shadow-sm ring-1 ring-border w-fit shrink-0 flex flex-col items-center gap-2">
+                  <h3 className="text-base font-semibold text-foreground">Carbonation</h3>
+                  <span className="text-2xl font-semibold text-foreground tabular-nums">{product.carbonation_level}</span>
                 </div>
               )}
             </div>
@@ -387,6 +388,13 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                 <h2 className="mt-6 text-xl font-semibold text-foreground">Sparkling Authority Review</h2>
               )}
               <AuthorityReviewSection verdict={product.verdict ?? null} reviewFull={product.review_full ?? null} />
+
+              {/* Carbonation Profile Dropdown */}
+              <CarbonationProfileDropdown
+                carbonationLevel={product.carbonation_level ?? null}
+                bubbleSize={product.bubble_size ?? null}
+                persistence={product.persistence ?? null}
+              />
 
               {/* Nutrition Facts Dropdown */}
               <NutritionDropdown nutrition={nutrition} />

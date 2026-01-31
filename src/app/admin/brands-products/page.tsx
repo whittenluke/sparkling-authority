@@ -58,6 +58,8 @@ interface Product {
   flavor_categories: string[] | null
   flavor_tags: string[] | null
   carbonation_level: number
+  bubble_size?: string | null
+  persistence?: string | null
   is_discontinued: boolean
   review_status?: string | null
   created_at: string
@@ -94,6 +96,8 @@ type ProductInsertPayload = {
   flavor_categories: string[] | null
   flavor_tags: string[] | null
   carbonation_level: number
+  bubble_size?: string | null
+  persistence?: string | null
   nutrition_info: NutritionInfo | null
   amazon_link: string | null
   walmart_link: string | null
@@ -102,6 +106,9 @@ type ProductInsertPayload = {
   is_discontinued: boolean
   product_line_id?: string | null
 }
+
+const BUBBLE_SIZE_OPTIONS = ['Small', 'Medium', 'Large'] as const
+const PERSISTENCE_OPTIONS = ['Short', 'Moderate', 'Long'] as const
 
 function ProductAddDropdown({ onSelectSingle, onSelectBulk }: { onSelectSingle: () => void; onSelectBulk: () => void }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -220,6 +227,8 @@ export default function AdminBrandsProducts() {
   const [editProductBrandId, setEditProductBrandId] = useState('')
   const [editProductReviewStatus, setEditProductReviewStatus] = useState<string>('needs_review')
   const [editProductCarbonationLevel, setEditProductCarbonationLevel] = useState<number>(5)
+  const [editProductBubbleSize, setEditProductBubbleSize] = useState<string>('')
+  const [editProductPersistence, setEditProductPersistence] = useState<string>('')
   const [editProductIsDiscontinued, setEditProductIsDiscontinued] = useState(false)
   const [editFormError, setEditFormError] = useState<string | null>(null)
   const [editSuccessMessage, setEditSuccessMessage] = useState<string | null>(null)
@@ -417,11 +426,13 @@ export default function AdminBrandsProducts() {
           brand_id,
           flavor_categories,
           flavor_tags,
-          carbonation_level,
-          is_discontinued,
-          review_status,
-          created_at,
-          brands (
+  carbonation_level,
+  bubble_size,
+  persistence,
+  is_discontinued,
+  review_status,
+  created_at,
+  brands (
             id,
             name,
             slug
@@ -838,6 +849,8 @@ export default function AdminBrandsProducts() {
       setFlavorCategories([])
       setFlavorTags([])
       setCarbonationLevel('')
+      setBubbleSize('')
+      setPersistence('')
       setServingSize('')
       setCalories('')
       setTotalFat('')
@@ -909,6 +922,20 @@ export default function AdminBrandsProducts() {
           return
         }
 
+        // Validate optional bubble_size if present
+        const bubbleSizeVal = row.bubble_size?.trim()
+        if (bubbleSizeVal && !BUBBLE_SIZE_OPTIONS.includes(bubbleSizeVal as (typeof BUBBLE_SIZE_OPTIONS)[number])) {
+          errors.push(`Row ${i + 1}: bubble_size must be one of ${BUBBLE_SIZE_OPTIONS.join(', ')}`)
+          return
+        }
+
+        // Validate optional persistence if present
+        const persistenceVal = row.persistence?.trim()
+        if (persistenceVal && !PERSISTENCE_OPTIONS.includes(persistenceVal as (typeof PERSISTENCE_OPTIONS)[number])) {
+          errors.push(`Row ${i + 1}: persistence must be one of ${PERSISTENCE_OPTIONS.join(', ')}`)
+          return
+        }
+
         rows.push(row)
       }
 
@@ -961,6 +988,11 @@ export default function AdminBrandsProducts() {
           // Ensure slug is unique
           const uniqueSlug = await ensureUniqueSlug(row.slug, 'products')
 
+          const bubbleSizeNormalized = row.bubble_size?.trim()
+          const bubbleSizeInsert = bubbleSizeNormalized && BUBBLE_SIZE_OPTIONS.includes(bubbleSizeNormalized as (typeof BUBBLE_SIZE_OPTIONS)[number]) ? bubbleSizeNormalized : null
+          const persistenceNormalized = row.persistence?.trim()
+          const persistenceInsert = persistenceNormalized && PERSISTENCE_OPTIONS.includes(persistenceNormalized as (typeof PERSISTENCE_OPTIONS)[number]) ? persistenceNormalized : null
+
           const { error } = await supabase
             .from('products')
             .insert({
@@ -972,6 +1004,8 @@ export default function AdminBrandsProducts() {
               flavor_categories: flavorCategories && flavorCategories.length > 0 ? flavorCategories : null,
               flavor_tags: flavorTags && flavorTags.length > 0 ? flavorTags : null,
               carbonation_level: Number(row.carbonation_level),
+              bubble_size: bubbleSizeInsert,
+              persistence: persistenceInsert,
               nutrition_info: Object.keys(nutritionInfo).length > 0 ? nutritionInfo : null,
               amazon_link: row.amazon_link || null,
               walmart_link: row.walmart_link || null,
@@ -1072,6 +1106,8 @@ export default function AdminBrandsProducts() {
           })(),
           review_status: editProductReviewStatus,
           carbonation_level: editProductCarbonationLevel,
+          bubble_size: editProductBubbleSize || null,
+          persistence: editProductPersistence || null,
           is_discontinued: editProductIsDiscontinued,
         })
         .eq('id', editingProduct.id)
@@ -1217,6 +1253,8 @@ export default function AdminBrandsProducts() {
                 setFlavorCategories([])
                 setFlavorTags([])
                 setCarbonationLevel('')
+                setBubbleSize('')
+                setPersistence('')
                 setServingSize('')
                 setCalories('')
                 setTotalFat('')
@@ -2122,6 +2160,40 @@ export default function AdminBrandsProducts() {
                 </div>
 
                 <div>
+                  <label htmlFor="editProductBubbleSize" className="block text-sm font-medium text-foreground mb-1">
+                    Bubble Size (optional)
+                  </label>
+                  <select
+                    id="editProductBubbleSize"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    value={editProductBubbleSize}
+                    onChange={(e) => setEditProductBubbleSize(e.target.value)}
+                  >
+                    <option value="">—</option>
+                    {BUBBLE_SIZE_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="editProductPersistence" className="block text-sm font-medium text-foreground mb-1">
+                    Persistence (optional)
+                  </label>
+                  <select
+                    id="editProductPersistence"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm"
+                    value={editProductPersistence}
+                    onChange={(e) => setEditProductPersistence(e.target.value)}
+                  >
+                    <option value="">—</option>
+                    {PERSISTENCE_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
                   <label htmlFor="editProductStatus" className="block text-sm font-medium text-foreground mb-1">
                     Status
                   </label>
@@ -2626,12 +2698,14 @@ export default function AdminBrandsProducts() {
                     <div>
                       <p className="font-medium mb-1">All columns (copy this as first row for full import):</p>
                       <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded text-xs font-mono break-all">
-                        brand_id,name,slug,verdict,carbonation_level,product_line_id,flavor_categories,flavor_tags,serving_size,calories,total_fat,sodium,total_carbohydrates,total_sugars,protein,ingredients,amazon_link,walmart_link,instacart_link,product_website_link
+                        brand_id,name,slug,verdict,carbonation_level,bubble_size,persistence,product_line_id,flavor_categories,flavor_tags,serving_size,calories,total_fat,sodium,total_carbohydrates,total_sugars,protein,ingredients,amazon_link,walmart_link,instacart_link,product_website_link
                       </code>
                     </div>
                     <div className="text-xs space-y-1">
                       <p>• <strong>brand_id:</strong> UUID from brands table</p>
                       <p>• <strong>carbonation_level:</strong> Number 1-10</p>
+                      <p>• <strong>bubble_size:</strong> Optional; one of Small, Medium, Large</p>
+                      <p>• <strong>persistence:</strong> Optional; one of Short, Moderate, Long</p>
                       <p>• <strong>flavor_categories/flavor_tags:</strong> Comma-separated values</p>
                       <p>• All other columns are strings unless specified</p>
                     </div>
