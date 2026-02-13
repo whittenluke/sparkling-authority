@@ -345,7 +345,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
             <div className="mt-6 flex flex-col sm:flex-row gap-6 sm:gap-8">
               {/* Flavor Section - vertical stack to free horizontal space for Carbonation */}
               {product.flavor_tags && product.flavor_tags.length > 0 && (
-                <div className="rounded-lg bg-card px-3 py-2 shadow-sm ring-1 ring-border sm:w-[16.25rem] shrink-0">
+                <div className="rounded-lg bg-card px-3 py-2 shadow-sm ring-1 ring-border w-fit max-w-[16.25rem] shrink-0">
                   <h3 className="text-base font-semibold text-foreground mb-2">Flavors</h3>
                   <div className="flex flex-wrap gap-1.5">
                     {product.flavor_tags.map((flavor: string) => (

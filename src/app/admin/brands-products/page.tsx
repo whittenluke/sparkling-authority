@@ -1049,6 +1049,8 @@ export default function AdminBrandsProducts() {
     setEditProductBrandId(product.brand_id ?? getProductBrand(product)?.id ?? '')
     setEditProductReviewStatus(product.review_status ?? 'needs_review')
     setEditProductCarbonationLevel(product.carbonation_level)
+    setEditProductBubbleSize(product.bubble_size ?? '')
+    setEditProductPersistence(product.persistence ?? '')
     setEditProductIsDiscontinued(product.is_discontinued)
     setEditProductVerdict(product.verdict ?? '')
     const [taste, carbonation, value] = parseReviewFullSections(product.review_full ?? null)
