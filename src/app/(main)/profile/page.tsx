@@ -87,9 +87,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
+    <div className="space-y-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Profile Settings</h1>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -168,8 +166,6 @@ export default function ProfilePage() {
               </button>
             </div>
           </form>
-        </div>
-      </main>
     </div>
   )
 } 

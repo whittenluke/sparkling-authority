@@ -1,7 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -92,12 +90,8 @@ export default async function ProductLinePage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Header />
-      <main className="flex-grow">
-        <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
-          <div className="space-y-8">
-            {/* Brand Header */}
+    <div className="space-y-8">
+      {/* Brand Header */}
             <div>
               <div className="flex items-center gap-6">
                 {/* Brand Logo/Letter */}
@@ -178,10 +172,6 @@ export default async function ProductLinePage({ params }: Props) {
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      </main>
-      <Footer />
     </div>
   )
 } 

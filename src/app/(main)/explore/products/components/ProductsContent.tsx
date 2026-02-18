@@ -32,7 +32,7 @@ export function ProductsContent({ topRatedProducts }: ProductsContentProps) {
   const [scope, setScope] = useState<Scope>('products')
 
   return (
-    <div className="container py-8 space-y-8">
+    <div className="w-full py-8 space-y-8">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
           <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary">Product Directory</h1>

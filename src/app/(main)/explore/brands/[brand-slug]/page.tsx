@@ -187,7 +187,7 @@ export default async function BrandPage({ params }: Props) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-grow">
-        <div className="mx-auto max-w-7xl py-8">
+        <div className="w-full py-8">
           {/* Breadcrumb and Header - with padding */}
           <div className="px-4 sm:px-6 lg:px-8 space-y-8">
             {/* Breadcrumb */}

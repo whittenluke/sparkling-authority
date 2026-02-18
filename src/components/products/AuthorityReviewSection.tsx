@@ -17,49 +17,49 @@ export function AuthorityReviewSection({ verdict, reviewFull }: AuthorityReviewS
   if (!hasVerdict && !hasReviewFull) return null
 
   return (
-    <div className="pt-4 pb-4">
+    <div className="pb-2">
       {hasVerdict && (
-        <p className="mt-4 text-sm text-muted-foreground first:mt-0">
+        <p className="text-sm text-muted-foreground first:mt-0">
           {verdict}
         </p>
+      )}
+      {hasReviewFull && (
+        <button
+          type="button"
+          onClick={() => setExpanded(prev => !prev)}
+          aria-expanded={expanded}
+          aria-controls="full-review-content"
+          className="mt-3 inline-flex items-center rounded-lg border border-border bg-transparent px-3 py-2 text-sm font-medium text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+        >
+          {expanded ? 'Hide full review' : 'Read full review'}
+        </button>
       )}
       {hasReviewFull && (() => {
         const [taste, carbonation, value] = parseReviewFullSections(reviewFull)
         return (
-          <>
-            <button
-              type="button"
-              onClick={() => setExpanded(prev => !prev)}
-              aria-expanded={expanded}
-              aria-controls="full-review-content"
-              className="mt-3 inline-flex items-center rounded-lg border border-border bg-transparent px-3 py-2 text-sm font-medium text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-            >
-              {expanded ? 'Hide full review' : 'Read full review'}
-            </button>
-            <div
-              id="full-review-content"
-              className={`mt-4 rounded-lg border border-border bg-sky-50/90 dark:bg-sky-950/20 shadow-sm px-4 py-3 ${!expanded ? 'hidden' : ''}`}
-            >
-              {taste && (
-                <>
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Taste & Flavor</h3>
-                  <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{taste}</p>
-                </>
-              )}
-              {carbonation && (
-                <div className={taste ? 'mt-3' : ''}>
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Carbonation & Mouthfeel</h3>
-                  <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{carbonation}</p>
-                </div>
-              )}
-              {value && (
-                <div className={taste || carbonation ? 'mt-3' : ''}>
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Value & Context</h3>
-                  <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{value}</p>
-                </div>
-              )}
-            </div>
-          </>
+          <div
+            id="full-review-content"
+            className={`mt-4 rounded-lg border border-border bg-sky-50/90 dark:bg-sky-950/20 shadow-sm px-4 py-3 ${!expanded ? 'hidden' : ''}`}
+          >
+            {taste && (
+              <>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Taste & Flavor</h3>
+                <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{taste}</p>
+              </>
+            )}
+            {carbonation && (
+              <div className={taste ? 'mt-3' : ''}>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Carbonation & Mouthfeel</h3>
+                <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{carbonation}</p>
+              </div>
+            )}
+            {value && (
+              <div className={taste || carbonation ? 'mt-3' : ''}>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Value & Context</h3>
+                <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{value}</p>
+              </div>
+            )}
+          </div>
         )
       })()}
     </div>

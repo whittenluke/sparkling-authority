@@ -3,10 +3,14 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
-export function Footer() {
+type FooterProps = {
+  contentMaxWidth?: string
+}
+
+export function Footer({ contentMaxWidth = 'max-w-5xl' }: FooterProps) {
   return (
     <footer className="app-background">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className={`mx-auto ${contentMaxWidth} px-4 py-12 sm:px-6 lg:px-8`}>
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8">
             <div className="flex items-center">

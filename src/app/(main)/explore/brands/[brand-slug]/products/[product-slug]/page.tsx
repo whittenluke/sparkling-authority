@@ -228,11 +228,8 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
     ) ?? []
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <main className="flex-grow">
-        <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
-          <div className="space-y-8">
-            {/* Breadcrumb */}
+    <div className="space-y-8">
+      {/* Breadcrumb */}
             <nav className="flex" aria-label="Breadcrumb">
               <ol className="flex items-center space-x-2">
                 <li>
@@ -268,16 +265,16 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
             </nav>
 
             {/* Product Header */}
-            <div className="flex flex-col lg:flex-row gap-8">
-              {/* Left Column: Product Image */}
-              <div className="lg:w-1/3 lg:shrink-0">
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
+              {/* Left: Product Image (fixed) */}
+              <div className="lg:w-[22rem] lg:shrink-0">
                 {product.thumbnail ? (
                   <div className="relative w-full aspect-square max-w-md mx-auto lg:max-w-none rounded-xl overflow-hidden flex items-center justify-center">
                     <Image
                       src={product.thumbnail}
                       alt={product.name}
-                      width={400}
-                      height={400}
+                      width={560}
+                      height={560}
                       className="w-full h-full object-contain"
                     />
                     {product.is_discontinued && (
@@ -310,114 +307,134 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                 )}
               </div>
 
-              {/* Right Column: Product Details */}
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
-                  {product.is_discontinued && (
-                    <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground ring-1 ring-border">
-                      Discontinued
-                    </span>
-                  )}
-                </div>
-                <p className="mt-2 text-lg text-muted-foreground">
-                  by {product.brands.name}
-                </p>
-
-                {/* Rating Section */}
-                <div className="mt-4">
-                  <QuickRating
-                    productId={product.id}
-                    productName={product.name}
-                    brandName={product.brands.name}
-                    initialRating={userRating}
-                    initialReview={userReviewText}
-                    averageRating={averageRating}
-                    totalRatings={ratings.length}
-                    totalReviews={reviewCount}
-                    scrollToReviewsId="reviews"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Profile Section: Flavor + Carbonation - Full Width */}
-            <div className="mt-6 flex flex-col sm:flex-row gap-6 sm:gap-8">
-              {/* Flavor Section - vertical stack to free horizontal space for Carbonation */}
-              {product.flavor_tags && product.flavor_tags.length > 0 && (
-                <div className="rounded-lg bg-card px-3 py-2 shadow-sm ring-1 ring-border w-fit max-w-[16.25rem] shrink-0">
-                  <h3 className="text-base font-semibold text-foreground mb-2">Flavors</h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    {product.flavor_tags.map((flavor: string) => (
-                      <span
-                        key={flavor}
-                        className="inline-flex items-center rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground w-fit"
-                      >
-                        {flavor}
-                      </span>
-                    ))}
+              {/* Right: Product Info (constrained, not edge-to-edge) */}
+              <div className="flex-1 min-w-0 max-w-2xl">
+                {/* Two columns: Title/Brand/Rating (left, more space) | Flavor & Carbonation (right, stacked) */}
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_minmax(0,15rem)] gap-4 sm:gap-6 items-start">
+                  <div className="min-w-0 space-y-4">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
+                        {product.is_discontinued && (
+                          <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground ring-1 ring-border">
+                            Discontinued
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1 text-lg text-muted-foreground">
+                        by {product.brands.name}
+                      </p>
+                    </div>
+                    {/* Rating – below title and brand */}
+                    <QuickRating
+                      productId={product.id}
+                      productName={product.name}
+                      brandName={product.brands.name}
+                      initialRating={userRating}
+                      initialReview={userReviewText}
+                      averageRating={averageRating}
+                      totalRatings={ratings.length}
+                      totalReviews={reviewCount}
+                      scrollToReviewsId="reviews"
+                      size="large"
+                    />
+                  </div>
+                  <div className="sm:pl-2 flex flex-col gap-4 w-full sm:w-auto">
+                    {product.flavor_tags && product.flavor_tags.length > 0 && (
+                      <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-sm min-w-0">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                          Flavor
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {product.flavor_tags.map((flavor: string) => (
+                            <span
+                              key={flavor}
+                              className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-sm font-medium text-primary"
+                            >
+                              {flavor}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {product.carbonation_level != null && (
+                      <div className="rounded-xl border border-border bg-card px-4 py-3 shadow-sm min-w-0">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                          Carbonation Intensity
+                        </p>
+                        <div className="flex items-center gap-1.5" aria-label={`Carbonation level ${product.carbonation_level} out of 10`}>
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                            <span
+                              key={n}
+                              className={`h-2.5 w-2.5 rounded-full shrink-0 ${
+                                n <= product.carbonation_level
+                                  ? 'bg-primary'
+                                  : 'bg-muted'
+                              }`}
+                              aria-hidden
+                            />
+                          ))}
+                          <span className="ml-2 text-sm font-semibold tabular-nums text-foreground">
+                            {product.carbonation_level}/10
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
 
-              {/* Carbonation Section: header + number (1-10), width fits content */}
-              {product.carbonation_level != null && (
-                <div className="rounded-lg bg-card px-3 py-2 shadow-sm ring-1 ring-border w-fit shrink-0 flex flex-col items-center gap-2">
-                  <h3 className="text-base font-semibold text-foreground">Carbonation</h3>
-                  <span className="text-2xl font-semibold text-foreground tabular-nums">{product.carbonation_level}</span>
+                {/* Verdict section: own block with subtle border, toolbar + body */}
+                <section
+                  className="mt-6 rounded-xl border border-border bg-card/50 px-4 py-4 sm:px-5 sm:py-5 shadow-sm"
+                  aria-labelledby="verdict-heading"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      {(product.verdict || product.review_full) && (
+                        <h2 id="verdict-heading" className="text-xl font-semibold text-foreground">Verdict</h2>
+                      )}
+                    </div>
+                    <WhereToBuy
+                      amazonLink={product.amazon_link || product.brands.amazon_link}
+                      walmartLink={product.walmart_link || product.brands.walmart_link}
+                      instacartLink={product.instacart_link || product.brands.instacart_link}
+                      brandLink={product.product_website_link || product.brands.brand_website_link}
+                      brandName={product.brands.name}
+                      className="my-0"
+                    />
+                  </div>
+                  {(product.verdict || product.review_full) && (
+                    <div className="mt-4 pt-2">
+                      <AuthorityReviewSection verdict={product.verdict ?? null} reviewFull={product.review_full ?? null} />
+                    </div>
+                  )}
+                </section>
+
+                {/* Carbonation, Nutrition, Ingredients – same column as Verdict */}
+                <div className="mt-6">
+                  <CarbonationProfileDropdown
+                    carbonationLevel={product.carbonation_level ?? null}
+                    bubbleSize={product.bubble_size ?? null}
+                    persistence={product.persistence ?? null}
+                  />
+                  <NutritionDropdown nutrition={nutrition} />
+                  <IngredientsDropdown ingredients={nutrition.ingredients} />
                 </div>
-              )}
-            </div>
 
-            {/* Single Column Section: Purchase, Description */}
-            <div>
-
-              {/* Where to Buy Section */}
-              <div className="mt-6">
-                <WhereToBuy
-                  amazonLink={product.amazon_link || product.brands.amazon_link}
-                  walmartLink={product.walmart_link || product.brands.walmart_link}
-                  instacartLink={product.instacart_link || product.brands.instacart_link}
-                  brandLink={product.product_website_link || product.brands.brand_website_link}
-                  brandName={product.brands.name}
-                />
+                {/* Affiliate Disclosure – same column as Verdict */}
+                <div className="mt-8">
+                  <AffiliateDisclosure />
+                </div>
               </div>
-
-              {/* Sparkling Authority Review */}
-              {(product.verdict || product.review_full) && (
-                <h2 className="mt-6 text-xl font-semibold text-foreground">Sparkling Authority Review</h2>
-              )}
-              <AuthorityReviewSection verdict={product.verdict ?? null} reviewFull={product.review_full ?? null} />
-
-              {/* Carbonation Profile Dropdown */}
-              <CarbonationProfileDropdown
-                carbonationLevel={product.carbonation_level ?? null}
-                bubbleSize={product.bubble_size ?? null}
-                persistence={product.persistence ?? null}
-              />
-
-              {/* Nutrition Facts Dropdown */}
-              <NutritionDropdown nutrition={nutrition} />
-
-              {/* Ingredients Dropdown */}
-              <IngredientsDropdown ingredients={nutrition.ingredients} />
             </div>
 
-            {/* Affiliate Disclosure */}
-            <div className="mt-8">
-              <AffiliateDisclosure />
-            </div>
-
-            {/* Reviews Section */}
-            <section id="reviews" aria-label="Reviews">
+            {/* Reviews: filter left, cards right (cards same width as product info column) */}
+            <section id="reviews" aria-label="Reviews" className="mt-8">
               <ProductReviewsSection
                 reviews={filteredReviews}
                 sessionUserId={session?.user?.id}
               />
             </section>
-          </div>
-        </div>
-      </main>
     </div>
   )
 }

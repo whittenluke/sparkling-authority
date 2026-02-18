@@ -443,7 +443,7 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
   }
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-8 w-full">
       {/* Products Section */}
       {scope === 'products' && products.length > 0 && (
         <div className="space-y-4">
