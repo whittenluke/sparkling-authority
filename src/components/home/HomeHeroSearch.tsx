@@ -43,7 +43,7 @@ export function HomeHeroSearch() {
   return (
     <div ref={containerRef} className="relative w-full max-w-2xl mx-auto">
       <form onSubmit={handleSubmit}>
-        <div className="relative rounded-xl border border-input bg-background shadow-sm ring-1 ring-border/50 focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all">
+        <div className="relative rounded-xl border border-input bg-background shadow-md ring-1 ring-black/5 dark:ring-white/5 focus-within:shadow-lg focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <Search className="h-5 w-5 text-muted-foreground" />
           </div>

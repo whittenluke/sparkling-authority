@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Crown, Cherry, Grid3x3 } from 'lucide-react'
+import { Crown, Cherry, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { PostgrestError } from '@supabase/supabase-js'
 import { CompactProductCard } from '@/app/(main)/explore/products/components/CompactProductCard'
@@ -374,12 +374,12 @@ export default async function Home() {
               <p className="text-sm font-normal text-muted-foreground">Discover by taste</p>
             </Link>
 
-            <Link href="/explore/products" className="group relative flex flex-col items-center text-center rounded-xl bg-card p-5 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
+            <Link href="/explore/carbonation" className="group relative flex flex-col items-center text-center rounded-xl bg-card p-5 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-3">
-                <Grid3x3 className="h-8 w-8" />
+                <Sparkles className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-clash-display font-semibold text-primary mb-1">Directory</h3>
-              <p className="text-sm font-normal text-muted-foreground">Search all products</p>
+              <h3 className="text-xl font-clash-display font-semibold text-primary mb-1">Carbonation</h3>
+              <p className="text-sm font-normal text-muted-foreground">Search by intensity</p>
             </Link>
             </div>
         </section>

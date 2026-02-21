@@ -38,7 +38,7 @@ export function BrowseByFlavor() {
             href={`/explore/flavors?category=${category.slug}`}
             className="group relative flex flex-col items-center justify-center rounded-2xl bg-card p-6 shadow-sm ring-1 ring-border hover:ring-primary transition-all text-center"
           >
-            <FlavorIcon category={category.slug} />
+            <FlavorIcon category={category.slug} size={80} />
             <h3 className="text-base font-clash-display font-medium text-primary mt-4">
               {category.name}
             </h3>

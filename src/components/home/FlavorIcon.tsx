@@ -28,7 +28,7 @@ type IconType = {
   blurDataURL?: string
 }
 
-export function FlavorIcon({ category, size = 28 }: FlavorIconProps) {
+export function FlavorIcon({ category, size = 56 }: FlavorIconProps) {
   const iconMap: Record<string, IconType> = {
     apple: appleIcon,
     berry: berryIcon,
@@ -50,13 +50,16 @@ export function FlavorIcon({ category, size = 28 }: FlavorIconProps) {
   const altText = `${category} flavor icon`
 
   return (
-    <div className="flex h-20 w-20 items-center justify-center rounded-xl">
+    <div
+      className="flex items-center justify-center rounded-xl"
+      style={{ width: size + 24, height: size + 24 }}
+    >
       <Image
         src={iconSrc}
         alt={altText}
         width={size}
         height={size}
-        className="h-14 w-14"
+        className="object-contain"
         priority
       />
     </div>
