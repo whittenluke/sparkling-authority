@@ -11,6 +11,8 @@ type Scope = 'products' | 'brands'
 interface SearchResultsProps {
   searchQuery: string
   scope: Scope
+  /** When 'dropdown', show limited results and a "View all" link (e.g. homepage overlay) */
+  variant?: 'page' | 'dropdown'
 }
 
 type Brand = {
@@ -77,8 +79,9 @@ function toProductWithReviews(product: SupabaseProductData): {
 }
 
 const INITIAL_PRODUCTS_COUNT = 16
+const DROPDOWN_PRODUCTS_COUNT = 8
 
-export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
+export function SearchResults({ searchQuery, scope, variant = 'page' }: SearchResultsProps) {
   const [products, setProducts] = useState<Product[]>([])
   const [brands, setBrands] = useState<Brand[]>([])
   const [loading, setLoading] = useState(false)
@@ -442,20 +445,25 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
     )
   }
 
+  const isDropdown = variant === 'dropdown'
+  const productLimit = isDropdown ? DROPDOWN_PRODUCTS_COUNT : (showAllProducts ? products.length : INITIAL_PRODUCTS_COUNT)
+  const displayedProducts = products.slice(0, productLimit)
+  const hasMoreProducts = products.length > productLimit
+
   return (
-    <div className="space-y-8 w-full">
+    <div className={`w-full ${isDropdown ? 'space-y-4' : 'space-y-8'}`}>
       {/* Products Section */}
       {scope === 'products' && products.length > 0 && (
-        <div className="space-y-4">
+        <div className={isDropdown ? 'space-y-3' : 'space-y-4'}>
           <h2 className="text-lg font-semibold text-primary">
             Products ({products.length})
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {products.slice(0, showAllProducts ? products.length : INITIAL_PRODUCTS_COUNT).map((product) => (
+          <div className={`grid gap-4 ${isDropdown ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'}`}>
+            {displayedProducts.map((product) => (
               <CompactProductCard key={product.id} product={product} />
             ))}
           </div>
-          {!showAllProducts && products.length > INITIAL_PRODUCTS_COUNT && (
+          {!isDropdown && !showAllProducts && products.length > INITIAL_PRODUCTS_COUNT && (
             <div className="text-center pt-4">
               <button
                 onClick={() => setShowAllProducts(true)}
@@ -465,12 +473,22 @@ export function SearchResults({ searchQuery, scope }: SearchResultsProps) {
               </button>
             </div>
           )}
+          {isDropdown && hasMoreProducts && (
+            <div className="pt-2 text-center">
+              <a
+                href={`/explore/products?q=${encodeURIComponent(searchQuery)}&scope=products`}
+                className="text-sm font-medium text-primary hover:text-primary/90"
+              >
+                View all {products.length} results →
+              </a>
+            </div>
+          )}
         </div>
       )}
 
       {/* Brands Section */}
       {scope === 'brands' && brands.length > 0 && (
-        <div className="space-y-4">
+        <div className={isDropdown ? 'space-y-3' : 'space-y-4'}>
           <h2 className="text-lg font-semibold text-primary">
             Brands ({brands.length})
           </h2>

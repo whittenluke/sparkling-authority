@@ -45,7 +45,14 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function ProductsPage() {
+type ProductsPageProps = {
+  searchParams: Promise<{ q?: string }>
+}
+
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const resolved = await searchParams
+  const initialQuery = typeof resolved.q === 'string' ? resolved.q : ''
+
   const supabase = createClient()
 
   // Get products with their reviews for top rated section
@@ -117,5 +124,10 @@ export default async function ProductsPage() {
     })
     .slice(0, 10) : [] // Top 10 products
 
-  return <ProductsContent topRatedProducts={topRatedProducts} />
+  return (
+    <ProductsContent
+      topRatedProducts={topRatedProducts}
+      initialSearchQuery={initialQuery}
+    />
+  )
 }

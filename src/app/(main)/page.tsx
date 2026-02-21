@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Crown, Cherry, Grid3x3, ArrowRight } from 'lucide-react'
+import { Crown, Cherry, Grid3x3 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { PostgrestError } from '@supabase/supabase-js'
 import { CompactProductCard } from '@/app/(main)/explore/products/components/CompactProductCard'
@@ -8,6 +8,7 @@ import { BrowseByBrand } from '@/components/home/BrowseByBrand'
 import { UnflavoredChampions } from '@/components/home/UnflavoredChampions'
 import { StrongestCarbonation } from '@/components/home/StrongestCarbonation'
 import { CitrusCollection } from '@/components/home/CitrusCollection'
+import { HomeHeroSearch } from '@/components/home/HomeHeroSearch'
 
 type Brand = {
   id: string
@@ -336,57 +337,52 @@ export default async function Home() {
 
     return (
       <>
-        {/* Exploration Section */}
-        <div className="pt-8 pb-16">
+        {/* Page title and subtext – above the explore section */}
+        <div className="pt-8">
           <h1 className="text-center font-clash-display text-3xl font-medium text-primary mb-4 sm:text-4xl">
             The Definitive Sparkling Water Database
           </h1>
-          <p className="text-center text-muted-foreground text-lg mb-10">
+          <p className="text-center text-muted-foreground text-lg mb-8">
             Objective ratings, carbonation metrics, and flavor profiles across a growing list of brands.
           </p>
+        </div>
+
+        {/* Explore section – search, “Explore by”, and cards in one visual block */}
+        <section className="rounded-2xl border border-border bg-card shadow-sm ring-1 ring-black/5 dark:ring-white/5 px-4 py-8 sm:px-8 sm:py-10 mt-4">
+          <div className="mb-10">
+            <HomeHeroSearch />
+          </div>
           <h2 className="text-center font-clash-display text-2xl font-medium text-primary mb-12 sm:text-3xl">
             Explore sparkling waters by
           </h2>
 
           {/* Main Exploration Cards */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <Link href="/explore/brands" className="group relative flex flex-col items-center text-center rounded-2xl bg-card p-10 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all min-h-[280px]">
-              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 text-primary mb-6">
-                <Crown className="h-12 w-12" />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Link href="/explore/brands" className="group relative flex flex-col items-center text-center rounded-xl bg-card p-5 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-3">
+                <Crown className="h-8 w-8" />
               </div>
-              <h3 className="text-2xl font-clash-display font-semibold text-primary mb-2">Brand</h3>
-              <p className="text-base font-normal text-muted-foreground mb-6">Browse by maker</p>
-              <div className="mt-auto inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
-                <span>Explore</span>
-                <ArrowRight className="h-5 w-5" />
-              </div>
+              <h3 className="text-xl font-clash-display font-semibold text-primary mb-1">Brand</h3>
+              <p className="text-sm font-normal text-muted-foreground">Browse by maker</p>
             </Link>
 
-            <Link href="/explore/flavors" className="group relative flex flex-col items-center text-center rounded-2xl bg-card p-10 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all min-h-[280px]">
-              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 text-primary mb-6">
-                <Cherry className="h-12 w-12" />
+            <Link href="/explore/flavors" className="group relative flex flex-col items-center text-center rounded-xl bg-card p-5 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-3">
+                <Cherry className="h-8 w-8" />
               </div>
-              <h3 className="text-2xl font-clash-display font-semibold text-primary mb-2">Flavor</h3>
-              <p className="text-base font-normal text-muted-foreground mb-6">Discover by taste</p>
-              <div className="mt-auto inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
-                <span>Explore</span>
-                <ArrowRight className="h-5 w-5" />
-              </div>
+              <h3 className="text-xl font-clash-display font-semibold text-primary mb-1">Flavor</h3>
+              <p className="text-sm font-normal text-muted-foreground">Discover by taste</p>
             </Link>
 
-            <Link href="/explore/products" className="group relative flex flex-col items-center text-center rounded-2xl bg-card p-10 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all min-h-[280px]">
-              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 text-primary mb-6">
-                <Grid3x3 className="h-12 w-12" />
+            <Link href="/explore/products" className="group relative flex flex-col items-center text-center rounded-xl bg-card p-5 ring-1 ring-gray-200/50 dark:ring-gray-700/50 hover:ring-primary transition-all">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-3">
+                <Grid3x3 className="h-8 w-8" />
               </div>
-              <h3 className="text-2xl font-clash-display font-semibold text-primary mb-2">Directory</h3>
-              <p className="text-base font-normal text-muted-foreground mb-6">Search all products</p>
-              <div className="mt-auto inline-flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
-                <span>Explore</span>
-                <ArrowRight className="h-5 w-5" />
-              </div>
+              <h3 className="text-xl font-clash-display font-semibold text-primary mb-1">Directory</h3>
+              <p className="text-sm font-normal text-muted-foreground">Search all products</p>
             </Link>
-          </div>
-        </div>
+            </div>
+        </section>
 
         {/* Strongest Carbonation Section */}
         <StrongestCarbonation products={strongestCarbonationProducts} />

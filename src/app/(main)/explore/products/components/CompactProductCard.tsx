@@ -30,10 +30,10 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
   return (
     <Link
       href={`/explore/brands/${product.brand.slug}/products/${product.slug}`}
-      className="group block rounded-lg bg-card p-3 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all overflow-hidden"
+      className="group block rounded-md bg-card p-2 shadow-sm ring-1 ring-border hover:shadow-md hover:ring-primary transition-all overflow-hidden"
     >
       {/* Product Image */}
-      <div className="aspect-square w-full rounded-md overflow-hidden mb-2 bg-muted flex items-center justify-center">
+      <div className="aspect-square w-full rounded overflow-hidden mb-1.5 bg-muted flex items-center justify-center">
         {product.thumbnail ? (
           <Image
             src={product.thumbnail}
@@ -43,29 +43,29 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
             className="object-cover h-full w-full group-hover:scale-105 transition-transform"
           />
         ) : (
-          <div className="h-full w-full flex items-center justify-center text-foreground text-2xl font-medium">
+          <div className="h-full w-full flex items-center justify-center text-foreground text-xl font-medium">
             {product.name.charAt(0)}
           </div>
         )}
       </div>
 
       {/* Product Info */}
-      <div className="space-y-1 min-w-0">
+      <div className="space-y-0.5 min-w-0">
         {/* Brand Name */}
-        <p className="text-xs text-muted-foreground truncate">
+        <p className="text-[11px] text-muted-foreground truncate">
           {product.brand.name}
         </p>
 
         {/* Product Name */}
-        <h3 className="font-medium text-sm text-foreground group-hover:text-primary line-clamp-2 min-h-[2.5rem]">
+        <h3 className="font-medium text-xs text-foreground group-hover:text-primary line-clamp-2 min-h-[2rem]">
           {product.name}
         </h3>
 
         {/* Rating */}
-        <div className="flex items-center gap-0.5 pt-1 min-w-0">
+        <div className="flex items-center gap-0.5 pt-0.5 min-w-0">
           {typeof product.trueAverage === 'number' ? (
             <>
-              <span className="text-xs font-medium text-foreground whitespace-nowrap">
+              <span className="text-[11px] font-medium text-foreground whitespace-nowrap">
                 {product.trueAverage.toFixed(1)}
               </span>
               <div className="flex gap-0.5 flex-shrink-0">
@@ -73,16 +73,16 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
                   <PartialStar
                     key={index}
                     fillPercentage={percentage}
-                    size={11}
+                    size={10}
                   />
                 ))}
               </div>
-              <span className="text-xs text-muted-foreground whitespace-nowrap">
+              <span className="text-[11px] text-muted-foreground whitespace-nowrap">
                 ({product.ratingCount})
               </span>
             </>
           ) : (
-            <span className="text-xs text-muted-foreground">No ratings</span>
+            <span className="text-[11px] text-muted-foreground">No ratings</span>
           )}
         </div>
       </div>

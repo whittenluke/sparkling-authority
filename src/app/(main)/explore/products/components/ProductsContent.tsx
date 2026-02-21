@@ -23,13 +23,11 @@ type Product = {
 
 type ProductsContentProps = {
   topRatedProducts: Product[]
+  initialSearchQuery?: string
 }
 
-type Scope = 'products' | 'brands'
-
-export function ProductsContent({ topRatedProducts }: ProductsContentProps) {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [scope, setScope] = useState<Scope>('products')
+export function ProductsContent({ topRatedProducts, initialSearchQuery = '' }: ProductsContentProps) {
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery)
 
   return (
     <div className="w-full py-8 space-y-8">
@@ -40,15 +38,14 @@ export function ProductsContent({ topRatedProducts }: ProductsContentProps) {
             Browse our comprehensive collection of sparkling water products.
           </p>
         </div>
-        <SearchSection 
-          scope={scope}
-          onScopeChange={setScope}
-          onSearchChangeAction={setSearchQuery} 
+        <SearchSection
+          onSearchChangeAction={setSearchQuery}
+          initialSearchValue={initialSearchQuery}
         />
       </div>
 
       {searchQuery && searchQuery.length >= 2 && (
-        <SearchResults searchQuery={searchQuery} scope={scope} />
+        <SearchResults searchQuery={searchQuery} scope="products" />
       )}
     </div>
   )
