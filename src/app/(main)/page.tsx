@@ -117,7 +117,7 @@ export default async function Home() {
         }
         return b.ratingCount - a.ratingCount
       })
-      .slice(0, 10) : [] // Show top 10 for Best Overall (two columns of 5)
+      .slice(0, 8) : [] // Show top 8 for Best Overall
 
     // Get total count of unflavored products
     const { count: unflavoredTotalCount } = await supabase
@@ -339,7 +339,7 @@ export default async function Home() {
       <>
         {/* Page title and subtext – above the explore section */}
         <div className="pt-8">
-          <h1 className="text-center font-clash-display text-3xl font-medium text-primary mb-4 sm:text-4xl">
+          <h1 className="text-center font-clash-display text-4xl font-medium text-primary mb-4 sm:text-5xl">
             The Definitive Sparkling Water Database
           </h1>
           <p className="text-center text-muted-foreground text-lg mb-8">
@@ -390,9 +390,9 @@ export default async function Home() {
         {/* Citrus Collection Section */}
         <CitrusCollection products={citrusProducts} />
 
-        {/* Best Overall Section – two columns (1–5, 6–10), rank + same CompactProductCard as other sections */}
+        {/* Best Overall Section – same layout as Strongest Carbonation / Citrus: grid on desktop, horizontal scroll on mobile */}
         {topProducts.length > 0 && (
-          <div className="mt-16">
+          <div className="mt-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-clash-display text-2xl font-medium text-primary sm:text-3xl">
                 Best Overall
@@ -405,38 +405,26 @@ export default async function Home() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-4xl">
-              {/* Column 1: ranks 1–5 */}
-              <div className="space-y-4">
-                {topProducts.slice(0, 5).map((product, index) => (
-                  <div key={product.id} className="flex gap-3 items-start">
-                    <div
-                      className="flex-shrink-0 w-10 pt-1 text-center text-lg font-semibold tabular-nums text-primary"
-                      aria-hidden
-                    >
-                      {index + 1}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <CompactProductCard product={product} />
-                    </div>
-                  </div>
+            <div className="relative">
+              {/* Desktop/Tablet: same grid as other sections */}
+              <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {topProducts.map((product) => (
+                  <CompactProductCard key={product.id} product={product} />
                 ))}
               </div>
-              {/* Column 2: ranks 6–10 */}
-              <div className="space-y-4">
-                {topProducts.slice(5, 10).map((product, index) => (
-                  <div key={product.id} className="flex gap-3 items-start">
-                    <div
-                      className="flex-shrink-0 w-10 pt-1 text-center text-lg font-semibold tabular-nums text-primary"
-                      aria-hidden
-                    >
-                      {index + 6}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <CompactProductCard product={product} />
-                    </div>
+
+              {/* Mobile: horizontal scroll, same as other sections */}
+              <div className="md:hidden relative">
+                <div className="overflow-x-auto pb-4 scrollbar-hide scroll-smooth -mx-4 px-4">
+                  <div className="flex gap-3 w-max">
+                    {topProducts.map((product) => (
+                      <div key={product.id} className="w-[160px] flex-shrink-0">
+                        <CompactProductCard product={product} />
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+                <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none" />
               </div>
             </div>
 

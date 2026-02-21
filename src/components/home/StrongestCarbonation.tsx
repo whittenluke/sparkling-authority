@@ -29,46 +29,57 @@ export function StrongestCarbonation({ products }: StrongestCarbonationProps) {
   }
 
   return (
-    <div className="mt-16">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-clash-display text-2xl font-medium text-primary sm:text-3xl">
-          Strongest Carbonation
-        </h2>
-        <Link
-          href="/ratings/strongest-carbonation"
-          className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
-        >
-          View All
-        </Link>
-      </div>
+    <section
+      className="relative left-1/2 mt-16 w-screen -translate-x-1/2 py-16 overflow-hidden bg-[hsl(var(--background))]"
+    >
+      {/* Soft gradient overlay so content stays readable */}
+      <div
+        className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-background/30 via-transparent to-background/30"
+        aria-hidden
+      />
 
-      {/* Responsive Grid/Scroll Container */}
-      <div className="relative">
-        {/* Desktop/Tablet: Grid Layout */}
-        <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {products.slice(0, 8).map((product) => (
-            <CompactProductCard
-              key={product.id}
-              product={product}
-            />
-          ))}
+      {/* Content: same width as rest of page */}
+      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-clash-display text-2xl font-medium text-primary sm:text-3xl">
+            Strongest Carbonation
+          </h2>
+          <Link
+            href="/ratings/strongest-carbonation"
+            className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
+          >
+            View All
+          </Link>
         </div>
 
-        {/* Mobile: Horizontal Scroll with Fade Edge */}
-        <div className="md:hidden relative">
-          <div className="overflow-x-auto pb-4 scrollbar-hide scroll-smooth -mx-4 px-4">
-            <div className="flex gap-3 w-max">
-              {products.map((product) => (
-                <div key={product.id} className="w-[160px] flex-shrink-0">
-                  <CompactProductCard product={product} />
-                </div>
-              ))}
-            </div>
+        {/* Responsive Grid/Scroll Container */}
+        <div className="relative">
+          {/* Desktop/Tablet: Grid Layout */}
+          <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {products.slice(0, 8).map((product) => (
+              <CompactProductCard
+                key={product.id}
+                product={product}
+              />
+            ))}
           </div>
-          {/* Fade edge effect on right */}
-          <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+
+          {/* Mobile: Horizontal Scroll with Fade Edge */}
+          <div className="md:hidden relative">
+            <div className="overflow-x-auto pb-4 scrollbar-hide scroll-smooth -mx-4 px-4">
+              <div className="flex gap-3 w-max">
+                {products.map((product) => (
+                  <div key={product.id} className="w-[160px] flex-shrink-0">
+                    <CompactProductCard product={product} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Fade edge effect on right */}
+            <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
