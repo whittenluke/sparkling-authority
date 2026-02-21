@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Crown, Cherry, Grid3x3, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { PostgrestError } from '@supabase/supabase-js'
-import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
+import { CompactProductCard } from '@/app/(main)/explore/products/components/CompactProductCard'
 import { BrowseByFlavor } from '@/components/home/BrowseByFlavor'
 import { BrowseByBrand } from '@/components/home/BrowseByBrand'
 import { UnflavoredChampions } from '@/components/home/UnflavoredChampions'
@@ -116,7 +116,7 @@ export default async function Home() {
         }
         return b.ratingCount - a.ratingCount
       })
-      .slice(0, 5) : [] // Show top 5 products
+      .slice(0, 10) : [] // Show top 10 for Best Overall (two columns of 5)
 
     // Get total count of unflavored products
     const { count: unflavoredTotalCount } = await supabase
@@ -337,8 +337,14 @@ export default async function Home() {
     return (
       <>
         {/* Exploration Section */}
-        <div className="py-16">
-          <h2 className="text-center font-clash-display text-3xl font-medium text-primary mb-12">
+        <div className="pt-8 pb-16">
+          <h1 className="text-center font-clash-display text-3xl font-medium text-primary mb-4 sm:text-4xl">
+            The Definitive Sparkling Water Database
+          </h1>
+          <p className="text-center text-muted-foreground text-lg mb-10">
+            Objective ratings, carbonation metrics, and flavor profiles across a growing list of brands.
+          </p>
+          <h2 className="text-center font-clash-display text-2xl font-medium text-primary mb-12 sm:text-3xl">
             Explore sparkling waters by
           </h2>
 
@@ -388,35 +394,54 @@ export default async function Home() {
         {/* Citrus Collection Section */}
         <CitrusCollection products={citrusProducts} />
 
-        {/* Top Rated Section */}
+        {/* Best Overall Section – two columns (1–5, 6–10), rank + same CompactProductCard as other sections */}
         {topProducts.length > 0 && (
-          <div className="mt-16 max-w-3xl mx-auto w-full px-4 sm:px-0">
-            <div className="flex items-center justify-between mb-6">
-              <Link
-                href="/ratings/best-overall"
-                className="font-clash-display text-xl sm:text-2xl font-medium text-primary hover:text-primary/90"
-              >
-                Top Rated
-              </Link>
+          <div className="mt-16">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-clash-display text-2xl font-medium text-primary sm:text-3xl">
+                Best Overall
+              </h2>
               <Link
                 href="/ratings/best-overall"
                 className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm hover:bg-primary/20 transition-colors"
               >
-                View All Top Rated
+                View All
               </Link>
             </div>
 
-            <div className="space-y-3">
-              {topProducts.map((product, index) => (
-                <div key={product.id} className="relative">
-                  <div className="absolute left-6 top-6 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg font-medium z-10">
-                    {index + 1}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-4xl">
+              {/* Column 1: ranks 1–5 */}
+              <div className="space-y-4">
+                {topProducts.slice(0, 5).map((product, index) => (
+                  <div key={product.id} className="flex gap-3 items-start">
+                    <div
+                      className="flex-shrink-0 w-10 pt-1 text-center text-lg font-semibold tabular-nums text-primary"
+                      aria-hidden
+                    >
+                      {index + 1}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <CompactProductCard product={product} />
+                    </div>
                   </div>
-                  <div className="pl-24">
-                    <ProductCard product={product} />
+                ))}
+              </div>
+              {/* Column 2: ranks 6–10 */}
+              <div className="space-y-4">
+                {topProducts.slice(5, 10).map((product, index) => (
+                  <div key={product.id} className="flex gap-3 items-start">
+                    <div
+                      className="flex-shrink-0 w-10 pt-1 text-center text-lg font-semibold tabular-nums text-primary"
+                      aria-hidden
+                    >
+                      {index + 6}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <CompactProductCard product={product} />
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
             <div className="mt-6 text-center">
@@ -424,7 +449,7 @@ export default async function Home() {
                 href="/ratings/best-overall"
                 className="text-sm font-medium text-primary hover:text-primary/90"
               >
-                View all top rated
+                View all best overall
               </Link>
             </div>
           </div>

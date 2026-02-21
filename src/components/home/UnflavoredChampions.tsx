@@ -31,7 +31,7 @@ export function UnflavoredChampions({ products }: UnflavoredChampionsProps) {
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-clash-display text-xl font-medium text-primary">
+        <h2 className="font-clash-display text-2xl font-medium text-primary sm:text-3xl">
           Unflavored Champions
         </h2>
         <Link

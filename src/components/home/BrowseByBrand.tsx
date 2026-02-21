@@ -36,7 +36,7 @@ export function BrowseByBrand() {
           brand_logo_dark,
           products (count)
         `)
-        .limit(9)
+        .limit(12)
 
       if (data) {
         // Shuffle the brands array to randomize order
@@ -61,7 +61,7 @@ export function BrowseByBrand() {
           View All Brands
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {brands.map((brand) => {
           const logoUrl = theme === 'dark' ? brand.brand_logo_dark : brand.brand_logo_light
           const hasLogo = logoUrl !== undefined && logoUrl !== null
