@@ -7,11 +7,17 @@ type Product = {
   name: string
   carbonation_level: number
   slug: string
+  thumbnail?: string | null
   brand: {
     id: string
     name: string
     slug: string
+    brand_logo_light?: string | null
+    brand_logo_dark?: string | null
   }
+  trueAverage?: number
+  ratingCount: number
+  reviews?: Array<{ overall_rating: number; moderation_status?: string | null; review_text?: string | null }>
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -37,7 +43,7 @@ export const dynamic = 'force-dynamic'
 export default async function CarbonationPage() {
   const supabase = createClient()
   
-  // Get all products grouped by carbonation level
+  // Get all products with thumbnail and reviews (same pattern as homepage / Strongest Carbonation)
   const { data: products, error } = await supabase
     .from('products')
     .select(`
@@ -45,10 +51,18 @@ export default async function CarbonationPage() {
       name,
       carbonation_level,
       slug,
+      thumbnail,
       brand:brand_id (
         id,
         name,
-        slug
+        slug,
+        brand_logo_light,
+        brand_logo_dark
+      ),
+      reviews (
+        overall_rating,
+        moderation_status,
+        review_text
       )
     `)
     .order('name')
@@ -59,22 +73,39 @@ export default async function CarbonationPage() {
     return null
   }
 
-  // Group products by carbonation level and ensure they're sorted by name
-  const productsByLevel = products.reduce((acc: { [key: number]: Product[] }, product) => {
+  // Same helper as homepage: reviews that count (rating-only or approved)
+  const reviewsThatCount = (reviews: Product['reviews']) =>
+    (reviews ?? []).filter(r => !r.review_text?.trim() || r.moderation_status === 'approved')
+
+  // Group products by carbonation level; enrich with trueAverage and ratingCount like other pages
+  const productsByLevel = (products ?? []).reduce((acc: { [key: number]: Product[] }, product) => {
     const level = product.carbonation_level
     if (!acc[level]) {
       acc[level] = []
     }
-    // Transform the data to match the Product type
+    const counting = reviewsThatCount(product.reviews)
+    const ratings = counting.map(r => r.overall_rating)
+    const ratingCount = ratings.length
+    const trueAverage = ratingCount > 0 ? ratings.reduce((a, b) => a + b, 0) / ratingCount : undefined
+
+    const rawBrand = Array.isArray(product.brand) ? product.brand[0] : product.brand
     const transformedProduct: Product = {
       id: product.id,
       name: product.name,
       carbonation_level: product.carbonation_level,
       slug: product.slug,
-      brand: Array.isArray(product.brand) ? product.brand[0] : product.brand
+      thumbnail: product.thumbnail ?? null,
+      brand: {
+        id: rawBrand.id,
+        name: rawBrand.name,
+        slug: rawBrand.slug,
+        brand_logo_light: rawBrand.brand_logo_light ?? null,
+        brand_logo_dark: rawBrand.brand_logo_dark ?? null
+      },
+      trueAverage,
+      ratingCount
     }
     acc[level].push(transformedProduct)
-    // Sort each level's products by name
     acc[level].sort((a, b) => a.name.localeCompare(b.name))
     return acc
   }, {})

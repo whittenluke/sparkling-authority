@@ -16,6 +16,7 @@ const navigation = {
     items: [
       { name: 'All Brands', href: '/explore/brands' },
       { name: 'By Flavor', href: '/explore/flavors' },
+      { name: 'By Carbonation', href: '/explore/carbonation' },
       // { name: 'New Releases', href: '/explore/new-releases' },
       // { name: 'Regional Favorites', href: '/explore/regional' },
       { name: 'Product Directory', href: '/explore/products' },

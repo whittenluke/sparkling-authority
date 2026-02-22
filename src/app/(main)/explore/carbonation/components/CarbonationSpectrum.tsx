@@ -3,16 +3,22 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { useTheme } from '@/components/theme-provider'
+import { CompactProductCard } from '@/app/(main)/explore/products/components/CompactProductCard'
 
 type Product = {
   id: string
   name: string
   carbonation_level: number
   slug: string
+  thumbnail?: string | null
   brand: {
     id: string
     name: string
     slug: string
+    brand_logo_light?: string | null
+    brand_logo_dark?: string | null
   }
 }
 
@@ -36,6 +42,7 @@ const carbonationLevels = [
 ].sort((a, b) => a.level - b.level)
 
 export function CarbonationSpectrum({ productsByLevel }: CarbonationSpectrumProps) {
+  const { theme } = useTheme()
   const [activeLevel, setActiveLevel] = useState<number | null>(null)
   const [expandedBrands, setExpandedBrands] = useState<Set<string>>(new Set())
 
@@ -92,7 +99,9 @@ export function CarbonationSpectrum({ productsByLevel }: CarbonationSpectrumProp
       {/* Brands List */}
       {activeLevel && (
         <div className="space-y-4">
-          {Object.values(brandsWithProducts).map(({ brand, products }) => (
+          {Object.values(brandsWithProducts)
+            .sort((a, b) => a.brand.name.localeCompare(b.brand.name))
+            .map(({ brand, products }) => (
             <div
               key={brand.id}
               className="rounded-xl bg-card overflow-hidden"
@@ -107,36 +116,62 @@ export function CarbonationSpectrum({ productsByLevel }: CarbonationSpectrumProp
                   }
                   return newSet
                 })}
-                className="w-full px-6 py-4 flex items-center justify-between text-left transition-colors hover:bg-accent"
+                className="w-full px-6 py-5 flex items-center justify-between text-left transition-colors hover:bg-accent min-h-[120px]"
               >
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-foreground">{brand.name}</span>
-                  <Link
-                    href={`/explore/brands/${brand.slug}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-sm text-primary hover:text-primary/80 transition-colors"
-                  >
-                    View brand
-                  </Link>
+                <div className="flex items-center gap-4">
+                  <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg">
+                    {(() => {
+                      const logoUrl = theme === 'dark' ? (brand.brand_logo_dark ?? brand.brand_logo_light) : (brand.brand_logo_light ?? brand.brand_logo_dark)
+                      if (logoUrl) {
+                        return (
+                          <Image
+                            src={logoUrl}
+                            alt=""
+                            width={96}
+                            height={96}
+                            className="h-24 w-24 object-contain"
+                          />
+                        )
+                      }
+                      return <span className="text-3xl font-semibold text-muted-foreground">{brand.name.charAt(0)}</span>
+                    })()}
+                  </div>
+                  <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
+                    <span className="font-medium text-foreground">{brand.name}</span>
+                    <Link
+                      href={`/explore/brands/${brand.slug}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-sm text-primary hover:text-primary/80 transition-colors"
+                    >
+                      View brand
+                    </Link>
+                  </div>
                 </div>
                 {expandedBrands.has(brand.id) ? (
-                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                  <ChevronUp className="h-5 w-5 shrink-0 text-muted-foreground" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                  <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground" />
                 )}
               </button>
 
               {expandedBrands.has(brand.id) && (
-                <div className="px-6 py-4 border-t border-border space-y-2">
-                  {products.map((product) => (
-                    <Link
-                      key={product.id}
-                      href={`/explore/brands/${brand.slug}/products/${product.slug}`}
-                      className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {product.name}
-                    </Link>
-                  ))}
+                <div className="px-6 py-4 border-t border-border">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {products.map((product) => (
+                      <CompactProductCard
+                        key={product.id}
+                        product={{
+                          id: product.id,
+                          name: product.name,
+                          slug: product.slug,
+                          brand: { id: product.brand.id, name: product.brand.name, slug: product.brand.slug },
+                          thumbnail: product.thumbnail ?? null,
+                          trueAverage: product.trueAverage,
+                          ratingCount: product.ratingCount
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

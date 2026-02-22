@@ -89,7 +89,9 @@ export function CarbonationLevels({ productsByLevel }: CarbonationLevelsProps) {
 
             {expandedLevels.has(level) && hasProducts && (
               <div className="px-6 py-4 border-t border-border space-y-4">
-                {Object.values(brandsWithProducts).map(({ brand, products }) => (
+                {Object.values(brandsWithProducts)
+                  .sort((a, b) => a.brand.name.localeCompare(b.brand.name))
+                  .map(({ brand, products }) => (
                   <div key={brand.id} className="space-y-2">
                     <button
                       onClick={() => setExpandedBrands(prev => {
