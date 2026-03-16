@@ -129,9 +129,9 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Product Content */}
           <div className="flex flex-col gap-2 flex-1 min-w-0">
-          {/* Top: Title and Rating */}
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium text-foreground group-hover:text-primary text-base truncate pr-4">
+          {/* Top: Title and Rating - stack on small screens so title can wrap */}
+          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
+            <h3 className="font-medium text-foreground group-hover:text-primary text-base line-clamp-2 sm:truncate sm:pr-4">
               {product.name}
             </h3>
             <div className="flex items-center gap-2 shrink-0">

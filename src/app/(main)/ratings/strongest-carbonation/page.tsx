@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { PostgrestError } from '@supabase/supabase-js'
-import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
+import { CompactProductCard } from '@/app/(main)/explore/products/components/CompactProductCard'
 
 type Brand = {
   id: string
@@ -143,7 +143,7 @@ export default async function StrongestCarbonationPage() {
   const hasAnyProducts = levelGroups.some(group => group.products.length > 0)
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 min-w-0 overflow-x-hidden">
       <div>
         <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary">Strongest Carbonation</h1>
         <p className="mt-2 font-plus-jakarta text-lg leading-8 text-primary/80">
@@ -153,20 +153,34 @@ export default async function StrongestCarbonationPage() {
 
       {hasAnyProducts ? (
         <div className="space-y-12">
-          {levelGroups.map(({ level, products }) => (
-            products.length > 0 && (
-              <div key={level} className="space-y-6">
+          {levelGroups.map(({ level, products }) =>
+            products.length > 0 ? (
+              <div key={level} className="space-y-4">
                 <h2 className="font-clash-display text-2xl font-medium tracking-tight text-primary border-b border-border pb-2">
                   {getLevelTitle(level)}
                 </h2>
-                <div className="space-y-3">
-                  {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {products.map((product) => {
+                    const brand = Array.isArray(product.brand) ? product.brand[0] : product.brand
+                    return (
+                      <CompactProductCard
+                        key={product.id}
+                        product={{
+                          id: product.id,
+                          name: product.name,
+                          slug: product.slug,
+                          brand: { id: brand.id, name: brand.name, slug: brand.slug },
+                          thumbnail: product.thumbnail ?? null,
+                          trueAverage: product.trueAverage,
+                          ratingCount: product.ratingCount ?? 0,
+                        }}
+                      />
+                    )
+                  })}
                 </div>
               </div>
-            )
-          ))}
+            ) : null
+          )}
         </div>
       ) : (
         <div className="text-center">

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { PostgrestError } from '@supabase/supabase-js'
-import { ProductCard } from '@/app/(main)/explore/products/components/ProductCard'
+import { CompactProductCard } from '@/app/(main)/explore/products/components/CompactProductCard'
 
 type Brand = {
   id: string
@@ -115,7 +115,7 @@ export default async function BestOverallPage() {
     .slice(0, 50) || []
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 min-w-0 overflow-x-hidden">
       <div>
         <h1 className="font-clash-display text-4xl font-medium tracking-tight text-primary">Best Overall Sparkling Waters</h1>
         <p className="mt-2 font-plus-jakarta text-lg leading-8 text-primary/80">
@@ -124,17 +124,28 @@ export default async function BestOverallPage() {
       </div>
 
       {productsWithRatings.length > 0 ? (
-        <div className="space-y-3">
-          {productsWithRatings.map((product, index) => (
-            <div key={product.id} className="relative">
-              <div className="absolute left-6 top-6 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary text-lg font-medium z-10">
-                {index + 1}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {productsWithRatings.map((product, index) => {
+            const brand = Array.isArray(product.brand) ? product.brand[0] : product.brand
+            return (
+              <div key={product.id} className="relative">
+                <div className="absolute left-1.5 top-1.5 z-10 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary text-sm font-semibold ring-1 ring-border">
+                  {index + 1}
+                </div>
+                <CompactProductCard
+                  product={{
+                    id: product.id,
+                    name: product.name,
+                    slug: product.slug,
+                    brand: { id: brand.id, name: brand.name, slug: brand.slug },
+                    thumbnail: product.thumbnail ?? null,
+                    trueAverage: product.trueAverage,
+                    ratingCount: product.ratingCount ?? 0,
+                  }}
+                />
               </div>
-              <div className="pl-24">
-                <ProductCard product={product} />
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       ) : (
         <div className="text-center">
