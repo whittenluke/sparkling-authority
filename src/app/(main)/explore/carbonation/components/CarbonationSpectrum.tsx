@@ -20,6 +20,8 @@ type Product = {
     brand_logo_light?: string | null
     brand_logo_dark?: string | null
   }
+  trueAverage?: number
+  ratingCount: number
 }
 
 type CarbonationSpectrumProps = {
