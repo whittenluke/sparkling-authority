@@ -35,7 +35,6 @@ export function QuickRating({
   size = 'default',
 }: QuickRatingProps) {
   const { user } = useAuth()
-  const router = useRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isHoveringRating, setIsHoveringRating] = useState(false)
 
@@ -44,12 +43,6 @@ export function QuickRating({
   const starClass = isLarge ? 'h-6 w-6' : 'h-5 w-5'
 
   const handleButtonClick = () => {
-    if (!user) {
-      // Store current URL for redirect after login
-      const currentPath = window.location.pathname
-      router.push(`/auth/login?redirect=${encodeURIComponent(currentPath)}`)
-      return
-    }
     setIsModalOpen(true)
   }
 

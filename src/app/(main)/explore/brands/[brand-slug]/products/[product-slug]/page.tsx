@@ -92,7 +92,8 @@ type ProductContainer = {
 }
 
 type ReviewData = {
-  user_id: string
+  id: string
+  user_id: string | null
   created_at: string
   overall_rating: number
   review_text: string | null
@@ -164,6 +165,7 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
   const { data: ratingData } = await supabase
     .from('reviews')
     .select(`
+      id,
       user_id,
       created_at,
       overall_rating,
@@ -211,9 +213,9 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
     r => r.review_text?.trim() && r.moderation_status === 'approved'
   ).length ?? 0
 
-  // Get user's rating from the fetched data
+  // Get user's rating from the fetched data (guests have user_id null)
   const userReview = session?.user
-    ? ratingData?.find(r => r.user_id === session.user.id)
+    ? ratingData?.find(r => r.user_id !== null && r.user_id === session.user.id)
     : null
 
   const userRating = userReview?.overall_rating

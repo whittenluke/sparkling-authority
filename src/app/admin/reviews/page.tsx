@@ -7,8 +7,8 @@ import { Check, X, Inbox } from 'lucide-react'
 type ModerationStatus = 'pending' | 'approved' | 'rejected'
 
 interface Review {
-  id: number
-  user_id: string
+  id: string
+  user_id: string | null
   product_id: string
   rating: number
   review_text: string
@@ -30,7 +30,7 @@ export default function AdminReviews() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [actionLoading, setActionLoading] = useState<number | null>(null)
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
   const supabase = createClientComponentClient()
 
   const loadReviews = useCallback(async (status: ModerationStatus) => {
@@ -92,7 +92,7 @@ export default function AdminReviews() {
     loadReviews(activeTab)
   }, [activeTab, loadReviews])
 
-  async function moderateReview(reviewId: number, newStatus: ModerationStatus) {
+  async function moderateReview(reviewId: string, newStatus: ModerationStatus) {
     try {
       setActionLoading(reviewId)
       setError(null)

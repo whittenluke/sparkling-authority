@@ -47,59 +47,71 @@ export function ReviewModal({
       return
     }
 
-    if (!user) {
-      setError('You must be logged in to submit a review')
-      return
-    }
-
     setIsSubmitting(true)
     setError('')
 
     try {
-      // Check for existing review
-      const { data: existingReview } = await supabase
-        .from('reviews')
-        .select('id')
-        .eq('product_id', productId)
-        .eq('user_id', user.id)
-        .single()
-
-      if (existingReview) {
-        // Update existing review
-        await supabase
+      if (user) {
+        // Authenticated: Supabase insert/update
+        const { data: existingReview } = await supabase
           .from('reviews')
-          .update({
-            overall_rating: rating,
-            review_text: review,
-            moderation_status: review.trim() ? 'pending' : 'approved',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existingReview.id)
+          .select('id')
+          .eq('product_id', productId)
+          .eq('user_id', user.id)
+          .single()
 
+        if (existingReview) {
+          await supabase
+            .from('reviews')
+            .update({
+              overall_rating: rating,
+              review_text: review,
+              moderation_status: review.trim() ? 'pending' : 'approved',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingReview.id)
+        } else {
+          const { error: reviewError } = await supabase
+            .from('reviews')
+            .insert({
+              product_id: productId,
+              user_id: user.id,
+              overall_rating: rating,
+              review_text: review,
+              moderation_status: review.trim() ? 'pending' : 'approved',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .select()
+            .single()
+
+          if (reviewError) {
+            console.error('Error submitting review:', reviewError)
+            setError('Failed to submit review. Please try again.')
+            return
+          }
+        }
         router.refresh()
         onClose()
       } else {
-        // Insert new review
-        const { error: reviewError } = await supabase
-          .from('reviews')
-          .insert({
-            product_id: productId,
-            user_id: user.id,
-            overall_rating: rating,
-            review_text: review,
-            moderation_status: review.trim() ? 'pending' : 'approved',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .select()
-          .single()
-
-        if (reviewError) {
-          console.error('Error submitting review:', reviewError)
-          setError('Failed to submit review. Please try again.')
-        } else {
+        // Guest: POST to API route
+        const res = await fetch('/api/reviews/guest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            productId,
+            rating,
+            reviewText: review,
+          }),
+        })
+        const data = await res.json().catch(() => ({}))
+        if (res.status === 201) {
           router.refresh()
           onClose()
+        } else if (res.status === 409) {
+          setError(data.error ?? "You've already reviewed this product.")
+        } else {
+          setError(data.error ?? 'Failed to submit review. Please try again.')
         }
       }
     } catch (err) {
@@ -224,7 +236,7 @@ export function ReviewModal({
               </button>
               <button
                 type="submit"
-                disabled={!hasChanges || rating === 0 || isSubmitting}
+                disabled={rating === 0 || isSubmitting || (!!user && !hasChanges)}
                 className="px-4 py-2 text-sm font-medium rounded-md 
                          bg-primary text-primary-foreground hover:bg-primary/90
                          disabled:opacity-50 disabled:cursor-not-allowed

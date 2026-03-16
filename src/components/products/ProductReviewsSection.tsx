@@ -6,7 +6,8 @@ import { PartialStar } from '@/components/ui/PartialStar'
 import { getStarFillPercentages } from '@/lib/star-utils'
 
 export type ProductReview = {
-  user_id: string
+  id: string
+  user_id: string | null
   created_at: string
   overall_rating: number
   review_text: string | null
@@ -92,17 +93,17 @@ export function ProductReviewsSection({ reviews, sessionUserId }: ProductReviews
           ) : (
             filtered.map((review) => (
               <div
-                key={review.user_id}
+                key={review.id}
                 className="rounded-lg bg-card p-4 shadow-sm ring-1 ring-border"
               >
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-foreground">
-                    {review.profiles?.display_name || 'Anonymous'}
+                    {review.user_id == null ? 'Guest' : (review.profiles?.display_name || 'Anonymous')}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     • {new Date(review.created_at).toLocaleDateString()}
                   </span>
-                  {sessionUserId === review.user_id && review.moderation_status !== 'approved' && (
+                  {review.user_id != null && sessionUserId === review.user_id && review.moderation_status !== 'approved' && (
                     <span className="inline-flex items-center rounded-full bg-yellow-400/10 px-2 py-0.5 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-400/20">
                       Pending Review
                     </span>

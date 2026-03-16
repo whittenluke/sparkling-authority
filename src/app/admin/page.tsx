@@ -84,6 +84,7 @@ export default function AdminDashboard() {
           .from('reviews')
           .select(`
             id,
+            user_id,
             review_text,
             overall_rating,
             moderation_status,
@@ -105,16 +106,18 @@ export default function AdminDashboard() {
           .limit(5)
 
         if (reviews) {
-          const formattedReviews = reviews.map(review => ({
+          const formattedReviews = reviews.map((review: { id: string; user_id?: string | null; review_text: string; overall_rating: number; moderation_status: string; created_at: string; profiles?: Array<{ display_name?: string | null; username?: string }> | null; products?: Array<{ name?: string; brands?: Array<{ name?: string }> }> | null }) => ({
             id: review.id,
             review_text: review.review_text,
             overall_rating: review.overall_rating,
             moderation_status: review.moderation_status,
             created_at: review.created_at,
-            user: {
-              display_name: review.profiles?.[0]?.display_name || null,
-              username: review.profiles?.[0]?.username || 'Unknown'
-            },
+            user: review.user_id == null
+              ? { display_name: 'Guest', username: 'Guest' }
+              : {
+                  display_name: review.profiles?.[0]?.display_name ?? null,
+                  username: review.profiles?.[0]?.username ?? 'Unknown'
+                },
             product: {
               name: review.products?.[0]?.name || 'Unknown Product'
             },
