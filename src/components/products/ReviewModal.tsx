@@ -29,6 +29,7 @@ export function ReviewModal({
   const [rating, setRating] = useState(initialRating)
   const [hover, setHover] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showThankYou, setShowThankYou] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
   const supabase = createClientComponentClient()
@@ -91,8 +92,8 @@ export function ReviewModal({
             return
           }
         }
+        setShowThankYou(true)
         router.refresh()
-        onClose()
       } else {
         // Guest: POST to API route
         const res = await fetch('/api/reviews/guest', {
@@ -106,8 +107,8 @@ export function ReviewModal({
         })
         const data = await res.json().catch(() => ({}))
         if (res.status === 201) {
+          setShowThankYou(true)
           router.refresh()
-          onClose()
         } else if (res.status === 409) {
           setError(data.error ?? "You've already reviewed this product.")
         } else {
@@ -150,26 +151,44 @@ export function ReviewModal({
       {/* Modal */}
       <div className="relative w-full max-w-lg bg-card text-card-foreground rounded-lg shadow-lg">
         <div className="p-6 space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">
-              Rate & Review
-            </h2>
-            <button
-              onClick={onClose}
-              className="p-1 rounded-full hover:bg-accent transition-colors"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+          {showThankYou ? (
+            <>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Thank you</h2>
+                <button
+                  onClick={onClose}
+                  className="p-1 rounded-full hover:bg-accent transition-colors"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <p className="text-muted-foreground">
+                Thanks for rating and reviewing. Your feedback helps others find their perfect sparkling water.
+              </p>
+            </>
+          ) : (
+            <>
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">
+                  Rate & Review
+                </h2>
+                <button
+                  onClick={onClose}
+                  className="p-1 rounded-full hover:bg-accent transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
 
-          {/* Product Info */}
-          <div className="text-sm text-muted-foreground">
-            {brandName} {productName}
-          </div>
+              {/* Product Info */}
+              <div className="text-sm text-muted-foreground">
+                {brandName} {productName}
+              </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-6">
             {/* Rating Section */}
             <div>
               <label className="block text-sm font-medium mb-1.5">
@@ -246,6 +265,8 @@ export function ReviewModal({
               </button>
             </div>
           </form>
+            </>
+          )}
         </div>
       </div>
     </div>

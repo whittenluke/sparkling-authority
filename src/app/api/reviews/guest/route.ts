@@ -13,6 +13,17 @@ function computeGuestHash(guestId: string, productId: string, salt: string): str
   return createHash('sha256').update(payload).digest('hex')
 }
 
+function getClientIp(request: Request): string {
+  const forwarded = request.headers.get('x-forwarded-for')
+  if (forwarded) {
+    const first = forwarded.split(',')[0]?.trim()
+    if (first) return first
+  }
+  const realIp = request.headers.get('x-real-ip')?.trim()
+  if (realIp) return realIp
+  return 'unknown'
+}
+
 export async function POST(request: Request) {
   // Reject authenticated users; they should use client-side submit
   const supabase = createClient()
@@ -61,8 +72,10 @@ export async function POST(request: Request) {
   let guestId = cookieStore.get(COOKIE_NAME)?.value
   let setCookie = false
   if (!guestId) {
-    guestId = crypto.randomUUID()
-    setCookie = true
+    // No cookie (e.g. private window): use IP-based fallback so same IP can't rate same product from multiple sessions
+    const ip = getClientIp(request)
+    guestId = createHash('sha256').update(`${ip}:${salt}`).digest('hex')
+    setCookie = true // set cookie to this hash so same browser reuses it; other private windows from same IP still get same hash and hit 409
   }
 
   const guestHash = computeGuestHash(guestId, productId, salt)
@@ -82,7 +95,6 @@ export async function POST(request: Request) {
     )
   }
 
-  const moderationStatus = reviewText ? 'pending' : 'approved'
   const { data: inserted, error } = await supabase
     .from('reviews')
     .insert({
@@ -91,7 +103,7 @@ export async function POST(request: Request) {
       guest_hash: guestHash,
       overall_rating: rating,
       review_text: reviewText,
-      moderation_status: moderationStatus,
+      moderation_status: 'approved',
     })
     .select('id')
     .single()
