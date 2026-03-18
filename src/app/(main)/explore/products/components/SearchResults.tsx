@@ -106,6 +106,7 @@ export function SearchResults({ searchQuery, scope, variant = 'page' }: SearchRe
   const [error, setError] = useState<string | null>(null)
   const [showAllProducts, setShowAllProducts] = useState(false)
   const supabase = createClientComponentClient()
+  const submissionModal = useProductSubmissionModal()
 
   // Fetch products with smart search logic
   const fetchProducts = useCallback(async () => {
