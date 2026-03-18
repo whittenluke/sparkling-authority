@@ -1,4 +1,4 @@
-import { createAnonClient, createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { createHash } from 'crypto'
 
@@ -16,9 +16,11 @@ function getSubmittedHash(request: Request): string | null {
 }
 
 export async function POST(request: Request) {
-  // Guest-only: reject authenticated users so insert runs as anon (same as guest reviews).
-  const supabaseAuth = createClient()
-  const { data: { session } } = await supabaseAuth.auth.getSession()
+  // Same as guest reviews: one client, reject authenticated, then use that client for the insert (runs as anon).
+  const supabase = createClient()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
   if (session?.user) {
     return NextResponse.json(
       { error: 'When signed in, your submission is sent from the page.' },
@@ -46,7 +48,6 @@ export async function POST(request: Request) {
   }
 
   const submittedHash = getSubmittedHash(request)
-  const supabase = createAnonClient()
 
   const { data: inserted, error } = await supabase
     .from('product_submissions')
