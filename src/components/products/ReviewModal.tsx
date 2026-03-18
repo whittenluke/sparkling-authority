@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { X, Star } from 'lucide-react'
+import Link from 'next/link'
+import { X, Star, ArrowLeft } from 'lucide-react'
 import { createClientComponentClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/lib/supabase/auth-context'
 
 interface ReviewModalProps {
@@ -14,6 +15,8 @@ interface ReviewModalProps {
   brandName: string
   initialRating?: number
   initialReview?: string
+  /** When set, thank-you state shows a link to return to this URL (e.g. from card "Write Review" flow). */
+  returnHref?: string
 }
 
 export function ReviewModal({
@@ -23,7 +26,8 @@ export function ReviewModal({
   productName,
   brandName,
   initialRating = 0,
-  initialReview = ''
+  initialReview = '',
+  returnHref
 }: ReviewModalProps) {
   const [review, setReview] = useState(initialReview)
   const [rating, setRating] = useState(initialRating)
@@ -32,8 +36,15 @@ export function ReviewModal({
   const [showThankYou, setShowThankYou] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+  const pathname = usePathname()
   const supabase = createClientComponentClient()
   const { user } = useAuth()
+
+  /** Strip openReview/from/rating from URL and refetch so review list updates and refresh won't re-open modal. */
+  const clearUrlAndRefresh = useCallback(() => {
+    router.replace(pathname)
+    router.refresh()
+  }, [router, pathname])
 
   // Track initial values
   const [initialValues, setInitialValues] = useState({
@@ -106,11 +117,9 @@ export function ReviewModal({
           }),
         })
         const data = await res.json().catch(() => ({}))
-        if (res.status === 201) {
+        if (res.status === 200 || res.status === 201) {
           setShowThankYou(true)
           router.refresh()
-        } else if (res.status === 409) {
-          setError(data.error ?? "You've already reviewed this product.")
         } else {
           setError(data.error ?? 'Failed to submit review. Please try again.')
         }
@@ -121,7 +130,7 @@ export function ReviewModal({
     } finally {
       setIsSubmitting(false)
     }
-  }, [rating, review, user, productId, supabase, router, onClose])
+  }, [rating, review, user, productId, supabase, router, onClose, clearUrlAndRefresh])
 
   // Reset form when modal opens/closes
   useEffect(() => {
@@ -166,6 +175,16 @@ export function ReviewModal({
               <p className="text-muted-foreground">
                 Thanks for rating and reviewing. Your feedback helps others find their perfect sparkling water.
               </p>
+              {returnHref && (
+                <Link
+                  href={returnHref}
+                  onClick={onClose}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/90"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Return to previous page
+                </Link>
+              )}
             </>
           ) : (
             <>

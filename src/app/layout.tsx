@@ -4,9 +4,10 @@ import { Plus_Jakarta_Sans } from 'next/font/google'
 import "./globals.css";
 import { AuthProvider } from "@/lib/supabase/auth-context";
 import { ThemeProvider } from '@/components/theme-provider'
+import { ProductSubmissionProvider } from '@/components/product-submission/ProductSubmissionContext'
 
 const inter = Inter({ subsets: ["latin"] });
-const plusJakartaSans = Plus_Jakarta_Sans({ 
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-plus-jakarta'
 })
@@ -71,7 +72,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* End Google Tag Manager (noscript) */}
         <ThemeProvider defaultTheme="system" storageKey="sparkling-authority-theme">
           <AuthProvider>
-            {children}
+            <ProductSubmissionProvider>
+              {children}
+            </ProductSubmissionProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

@@ -1,8 +1,6 @@
 'use client'
 
-import { useAuth } from '@/lib/supabase/auth-context'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Star, MessageSquare, ChevronDown } from 'lucide-react'
 import { ReviewModal } from './ReviewModal'
 import { PartialStar } from '@/components/ui/PartialStar'
@@ -21,6 +19,10 @@ interface QuickRatingProps {
   scrollToReviewsId?: string
   /** Larger typography and stars for product page. */
   size?: 'default' | 'large'
+  /** When true, open the review modal on mount (e.g. from card "Write Review" link). */
+  initialOpenReview?: boolean
+  /** Passed to ReviewModal thank-you state so user can return to where they came from. */
+  returnHref?: string
 }
 
 export function QuickRating({
@@ -33,10 +35,15 @@ export function QuickRating({
   initialReview,
   scrollToReviewsId,
   size = 'default',
+  initialOpenReview = false,
+  returnHref,
 }: QuickRatingProps) {
-  const { user } = useAuth()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isHoveringRating, setIsHoveringRating] = useState(false)
+
+  useEffect(() => {
+    if (initialOpenReview) setIsModalOpen(true)
+  }, [initialOpenReview])
 
   const isLarge = size === 'large'
   const starSize = isLarge ? 26 : 20
@@ -135,6 +142,7 @@ export function QuickRating({
         brandName={brandName}
         initialRating={initialRating}
         initialReview={initialReview}
+        returnHref={returnHref}
       />
     </div>
   )

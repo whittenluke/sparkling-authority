@@ -2,12 +2,15 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { useProductSubmissionModal } from '@/components/product-submission/ProductSubmissionContext'
 
 type FooterProps = {
   contentMaxWidth?: string
 }
 
 export function Footer({ contentMaxWidth = 'max-w-5xl' }: FooterProps) {
+  const submissionModal = useProductSubmissionModal()
+
   return (
     <footer className="app-background">
       <div className={`mx-auto ${contentMaxWidth} px-4 py-12 sm:px-6 lg:px-8`}>
@@ -55,6 +58,17 @@ export function Footer({ contentMaxWidth = 'max-w-5xl' }: FooterProps) {
                       Flavors
                     </Link>
                   </li>
+                  {submissionModal && (
+                    <li>
+                      <button
+                        type="button"
+                        onClick={submissionModal.openSubmissionModal}
+                        className="text-sm text-muted-foreground hover:text-foreground"
+                      >
+                        Suggest a product
+                      </button>
+                    </li>
+                  )}
                 </ul>
               </div>
               <div className="mt-10 md:mt-0">

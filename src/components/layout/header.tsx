@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { LogOut, Menu, Moon, Sun, User, X, LayoutDashboard } from 'lucide-react'
+import { LogOut, Menu, Moon, Sun, User, X, LayoutDashboard, Plus } from 'lucide-react'
 import { useAuth } from '@/lib/supabase/auth-context'
 import { useState, useEffect, createContext, useContext } from 'react'
 import { useTheme } from '@/components/theme-provider'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { isAdmin } from '@/lib/supabase/admin'
 import { createBrowserClient } from '@supabase/ssr'
+import { useProductSubmissionModal } from '@/components/product-submission/ProductSubmissionContext'
 
 const navigation = {
   explore: {
@@ -59,7 +60,7 @@ const DisplayNameContext = createContext<{
   setDisplayName: (name: string | null) => void;
 }>({
   displayName: null,
-  setDisplayName: () => {},
+  setDisplayName: () => { },
 })
 
 // Create a provider component that handles the real-time subscription
@@ -109,8 +110,8 @@ function DisplayNameProvider({ children, user }: { children: React.ReactNode; us
           if (mounted) {
             const newProfile = payload.new as { display_name?: string; username?: string }
             console.log('New profile data:', newProfile)
-            const newName = newProfile.display_name || 
-              newProfile.username || 
+            const newName = newProfile.display_name ||
+              newProfile.username ||
               (user?.email ? user.email.split('@')[0] : 'user')
             console.log('Updating display name to:', newName)
             setDisplayName(newName)
@@ -161,9 +162,9 @@ function NavDropdown({ section, items }: { section: string; items: { name: strin
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div 
-      className="relative h-full flex items-center" 
-      onMouseEnter={() => setIsOpen(true)} 
+    <div
+      className="relative h-full flex items-center"
+      onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
       {section === 'Explore' ? (
@@ -274,6 +275,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
   const { user, signOut } = useAuth()
   const [isAdminUser, setIsAdminUser] = useState(false)
   const { displayName } = useDisplayName()
+  const submissionModal = useProductSubmissionModal()
 
   useEffect(() => {
     if (isOpen) {
@@ -281,7 +283,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     } else {
       document.body.style.overflow = 'auto'
     }
-    
+
     return () => {
       document.body.style.overflow = 'auto'
     }
@@ -369,6 +371,22 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
               </div>
             )}
 
+            {submissionModal && (
+              <div className="mb-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    submissionModal.openSubmissionModal()
+                    onClose()
+                  }}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Flavor
+                </button>
+              </div>
+            )}
+
             {/* Navigation sections */}
             <div className="space-y-6">
               {Object.entries(navigation).map(([key, section]) => (
@@ -401,6 +419,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 export function Header() {
   const { user, signOut } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const submissionModal = useProductSubmissionModal()
 
   return (
     <DisplayNameProvider user={user}>
@@ -429,16 +448,26 @@ export function Header() {
                 />
                 <span className="sr-only">SparklingAuthority</span>
               </Link>
-              
+
               <div className="hidden sm:ml-12 sm:flex sm:space-x-10">
                 {Object.entries(navigation).map(([key, section]) => (
                   <NavDropdown key={key} section={section.name} items={section.items} />
                 ))}
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <ThemeToggle />
+              {submissionModal && (
+                <button
+                  type="button"
+                  onClick={submissionModal.openSubmissionModal}
+                  className="hidden sm:inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-primary hover:bg-primary/10"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Flavor
+                </button>
+              )}
               <div className="hidden sm:flex sm:items-center">
                 {user ? (
                   <UserMenu user={user} signOut={signOut} />

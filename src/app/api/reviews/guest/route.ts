@@ -1,28 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
-import { createHash } from 'crypto'
+import {
+  GUEST_REVIEW_COOKIE_NAME,
+  computeGuestHash,
+  resolveGuestId,
+} from '@/lib/guest-review-server'
 
 export const dynamic = 'force-dynamic'
 
-const COOKIE_NAME = 'sparkling_guest_id'
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
-
-function computeGuestHash(guestId: string, productId: string, salt: string): string {
-  const payload = `${guestId}:${productId}:${salt}`
-  return createHash('sha256').update(payload).digest('hex')
-}
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for')
-  if (forwarded) {
-    const first = forwarded.split(',')[0]?.trim()
-    if (first) return first
-  }
-  const realIp = request.headers.get('x-real-ip')?.trim()
-  if (realIp) return realIp
-  return 'unknown'
-}
 
 export async function POST(request: Request) {
   // Reject authenticated users; they should use client-side submit
@@ -69,15 +56,9 @@ export async function POST(request: Request) {
   }
 
   const cookieStore = await cookies()
-  let guestId = cookieStore.get(COOKIE_NAME)?.value
-  let setCookie = false
-  if (!guestId) {
-    // No cookie (e.g. private window): use IP-based fallback so same IP can't rate same product from multiple sessions
-    const ip = getClientIp(request)
-    guestId = createHash('sha256').update(`${ip}:${salt}`).digest('hex')
-    setCookie = true // set cookie to this hash so same browser reuses it; other private windows from same IP still get same hash and hit 409
-  }
-
+  const cookieValue = cookieStore.get(GUEST_REVIEW_COOKIE_NAME)?.value
+  const guestId = resolveGuestId(cookieValue, request.headers, salt)
+  const setCookie = !cookieValue
   const guestHash = computeGuestHash(guestId, productId, salt)
 
   const { data: existing } = await supabase
@@ -89,10 +70,26 @@ export async function POST(request: Request) {
     .maybeSingle()
 
   if (existing) {
-    return NextResponse.json(
-      { error: "You've already reviewed this product." },
-      { status: 409 }
-    )
+    const moderationStatus = reviewText ? 'pending' : 'approved'
+    const { error: updateError } = await supabase
+      .from('reviews')
+      .update({
+        overall_rating: rating,
+        review_text: reviewText,
+        moderation_status: moderationStatus,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', existing.id)
+
+    if (updateError) {
+      console.error('Guest review update error:', updateError.message)
+      return NextResponse.json(
+        { error: 'Failed to update review. Please try again.' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({ id: existing.id }, { status: 200 })
   }
 
   const { data: inserted, error } = await supabase
@@ -103,7 +100,7 @@ export async function POST(request: Request) {
       guest_hash: guestHash,
       overall_rating: rating,
       review_text: reviewText,
-      moderation_status: 'approved',
+      moderation_status: reviewText ? 'pending' : 'approved',
     })
     .select('id')
     .single()
@@ -118,7 +115,7 @@ export async function POST(request: Request) {
 
   const res = NextResponse.json({ id: inserted?.id }, { status: 201 })
   if (setCookie) {
-    res.cookies.set(COOKIE_NAME, guestId!, {
+    res.cookies.set(GUEST_REVIEW_COOKIE_NAME, guestId, {
       httpOnly: true,
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',

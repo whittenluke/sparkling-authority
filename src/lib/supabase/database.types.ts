@@ -284,6 +284,38 @@ export interface Database {
           created_at?: string
         }
       }
+      product_submissions: {
+        Row: {
+          id: string
+          brand_name: string
+          product_name: string
+          image_url: string | null
+          notes: string | null
+          status: string
+          created_at: string
+          submitted_hash: string | null
+        }
+        Insert: {
+          id?: string
+          brand_name: string
+          product_name: string
+          image_url?: string | null
+          notes?: string | null
+          status?: string
+          created_at?: string
+          submitted_hash?: string | null
+        }
+        Update: {
+          id?: string
+          brand_name?: string
+          product_name?: string
+          image_url?: string | null
+          notes?: string | null
+          status?: string
+          created_at?: string
+          submitted_hash?: string | null
+        }
+      }
     }
     Views: {
       [_ in never]: never

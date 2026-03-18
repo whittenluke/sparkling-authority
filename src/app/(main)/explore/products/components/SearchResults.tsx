@@ -5,6 +5,24 @@ import { createClientComponentClient } from '@/lib/supabase/client'
 import { CompactProductCard } from './CompactProductCard'
 import { BrandsGrid } from '@/app/(main)/explore/brands/components/BrandsGrid'
 import { calculateMeanRating, transformProductWithRatings } from '@/lib/product-utils'
+import { useProductSubmissionModal } from '@/components/product-submission/ProductSubmissionContext'
+
+function SearchEmptyState({ onOpenSubmissionModal }: { onOpenSubmissionModal?: (() => void) | null }) {
+  return (
+    <div className="text-center text-muted-foreground py-8 space-y-4">
+      <p>No results found. Want to add it?</p>
+      {onOpenSubmissionModal && (
+        <button
+          type="button"
+          onClick={onOpenSubmissionModal}
+          className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          Submit a flavor
+        </button>
+      )}
+    </div>
+  )
+}
 
 type Scope = 'products' | 'brands'
 
@@ -100,10 +118,10 @@ export function SearchResults({ searchQuery, scope, variant = 'page' }: SearchRe
     setError(null)
 
     try {
-  // Get mean rating for Bayesian average calculation
+      // Get mean rating for Bayesian average calculation
       const { data: allProductsData } = await supabase
-      .from('products')
-      .select(`
+        .from('products')
+        .select(`
         reviews (
           overall_rating
         )
@@ -145,8 +163,8 @@ export function SearchResults({ searchQuery, scope, variant = 'page' }: SearchRe
       // Priority 1: Product name match
       if (searchQuery.length >= 2) {
         const { data: nameMatchData } = await supabase
-        .from('products')
-        .select(`
+          .from('products')
+          .select(`
           id,
           name,
           slug,
@@ -325,10 +343,10 @@ export function SearchResults({ searchQuery, scope, variant = 'page' }: SearchRe
         if (!aPartialMatch && bPartialMatch) return 1
 
         // Check brand match
-        const aBrandMatch = brandNames.some(brandName => 
+        const aBrandMatch = brandNames.some(brandName =>
           a.brand.name.toLowerCase().includes(brandName)
         )
-        const bBrandMatch = brandNames.some(brandName => 
+        const bBrandMatch = brandNames.some(brandName =>
           b.brand.name.toLowerCase().includes(brandName)
         )
         if (aBrandMatch && !bBrandMatch) return -1
@@ -437,11 +455,8 @@ export function SearchResults({ searchQuery, scope, variant = 'page' }: SearchRe
   const hasAnyResults = products.length > 0 || brands.length > 0
 
   if (!hasAnyResults && !loading && searchQuery.length >= 2) {
-    const scopeText = scope === 'products' ? 'products' : 'brands'
     return (
-      <div className="text-center text-muted-foreground py-8">
-        No {scopeText} found for &quot;{searchQuery}&quot;. Try a different search term.
-      </div>
+      <SearchEmptyState onOpenSubmissionModal={submissionModal?.openSubmissionModal ?? undefined} />
     )
   }
 

@@ -1,5 +1,10 @@
 import * as React from 'react'
+import { cookies, headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import {
+  GUEST_REVIEW_COOKIE_NAME,
+  getCurrentGuestHashForProduct,
+} from '@/lib/guest-review-server'
 import { QuickRating } from '@/components/products/QuickRating'
 import { WhereToBuy } from '@/components/products/WhereToBuy'
 import { AffiliateDisclosure } from '@/components/products/AffiliateDisclosure'
@@ -94,6 +99,7 @@ type ProductContainer = {
 type ReviewData = {
   id: string
   user_id: string | null
+  guest_hash: string | null
   created_at: string
   overall_rating: number
   review_text: string | null
@@ -103,10 +109,24 @@ type ReviewData = {
   } | null
 }
 
-export default async function ProductPage({ params }: Props): Promise<React.ReactElement> {
+export default async function ProductPage({ params, searchParams }: Props): Promise<React.ReactElement> {
   const supabase = createClient()
   const { data: { session } } = await supabase.auth.getSession()
   const resolvedParams = await params
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
+  const openReview = resolvedSearchParams?.openReview
+  const openReviewFlag = (Array.isArray(openReview) ? openReview[0] : openReview) === '1'
+  const fromParam = resolvedSearchParams?.from
+  const returnHref = typeof fromParam === 'string' ? fromParam : Array.isArray(fromParam) ? fromParam[0] : undefined
+  const ratingParam = resolvedSearchParams?.rating
+  const ratingFromQueryRaw = Array.isArray(ratingParam) ? ratingParam[0] : ratingParam
+  const ratingFromQuery =
+    typeof ratingFromQueryRaw === 'string'
+      ? (() => {
+          const n = parseInt(ratingFromQueryRaw, 10)
+          return n >= 1 && n <= 5 ? n : undefined
+        })()
+      : undefined
 
   // First get the brand to ensure it exists
   const { data: brand } = await supabase
@@ -161,12 +181,13 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
     return acc;
   }, {} as { [key: string]: string[] });
 
-  // Fetch rating data - include both approved reviews and user's own reviews
+  // Fetch rating data – include guest_hash so we can show current guest's own review (including pending)
   const { data: ratingData } = await supabase
     .from('reviews')
     .select(`
       id,
       user_id,
+      guest_hash,
       created_at,
       overall_rating,
       review_text,
@@ -177,6 +198,15 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
     `)
     .eq('product_id', product.id)
     .order('created_at', { ascending: false }) as { data: ReviewData[] | null }
+
+  const cookieStore = await cookies()
+  const hdrs = await headers()
+  const currentGuestHash =
+    session?.user ? null : await getCurrentGuestHashForProduct(
+      product.id,
+      cookieStore.get(GUEST_REVIEW_COOKIE_NAME)?.value,
+      hdrs
+    )
 
   // Ratings that count: rating-only (no text) or moderation_status === 'approved'
   const reviewsThatCount = ratingData?.filter(
@@ -220,13 +250,16 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
 
   const userRating = userReview?.overall_rating
   const userReviewText = userReview?.review_text || undefined
+  const initialRating = userRating ?? ratingFromQuery
 
-  // Review cards: non-empty text and (approved or own review)
+  // Review cards: non-empty text and (approved or own review – including current guest's pending review)
   const filteredReviews =
     ratingData?.filter(
       r =>
         r.review_text?.trim() &&
-        (r.moderation_status === 'approved' || r.user_id === session?.user?.id)
+        (r.moderation_status === 'approved' ||
+          r.user_id === session?.user?.id ||
+          (r.user_id === null && r.guest_hash != null && r.guest_hash === currentGuestHash))
     ) ?? []
 
   return (
@@ -332,13 +365,15 @@ export default async function ProductPage({ params }: Props): Promise<React.Reac
                       productId={product.id}
                       productName={product.name}
                       brandName={product.brands.name}
-                      initialRating={userRating}
+                      initialRating={initialRating}
                       initialReview={userReviewText}
                       averageRating={averageRating}
                       totalRatings={ratings.length}
                       totalReviews={reviewCount}
                       scrollToReviewsId="reviews"
                       size="large"
+                      initialOpenReview={openReviewFlag}
+                      returnHref={returnHref}
                     />
                   </div>
                   <div className="sm:pl-2 flex flex-col gap-4 w-full sm:w-auto">
