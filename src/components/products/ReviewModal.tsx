@@ -78,7 +78,7 @@ export function ReviewModal({
             .update({
               overall_rating: rating,
               review_text: review,
-              moderation_status: review.trim() ? 'pending' : 'approved',
+              moderation_status: 'approved',
               updated_at: new Date().toISOString()
             })
             .eq('id', existingReview.id)
@@ -90,7 +90,7 @@ export function ReviewModal({
               user_id: user.id,
               overall_rating: rating,
               review_text: review,
-              moderation_status: review.trim() ? 'pending' : 'approved',
+              moderation_status: 'approved',
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
             })
@@ -104,12 +104,13 @@ export function ReviewModal({
           }
         }
         setShowThankYou(true)
-        router.refresh()
+        clearUrlAndRefresh()
       } else {
         // Guest: POST to API route
-        const res = await fetch('/api/reviews/guest', {
+        const res = await fetch('/api/reviews/guest/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({
             productId,
             rating,
@@ -119,7 +120,7 @@ export function ReviewModal({
         const data = await res.json().catch(() => ({}))
         if (res.status === 200 || res.status === 201) {
           setShowThankYou(true)
-          router.refresh()
+          clearUrlAndRefresh()
         } else {
           setError(data.error ?? 'Failed to submit review. Please try again.')
         }
@@ -132,9 +133,11 @@ export function ReviewModal({
     }
   }, [rating, review, user, productId, supabase, router, onClose, clearUrlAndRefresh])
 
-  // Reset form when modal opens/closes
+  // Reset form and thank-you state when modal opens so we always show the form, not a stale thank you
   useEffect(() => {
     if (isOpen) {
+      setShowThankYou(false)
+      setError('')
       setRating(initialRating)
       setReview(initialReview)
       setInitialValues({

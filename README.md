@@ -25,6 +25,7 @@ The leading online authority for sparkling water enthusiasts, offering expert co
 4. Update the environment variables in `.env.local` with your:
 
    - Supabase project URL and anon key
+   - **GUEST_REVIEW_SALT** — a random string (e.g. 32 chars) for guest review hashing; required for guest reviews
    - Notion API key and database ID
 
 5. Run the development server:

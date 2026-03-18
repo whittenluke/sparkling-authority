@@ -42,7 +42,7 @@ export function QuickRating({
   const [isHoveringRating, setIsHoveringRating] = useState(false)
 
   useEffect(() => {
-    if (initialOpenReview) setIsModalOpen(true)
+    setIsModalOpen(!!initialOpenReview)
   }, [initialOpenReview])
 
   const isLarge = size === 'large'

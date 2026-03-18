@@ -103,11 +103,6 @@ export function ProductReviewsSection({ reviews, sessionUserId }: ProductReviews
                   <span className="text-xs text-muted-foreground">
                     • {new Date(review.created_at).toLocaleDateString()}
                   </span>
-                  {review.user_id != null && sessionUserId === review.user_id && review.moderation_status !== 'approved' && (
-                    <span className="inline-flex items-center rounded-full bg-yellow-400/10 px-2 py-0.5 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-400/20">
-                      Pending Review
-                    </span>
-                  )}
                 </div>
                 <div className="mt-2 flex gap-0.5">
                   {getStarFillPercentages(review.overall_rating).map((percentage, index) => (

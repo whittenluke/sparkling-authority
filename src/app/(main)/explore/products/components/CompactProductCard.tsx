@@ -29,7 +29,8 @@ interface CompactProductCardProps {
   product: Product
 }
 
-const STAR_SIZE = 10
+const STAR_SIZE_MOBILE = 10
+const STAR_SIZE_DESKTOP = 14
 
 export function CompactProductCard({ product }: CompactProductCardProps) {
   const pathname = usePathname()
@@ -80,16 +81,17 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
             })
           }
         } else {
-          const res = await fetch('/api/reviews/guest', {
+          const res = await fetch('/api/reviews/guest/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ productId: product.id, rating }),
           })
-          if (res.status !== 201) {
-            const data = await res.json().catch(() => ({}))
+          const data = await res.json().catch(() => ({}))
+          if (res.status !== 200 && res.status !== 201) {
             throw new Error(data.error ?? 'Failed to submit rating')
           }
-          didInsert = true
+          if (res.status === 201) didInsert = true
         }
         setOptimisticAverage(rating)
         if (didInsert) setOptimisticCount((c) => (c ?? product.ratingCount) + 1)
@@ -177,7 +179,7 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
                   {effectiveAverage.toFixed(1)}
                 </span>
               )}
-              <div className="flex gap-0.5 flex-shrink-0 items-center min-h-[10px]">
+              <div className="flex gap-0.5 flex-shrink-0 items-center min-h-[10px] sm:min-h-[14px]">
                 {[1, 2, 3, 4, 5].map((star) => {
                   const active = hoverRating > 0 ? star <= hoverRating : star <= effectiveAverage
                   const fill = active ? 100 : hoverRating > 0 ? 0 : (getStarFillPercentages(effectiveAverage)[star - 1] ?? 0)
@@ -186,13 +188,14 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
                       key={star}
                       type="button"
                       disabled={isSubmitting}
-                      className="p-0.5 -m-0.5 rounded touch-manipulation focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:opacity-50 w-[10px] h-[10px] flex items-center justify-center"
+                      className="p-0.5 -m-0.5 rounded touch-manipulation focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:opacity-50 w-[10px] h-[10px] sm:w-[14px] sm:h-[14px] flex items-center justify-center"
                       onMouseEnter={() => setHoverRating(star)}
                       onMouseLeave={() => setHoverRating(0)}
                       onClick={(e) => handleStarClick(e, star)}
                       aria-label={`Rate ${star} star${star !== 1 ? 's' : ''}`}
                     >
-                      <PartialStar fillPercentage={fill} size={STAR_SIZE} />
+                      <PartialStar fillPercentage={fill} size={STAR_SIZE_MOBILE} className="sm:hidden" />
+                      <PartialStar fillPercentage={fill} size={STAR_SIZE_DESKTOP} className="hidden sm:block" />
                     </button>
                   )
                 })}
@@ -200,8 +203,8 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
             </div>
             <p className="text-[11px] text-muted-foreground mt-0.5">
               {displayCount === 0
-                ? 'No reviews yet'
-                : `${displayCount} review${displayCount !== 1 ? 's' : ''}`}
+                ? 'No ratings yet'
+                : `${displayCount} rating${displayCount !== 1 ? 's' : ''}`}
             </p>
           </>
         )}

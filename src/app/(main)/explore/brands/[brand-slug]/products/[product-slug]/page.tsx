@@ -243,10 +243,10 @@ export default async function ProductPage({ params, searchParams }: Props): Prom
     r => r.review_text?.trim() && r.moderation_status === 'approved'
   ).length ?? 0
 
-  // Get user's rating from the fetched data (guests have user_id null)
+  // Get user's or guest's rating from the fetched data (guests have user_id null, matched by guest_hash)
   const userReview = session?.user
     ? ratingData?.find(r => r.user_id !== null && r.user_id === session.user.id)
-    : null
+    : (ratingData?.find(r => r.user_id === null && r.guest_hash != null && r.guest_hash === currentGuestHash) ?? null)
 
   const userRating = userReview?.overall_rating
   const userReviewText = userReview?.review_text || undefined

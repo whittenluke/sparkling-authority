@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { User, AuthError } from '@supabase/supabase-js'
 import { createClientComponentClient } from './client'
 
@@ -18,7 +18,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClientComponentClient()
+  const supabase = useMemo(() => createClientComponentClient(), [])
 
   useEffect(() => {
     // Check active sessions and sets the user
@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase.auth])
+  }, [supabase])
 
   const signIn = async (provider: 'google' | 'facebook' | 'twitter', redirectTo?: string) => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -69,6 +69,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut()
+    setUser(null)
+    // Server clears auth cookies so refresh stays logged out (test/dev often doesn't clear from client)
+    window.location.href = '/auth/signout'
   }
 
   const value = {

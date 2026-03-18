@@ -255,9 +255,10 @@ function UserMenu({ user, signOut }: { user: SupabaseUser | null; signOut: () =>
               </Link>
             )}
             <button
+              type="button"
               onClick={() => {
-                signOut()
                 setIsOpen(false)
+                signOut()
               }}
               className="flex w-full items-center px-4 py-2 text-sm text-primary hover:bg-accent"
             >
@@ -348,9 +349,10 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                     </Link>
                   )}
                   <button
+                    type="button"
                     onClick={() => {
-                      signOut()
                       onClose()
+                      signOut()
                     }}
                     className="flex items-center gap-2 px-3 py-2 rounded-md bg-background hover:bg-accent/80 transition-colors w-full text-foreground"
                   >
