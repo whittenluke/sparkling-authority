@@ -93,7 +93,7 @@ export function ProductSubmissionModal({ isOpen, onClose }: ProductSubmissionMod
       />
       <div className="relative w-full max-w-md bg-card text-card-foreground rounded-lg shadow-lg p-6 mx-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Add a flavor</h2>
+          <h2 className="text-lg font-semibold">Suggest Product</h2>
           <button
             type="button"
             onClick={handleClose}

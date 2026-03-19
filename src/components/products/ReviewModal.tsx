@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { X, Star, ArrowLeft } from 'lucide-react'
 import { createClientComponentClient } from '@/lib/supabase/client'
@@ -39,6 +39,8 @@ export function ReviewModal({
   const pathname = usePathname()
   const supabase = createClientComponentClient()
   const { user } = useAuth()
+
+  const prevIsOpenRef = useRef(false)
 
   /** Strip openReview/from/rating from URL and refetch so review list updates and refresh won't re-open modal. */
   const clearUrlAndRefresh = useCallback(() => {
@@ -133,9 +135,11 @@ export function ReviewModal({
     }
   }, [rating, review, user, productId, supabase, router, onClose, clearUrlAndRefresh])
 
-  // Reset form and thank-you state when modal opens so we always show the form, not a stale thank you
+  // Reset form only when the modal transitions from closed -> open.
+  // We must not reset after submit + `router.refresh()`, because that triggers a prop refresh
+  // while the modal is still open (which would clear the thank-you view).
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !prevIsOpenRef.current) {
       setShowThankYou(false)
       setError('')
       setRating(initialRating)
@@ -145,6 +149,7 @@ export function ReviewModal({
         review: initialReview
       })
     }
+    prevIsOpenRef.current = isOpen
   }, [isOpen, initialRating, initialReview])
 
   // Calculate if there are actual changes
