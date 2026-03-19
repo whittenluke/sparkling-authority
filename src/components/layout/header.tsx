@@ -381,10 +381,10 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                     submissionModal.openSubmissionModal()
                     onClose()
                   }}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-blue-200 bg-transparent px-4 py-2 text-sm font-medium text-blue-600 transition-colors hover:border-blue-500 hover:text-blue-700 dark:border-blue-600 dark:text-blue-400 dark:hover:border-blue-500 dark:hover:text-blue-300"
                 >
                   <Plus className="h-4 w-4" />
-                  Add Flavor
+                  Suggest Product
                 </button>
               </div>
             )}
@@ -459,17 +459,17 @@ export function Header() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <ThemeToggle />
               {submissionModal && (
                 <button
                   type="button"
                   onClick={submissionModal.openSubmissionModal}
-                  className="hidden sm:inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-primary hover:bg-primary/10"
+                  className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-transparent px-3 py-2 text-sm font-medium text-blue-600 transition-colors hover:border-blue-500 hover:text-blue-700 dark:border-blue-600 dark:text-blue-400 dark:hover:border-blue-500 dark:hover:text-blue-300"
                 >
                   <Plus className="h-4 w-4" />
-                  Add Flavor
+                  Suggest Product
                 </button>
               )}
+              <ThemeToggle />
               <div className="hidden sm:flex sm:items-center">
                 {user ? (
                   <UserMenu user={user} signOut={signOut} />
