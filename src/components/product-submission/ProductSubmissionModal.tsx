@@ -105,9 +105,21 @@ export function ProductSubmissionModal({ isOpen, onClose }: ProductSubmissionMod
         </div>
 
         {success ? (
-          <p className="text-muted-foreground">
-            Thanks, we&apos;ll review and add it soon.
-          </p>
+          <div className="space-y-4">
+            <p className="text-foreground">
+              Thanks for helping build the database.
+            </p>
+            <p className="text-muted-foreground">
+              We&apos;ll review your submission and add it soon.
+            </p>
+            <button
+              type="button"
+              onClick={() => setSuccess(false)}
+              className="text-sm text-primary hover:text-primary/90 hover:underline underline-offset-2 transition-colors"
+            >
+              Want to suggest another?
+            </button>
+          </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
