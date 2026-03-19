@@ -53,6 +53,11 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
       if (isSubmitting || rating < 1 || rating > 5) return
       setIsSubmitting(true)
       let didInsert = false
+      const currentCount = Number(product.ratingCount)
+      const currentAverage =
+        typeof displayAverage === 'number' && Number.isFinite(displayAverage) ? displayAverage : NaN
+
+      let nextAverage: number = rating
       try {
         if (user) {
           const { data: existing } = await supabase
@@ -63,6 +68,10 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
             .maybeSingle()
 
           if (existing) {
+            // Authenticated "update": replace the previous rating in the average.
+            const previousRating =
+              existing && existing.overall_rating != null ? Number(existing.overall_rating) : NaN
+
             await supabase
               .from('reviews')
               .update({
@@ -70,6 +79,18 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
                 updated_at: new Date().toISOString(),
               })
               .eq('id', existing.id)
+
+            if (
+              currentCount > 0 &&
+              Number.isFinite(currentAverage) &&
+              Number.isFinite(previousRating)
+            ) {
+              // average = (sum - prev + new) / count
+              const nextSum = currentAverage * currentCount - previousRating + rating
+              nextAverage = nextSum / currentCount
+            } else {
+              nextAverage = rating
+            }
           } else {
             didInsert = true
             await supabase.from('reviews').insert({
@@ -79,6 +100,12 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
               review_text: '',
               moderation_status: 'approved',
             })
+
+            // Insert "rating-only": average becomes (sum + rating) / (count + 1)
+            if (currentCount > 0 && Number.isFinite(currentAverage)) {
+              const nextSum = currentAverage * currentCount + rating
+              nextAverage = nextSum / (currentCount + 1)
+            } else nextAverage = rating
           }
         } else {
           const res = await fetch('/api/reviews/guest/', {
@@ -92,8 +119,14 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
             throw new Error(data.error ?? 'Failed to submit rating')
           }
           if (res.status === 201) didInsert = true
+
+          // Guest insert: average becomes (sum + rating) / (count + 1)
+          if (currentCount > 0 && Number.isFinite(currentAverage)) {
+            const nextSum = currentAverage * currentCount + rating
+            nextAverage = nextSum / (currentCount + 1)
+          } else nextAverage = rating
         }
-        setOptimisticAverage(rating)
+        setOptimisticAverage(nextAverage)
         if (didInsert) setOptimisticCount((c) => (c ?? product.ratingCount) + 1)
         setShowThanks(true)
       } catch {
@@ -102,7 +135,7 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
         setIsSubmitting(false)
       }
     },
-    [product.id, product.ratingCount, user, supabase, isSubmitting]
+    [product.id, product.ratingCount, user, supabase, isSubmitting, displayAverage]
   )
 
   const handleStarClick = (e: React.MouseEvent, rating: number) => {
