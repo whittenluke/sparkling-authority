@@ -41,6 +41,9 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
   const [showThanks, setShowThanks] = useState(false)
   const [optimisticAverage, setOptimisticAverage] = useState<number | null>(null)
   const [optimisticCount, setOptimisticCount] = useState<number | null>(null)
+  const [isRatingSheetOpen, setIsRatingSheetOpen] = useState(false)
+  const [sheetRating, setSheetRating] = useState<number>(0)
+  const [sheetError, setSheetError] = useState<string>('')
 
   const productUrl = `/explore/brands/${product.brand.slug}/products/${product.slug}`
   const displayAverage = typeof product.trueAverage === 'number' ? product.trueAverage : null
@@ -50,14 +53,17 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
 
   const submitRating = useCallback(
     async (rating: number) => {
-      if (isSubmitting || rating < 1 || rating > 5) return
+      if (isSubmitting || rating < 1 || rating > 5) return false
       setIsSubmitting(true)
       let didInsert = false
       const currentCount = Number(product.ratingCount)
       const currentAverage =
         typeof displayAverage === 'number' && Number.isFinite(displayAverage) ? displayAverage : NaN
 
-      let nextAverage: number = rating
+      const canUseCurrentAverage = Number.isFinite(currentAverage)
+      // Default to the product's displayed average so we never end up showing the user's raw rating
+      // when optimistic average calculation can't be performed reliably.
+      let nextAverage: number = canUseCurrentAverage ? currentAverage : rating
       try {
         if (user) {
           const { data: existing } = await supabase
@@ -89,7 +95,7 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
               const nextSum = currentAverage * currentCount - previousRating + rating
               nextAverage = nextSum / currentCount
             } else {
-              nextAverage = rating
+              nextAverage = canUseCurrentAverage ? currentAverage : rating
             }
           } else {
             didInsert = true
@@ -105,7 +111,7 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
             if (currentCount > 0 && Number.isFinite(currentAverage)) {
               const nextSum = currentAverage * currentCount + rating
               nextAverage = nextSum / (currentCount + 1)
-            } else nextAverage = rating
+            } else nextAverage = canUseCurrentAverage ? currentAverage : rating
           }
         } else {
           const res = await fetch('/api/reviews/guest/', {
@@ -124,29 +130,29 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
           if (currentCount > 0 && Number.isFinite(currentAverage)) {
             const nextSum = currentAverage * currentCount + rating
             nextAverage = nextSum / (currentCount + 1)
-          } else nextAverage = rating
+          } else nextAverage = canUseCurrentAverage ? currentAverage : rating
         }
         setOptimisticAverage(nextAverage)
         if (didInsert) setOptimisticCount((c) => (c ?? product.ratingCount) + 1)
         setShowThanks(true)
+        return true
       } catch {
         // Silent fail or toast in future
+        if (isRatingSheetOpen) {
+          setSheetError('Failed to submit rating. Please try again.')
+        }
+        return false
       } finally {
         setIsSubmitting(false)
       }
     },
-    [product.id, product.ratingCount, user, supabase, isSubmitting, displayAverage]
+    [product.id, product.ratingCount, user, supabase, isSubmitting, displayAverage, isRatingSheetOpen]
   )
 
   const handleStarClick = (e: React.MouseEvent, rating: number) => {
     e.preventDefault()
     e.stopPropagation()
-    submitRating(rating)
-  }
-
-  const handleStarRowClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    void submitRating(rating)
   }
 
   const writeReviewUrl =
@@ -178,7 +184,7 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
       </Link>
 
       {/* Rating: interactive stars or thanks + Write Review */}
-      <div className="pt-0.5 min-w-0" onClick={handleStarRowClick} role="group" aria-label="Rate this product">
+      <div className="pt-0.5 min-w-0" role="group" aria-label="Rate this product">
         {showThanks ? (
           <div className="space-y-1">
             <div className="flex items-start justify-between gap-1">
@@ -206,42 +212,149 @@ export function CompactProductCard({ product }: CompactProductCardProps) {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-0.5 min-w-0">
-              {hasRatingData && (
-                <span className="text-[11px] font-medium text-foreground whitespace-nowrap">
-                  {effectiveAverage.toFixed(1)}
-                </span>
-              )}
-              <div className="flex gap-0.5 flex-shrink-0 items-center min-h-[10px] sm:min-h-[14px]">
-                {[1, 2, 3, 4, 5].map((star) => {
-                  const active = hoverRating > 0 ? star <= hoverRating : star <= effectiveAverage
-                  const fill = active ? 100 : hoverRating > 0 ? 0 : (getStarFillPercentages(effectiveAverage)[star - 1] ?? 0)
-                  return (
-                    <button
-                      key={star}
-                      type="button"
-                      disabled={isSubmitting}
-                      className="p-0.5 -m-0.5 rounded touch-manipulation focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:opacity-50 w-[10px] h-[10px] sm:w-[14px] sm:h-[14px] flex items-center justify-center"
-                      onMouseEnter={() => setHoverRating(star)}
-                      onMouseLeave={() => setHoverRating(0)}
-                      onClick={(e) => handleStarClick(e, star)}
-                      aria-label={`Rate ${star} star${star !== 1 ? 's' : ''}`}
-                    >
-                      <PartialStar fillPercentage={fill} size={STAR_SIZE_MOBILE} className="sm:hidden" />
-                      <PartialStar fillPercentage={fill} size={STAR_SIZE_DESKTOP} className="hidden sm:block" />
-                    </button>
-                  )
-                })}
-              </div>
+            {/* Mobile: open rating bottom sheet */}
+            <div className="sm:hidden">
+              <button
+                type="button"
+                disabled={isSubmitting}
+                className="w-full text-left focus:outline-none focus:ring-2 focus:ring-primary rounded-md p-0.5 -m-0.5"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setSheetError('')
+                  setSheetRating(0)
+                  setIsRatingSheetOpen(true)
+                }}
+                aria-label="Rate this product"
+              >
+                <div className="flex items-center gap-0.5 min-w-0">
+                  {hasRatingData && (
+                    <span className="text-[11px] font-medium text-foreground whitespace-nowrap">
+                      {effectiveAverage.toFixed(1)}
+                    </span>
+                  )}
+                  <div className="flex gap-0.5 flex-shrink-0 items-center min-h-[10px]">
+                    {getStarFillPercentages(effectiveAverage).map((fill, idx) => (
+                      <span key={idx} aria-hidden className="inline-flex items-center justify-center">
+                        <PartialStar fillPercentage={fill} size={14} />
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {displayCount === 0
+                    ? 'No ratings yet'
+                    : `${displayCount} rating${displayCount !== 1 ? 's' : ''}`}
+                </p>
+              </button>
             </div>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              {displayCount === 0
-                ? 'No ratings yet'
-                : `${displayCount} rating${displayCount !== 1 ? 's' : ''}`}
-            </p>
+
+            {/* Desktop: fast star selection */}
+            <div className="hidden sm:block">
+              <div className="flex items-center gap-0.5 min-w-0">
+                {hasRatingData && (
+                  <span className="text-[11px] font-medium text-foreground whitespace-nowrap">
+                    {effectiveAverage.toFixed(1)}
+                  </span>
+                )}
+                <div className="flex gap-0.5 flex-shrink-0 items-center min-h-[10px] sm:min-h-[14px]">
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const active = hoverRating > 0 ? star <= hoverRating : star <= effectiveAverage
+                    const fill = active
+                      ? 100
+                      : hoverRating > 0
+                        ? 0
+                        : getStarFillPercentages(effectiveAverage)[star - 1] ?? 0
+                    return (
+                      <button
+                        key={star}
+                        type="button"
+                        disabled={isSubmitting}
+                        className="p-0.5 -m-0.5 rounded touch-manipulation focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:opacity-50 w-[10px] h-[10px] sm:w-[14px] sm:h-[14px] flex items-center justify-center"
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        onClick={(e) => handleStarClick(e, star)}
+                        aria-label={`Rate ${star} star${star !== 1 ? 's' : ''}`}
+                      >
+                        <PartialStar fillPercentage={fill} size={STAR_SIZE_DESKTOP} />
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {displayCount === 0
+                  ? 'No ratings yet'
+                  : `${displayCount} rating${displayCount !== 1 ? 's' : ''}`}
+              </p>
+            </div>
           </>
         )}
       </div>
+
+      {/* Rating bottom sheet (mobile) */}
+      {isRatingSheetOpen && !showThanks && (
+        <div className="fixed inset-0 z-50">
+          <button
+            type="button"
+            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+            onClick={() => setIsRatingSheetOpen(false)}
+            aria-label="Close rating sheet"
+          />
+          <div
+            className="absolute left-0 right-0 bottom-0 rounded-t-2xl bg-card p-4 shadow-xl ring-1 ring-border"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-foreground">Rate this product</h3>
+              <button
+                type="button"
+                onClick={() => setIsRatingSheetOpen(false)}
+                className="p-1 rounded-md text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="mt-3 flex items-center justify-center gap-1.5">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  className="w-12 h-12 flex items-center justify-center rounded-xl focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setSheetError('')
+                    setSheetRating(star)
+                  }}
+                  disabled={isSubmitting}
+                  aria-label={`Select ${star} stars`}
+                >
+                  <PartialStar fillPercentage={sheetRating >= star ? 100 : 0} size={26} />
+                </button>
+              ))}
+            </div>
+
+            {sheetError && <p className="mt-2 text-sm text-destructive">{sheetError}</p>}
+
+            <button
+              type="button"
+              onClick={async () => {
+                if (!sheetRating) return
+                setSheetError('')
+                const ok = await submitRating(sheetRating)
+                if (ok) setIsRatingSheetOpen(false)
+              }}
+              disabled={sheetRating === 0 || isSubmitting}
+              className="mt-4 w-full inline-flex items-center justify-center rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit rating'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

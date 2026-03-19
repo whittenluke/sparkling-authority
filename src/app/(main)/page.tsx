@@ -381,7 +381,7 @@ export default async function Home() {
               <h3 className="text-xl font-clash-display font-semibold text-primary mb-1">Carbonation</h3>
               <p className="text-sm font-normal text-muted-foreground">Search by intensity</p>
             </Link>
-            </div>
+          </div>
         </section>
 
         {/* Strongest Carbonation Section */}
@@ -408,8 +408,13 @@ export default async function Home() {
             <div className="relative">
               {/* Desktop/Tablet: same grid as other sections */}
               <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {topProducts.map((product) => (
-                  <CompactProductCard key={product.id} product={product} />
+                {topProducts.map((product, index) => (
+                  <div key={product.id} className="relative">
+                    <div className="absolute left-1.5 top-1.5 z-10 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary text-sm font-semibold ring-1 ring-border pointer-events-none">
+                      {index + 1}
+                    </div>
+                    <CompactProductCard product={product} />
+                  </div>
                 ))}
               </div>
 
@@ -417,8 +422,11 @@ export default async function Home() {
               <div className="md:hidden relative">
                 <div className="overflow-x-auto pb-4 scrollbar-hide scroll-smooth -mx-4 px-4">
                   <div className="flex gap-3 w-max">
-                    {topProducts.map((product) => (
-                      <div key={product.id} className="w-[160px] flex-shrink-0">
+                    {topProducts.map((product, index) => (
+                      <div key={product.id} className="w-[160px] flex-shrink-0 relative">
+                        <div className="absolute left-1.5 top-1.5 z-10 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary text-sm font-semibold ring-1 ring-border pointer-events-none">
+                          {index + 1}
+                        </div>
                         <CompactProductCard product={product} />
                       </div>
                     ))}
@@ -451,7 +459,7 @@ export default async function Home() {
         {/* About Section */}
         <div className="mt-24 max-w-2xl mx-auto text-center">
           <h2 className="font-clash-display text-xl font-medium text-primary mb-3">About</h2>
-          <p className="font-plus-jakarta text-base leading-7 text-primary/70">
+          <p className="font-plus-jakarta text-base leading-7 text-primary/70 text-left">
             Sparkling Authority organizes and indexes sparkling water products by flavor, brand, and user ratings. We help you discover options and make informed choices in a crowded category.
           </p>
         </div>
