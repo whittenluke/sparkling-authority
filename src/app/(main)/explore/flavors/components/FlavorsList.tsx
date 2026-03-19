@@ -170,10 +170,8 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
       const sortedTags: FlavorTag[] = Object.entries(tagCounts)
         .map(([tag, count]) => ({ tag, count }))
         .sort((a, b) => {
-          if (b.count !== a.count) {
-            return b.count - a.count // Most products first
-          }
-          return a.tag.localeCompare(b.tag) // Alphabetical for ties
+          // Alphabetical A->Z (case-insensitive). We still show counts, but ordering is purely alphabetical.
+          return a.tag.toLowerCase().localeCompare(b.tag.toLowerCase())
         })
 
       setFlavorTags(sortedTags)
@@ -291,10 +289,8 @@ export function FlavorsList({ categories, initialExpandedCategory, initialSelect
           const sortedTags: FlavorTag[] = Object.entries(tagCounts)
             .map(([tag, count]) => ({ tag, count }))
             .sort((a, b) => {
-              if (b.count !== a.count) {
-                return b.count - a.count // Most products first
-              }
-              return a.tag.localeCompare(b.tag) // Alphabetical for ties
+              // Alphabetical A->Z (case-insensitive). We still show counts, but ordering is purely alphabetical.
+              return a.tag.toLowerCase().localeCompare(b.tag.toLowerCase())
             })
 
           setFlavorTags(sortedTags)
