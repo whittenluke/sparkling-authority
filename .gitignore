@@ -61,6 +61,7 @@ schema.graphql
 .Documentation
 DesignDoc.md
 SchemaRoadmap.md
+ExampleQueries.md
 DesignSystem.md
 DesignUserVision.md
 UpdateStructureRM.md
